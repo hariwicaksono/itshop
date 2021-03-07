@@ -1,0 +1,32 @@
+{
+  "name": "starter-nextjs",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build && next export",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@tinymce/tinymce-react": "^3.8.1",
+    "axios": "^0.21.1",
+    "bootstrap": "^5.0.0-beta2",
+    "formik": "^2.2.5",
+    "html-react-parser": "^0.14.2",
+    "moment": "^2.29.1",
+    "next": "^10.0.4",
+    "react": "17.0.1",
+    "react-bootstrap": "^1.4.0",
+    "react-bootstrap-dialog": "^0.13.0",
+    "react-data-table-component": "^6.11.6",
+    "react-dom": "17.0.1",
+    "react-icons": "^3.11.0",
+    "react-loader": "^2.4.7",
+    "react-loading-skeleton": "^2.1.1",
+    "react-paginate": "^6.5.0",
+    "react-toastify": "^6.1.0",
+    "spin.js": "^4.1.0",
+    "styled-components": "^5.2.1",
+    "yup": "^0.29.3"
+  }
+}
