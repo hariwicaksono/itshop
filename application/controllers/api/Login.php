@@ -26,7 +26,7 @@ class Login extends REST_Controller
 
 	public function index_post()
 	{
-		$user = $this->post('username');
+		$user = $this->post('email');
 		$password = md5($this->post('password'));
 		$query1 = $this->db->query("SELECT status_user FROM users WHERE email LIKE '%$user%' and status_user = 'User' ");
 		$row1 = $query1->row_array();
@@ -42,7 +42,7 @@ class Login extends REST_Controller
 				} else {
 						$this->response([
 						'id'=> '404',
-						'data' => 'Data Not Found 1'
+						'data' => 'Data Not Found'
 					],REST_Controller::HTTP_OK);
 				}
 			}
@@ -65,11 +65,6 @@ class Login extends REST_Controller
 						'data' => 'Data Not Found'
 					],REST_Controller::HTTP_OK);
 				}
-			} else{
-				$this->response([
-					'id'=> '404',
-					'data' => 'Data Not Found'
-				],REST_Controller::HTTP_OK);
 			}
 		}
 	
