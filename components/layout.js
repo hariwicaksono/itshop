@@ -9,8 +9,8 @@ import { Container } from 'react-bootstrap';
 import {isLogin, isAdmin} from '../libs/utils';
 import API from '../libs/axios';
 
-export const siteName = 'Blog App'
-export const siteTitle = 'Blog App Dengan Next.js'
+export const siteName = 'itshop.id'
+export const siteTitle = 'itshop.id'
 
 class Layout extends Component {
   constructor(props) {
@@ -66,7 +66,7 @@ class Layout extends Component {
     {admin ? 
            <NavbarA toggleMenu={this.toggleMenu} setting={this.state.Pengaturan} />
     :
-        <Navbar toggleMenu={this.toggleMenu} setting={this.state.Pengaturan} />
+        <Navbar toggleMenu={this.toggleMenu} setting={this.state.Pengaturan} brandName={siteTitle} />
     } 
 
  

@@ -208,8 +208,8 @@ class MasterModel extends CI_Model {
 	public function get_tag($category)
 	{
         $this->db->select('p.*, c.name as category, u.name as user');
-        $this->db->from('posts p');
-        $this->db->join('categories c', 'c.id = p.category_id');
+        $this->db->from('blogs p');
+        $this->db->join('category c', 'c.id = p.category_id');
         $this->db->join('users u', 'u.id = p.user_id');
         $this->db->where('c.name', $category);
         $this->db->order_by('p.id', 'DESC');
@@ -220,20 +220,22 @@ class MasterModel extends CI_Model {
 	public function get_product($id = null)
 	{
 		if ($id == null) {
-        $this->db->select('b.*, c.name as category, u.name as user');
-        $this->db->from('products b');
-        $this->db->join('category c', 'c.id = b.category_id');
-        $this->db->join('users u', 'u.id = b.user_id');
-        $this->db->order_by('b.id', 'DESC');
+        $this->db->select('p.*, c.name as category, u.name as user');
+        $this->db->from('products p');
+        $this->db->join('category c', 'c.id = p.category_id');
+        $this->db->join('users u', 'u.id = p.user_id');
+		$this->db->join('supplier s', 's.id = p.supplier_id');
+        $this->db->order_by('p.id', 'DESC');
         $query = $this->db->get();
         return $query->result_array();
 		} else {
-        $this->db->select('b.*, c.name as category, u.name as user');
-        $this->db->from('products b');
-        $this->db->join('category c', 'c.id = b.category_id');
-        $this->db->join('users u', 'u.id = b.user_id');
-        $this->db->where('b.id', $id);
-        $this->db->order_by('b.id', 'DESC');
+        $this->db->select('p.*, c.name as category, u.name as user');
+        $this->db->from('products p');
+        $this->db->join('category c', 'c.id = p.category_id');
+        $this->db->join('users u', 'u.id = p.user_id');
+		$this->db->join('supplier s', 's.id = p.supplier_id');
+        $this->db->where('p.id', $id);
+        $this->db->order_by('p.id', 'DESC');
         $query = $this->db->get();
 		return $query->result_array();
 		}

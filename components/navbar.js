@@ -83,7 +83,7 @@ componentDidMount = () => {
       
         <Link href="/" passHref>
           <Navbar.Brand >
-          { this.state.loading ?
+          {/* this.state.loading ?
                 <>
                   <Spinner animation="grow" variant="primary" size="sm" />
                   <Spinner animation="grow" variant="success" size="sm" />
@@ -92,9 +92,12 @@ componentDidMount = () => {
                 </>
               :
               <strong>
-             {this.props.setting.brand}
+             {this.props.setting}
               </strong>
-              }
+          */}
+          <strong>
+           {this.props.brandName}
+           </strong>
           </Navbar.Brand></Link>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">

@@ -9,7 +9,7 @@ import {} from 'react-icons/md';
 import parse from 'html-react-parser';
 import Skeleton from 'react-loading-skeleton';
 import FormComment from '../../components/postComment';
-import Posts from '../../components/posts';
+import Posts from '../../components/blogs';
 
 class Detail extends Component {
   constructor(props){
