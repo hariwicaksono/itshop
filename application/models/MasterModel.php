@@ -134,32 +134,32 @@ class MasterModel extends CI_Model {
 	public function get_category($id = null)
 	{
 		if ($id == null) {
-			return $this->db->get('categories')->result_array();
+			return $this->db->get_where('category',['group'=>'blog'])->result_array();
 		} else { 
-			return $this->db->get_where('categories',['id'=>$id])->result_array();
+			return $this->db->get_where('category',['id'=>$id, 'group'=>'blog'])->result_array();
 		}
 	}
 
 	public function count_category()
 	{
-		return $this->db->count_all('categories');
+		return $this->db->count_all('category');
 	}
 
 	public function post_category($data)
 	{
-		$this->db->insert('categories',$data);
+		$this->db->insert('category',$data);
 		return $this->db->affected_rows();
 	}
 
 	public function put_category($id,$data)
 	{
-		$this->db->update('categories',$data,['id'=>$id]);
+		$this->db->update('category',$data,['id'=>$id]);
 		return $this->db->affected_rows();
 	}
 
 	public function delete_category($id = null)
 	{
-		$this->db->delete('categories',['id' => $id]);
+		$this->db->delete('category',['id' => $id]);
 		return $this->db->affected_rows();
 	}
 
@@ -262,6 +262,15 @@ class MasterModel extends CI_Model {
 	{
 		$this->db->delete('products',['id' => $id]);
 		return $this->db->affected_rows();
+	}
+
+	public function get_catalog($id = null)
+	{
+		if ($id == null) {
+			return $this->db->get_where('category',['group'=>'product'])->result_array();
+		} else { 
+			return $this->db->get_where('category',['id'=>$id, 'group'=>'product'])->result_array();
+		}
 	}
 
 }

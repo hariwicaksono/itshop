@@ -7,6 +7,7 @@ import Slideshow from '../components/slideshow';
 import Loader from 'react-loader';
 import Skeleton from 'react-loading-skeleton';
 import Blog from '../components/blogs';
+import Catalog from '../components/catalog';
 import {FaExclamationTriangle} from 'react-icons/fa';
 
 var options = {lines: 13,length: 20,width: 10,radius: 30,scale: 0.35,corners: 1,color: '#fff',opacity: 0.25,rotate: 0,direction: 1,speed: 1,trail: 60,fps: 20,zIndex: 2e9,top: '50%',left: '50%',shadow: false,hwaccel: false,position: 'absolute'};
@@ -17,6 +18,7 @@ class Index extends Component{
     this.state = {
         Products: [],
         Slideshow: [],
+        Catalog: [],
         Posts: [],
         loading: true
     }
@@ -36,6 +38,11 @@ class Index extends Component{
       API.GetBlog().then(res => {
         this.setState({
             Posts: res.data,
+        });
+      })
+      API.GetCatalog().then(res => {
+        this.setState({
+            Catalog: res.data,
         });
       })
   } 
@@ -62,8 +69,9 @@ class Index extends Component{
         <Slideshow data={this.state.Slideshow} /> 
         </>
         }
+
+      <Catalog data={this.state.Catalog} /> 
        
-        
         <Row>
           <Col md="12">
          
@@ -74,12 +82,7 @@ class Index extends Component{
           :
           <>
           <section className="">
-          <h2 className="text-center">Produk Kami</h2>
-
-          </section>
-
-          <section className="">
-          <h2 className="text-center">Layanan Kami</h2>
+          <h2 className="text-center">Produk Terlaris</h2>
 
           </section>
 

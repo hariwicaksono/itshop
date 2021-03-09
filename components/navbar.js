@@ -120,7 +120,7 @@ componentDidMount = () => {
         </Container>
       </Navbar>
 
-<Navbar bg="primary" variant="dark" className="shadow-sm py-3" expand="lg" sticky="top" >
+<Navbar bg="primary" variant="dark" className="shadow-sm" expand="lg" sticky="top" >
 <Container>
 
   <Navbar.Toggle aria-controls="basic-navbar-nav" />
