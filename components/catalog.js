@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Link from 'next/link';
 import {ImagesUrl} from '../libs/urls';
 import {Row, Col, Card} from 'react-bootstrap';
+import Slider from "react-slick";
 
 const url = ImagesUrl();
 
@@ -13,21 +14,58 @@ class Catalog extends Component {
         }
     }
     render() {
+        const settings = {
+            className: "",
+            centerMode: false,
+            centerPadding: '50px',
+            slidesToShow: 5,
+            autoplay: false,
+            arrows: false,
+            dots: false,
+            infinite:false,
+            swipeToSlide: true,
+            responsive: [
+                {
+                    breakpoint: 992,
+                    settings: {
+                        centerMode: false,
+                        centerPadding: '40px',
+                        slidesToShow: 5
+                    }
+                },
+                {
+                    breakpoint: 768,
+                    settings: {
+                        centerMode: false,
+                        centerPadding: '30px',
+                        slidesToShow: 5
+                    }
+                },
+                {
+                    breakpoint: 576,
+                    settings: {
+                        centerMode: false,
+                        centerPadding: '20px',
+                        slidesToShow: 5
+                    }
+                }
+            ]
+          };
         const ListCatalog = this.props.data.map((s, index) => (
-            <Col xs="4" sm="3" md="3" lg="2" xl="2" >
-               <Link href={"/catalog/"+s.slug} passHref>
+          
+            <Link href={"/catalog/"+s.slug} passHref>
                <a>
-            <Card body key={index} className="text-center">
-            <strong>{s.name}</strong>
+            <Card body key={index} className="rounded text-center">
+            <strong>{index}</strong>
             </Card>
             </a>
-               </Link>
-            </Col>
+            </Link>
+       
         ))
         return (
-            <Row>
+            <Slider {...settings}>
                 {ListCatalog}
-            </Row>
+            </Slider>
         )
     }
 }

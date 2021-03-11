@@ -19,12 +19,12 @@ function Cart(props) {
   return (
     <>
       <Button variant="light" onClick={handleShow}>
-      <FaShoppingCart size="1.5em" style={{color: '#e0a800'}}/> {props.cartCount ? <span className="text-danger">{props.cartCount}</span> : ""} Keranjang
+      <FaShoppingCart size="1em" className="text-primary"/> {props.cartCount ? <span className="text-danger">{props.cartCount}</span> : ""}
       </Button>
 
       <Modal show={show} size="lg" onHide={handleClose} animation={false} backdrop="static" keyboard={false}>
         <Modal.Header closeButton>
-          <Modal.Title>Keranjang</Modal.Title>
+          <Modal.Title>Keranjang Belanja</Modal.Title>
         </Modal.Header>
         <Modal.Body>{props.cartCount ? <span className="text-danger">{props.cartCount}</span> : ""}</Modal.Body>
         <Modal.Footer>
@@ -78,7 +78,7 @@ componentDidMount = () => {
 
     return(
       <>
-      <Navbar bg="white" variant="light" className="shadow-sm py-3" expand="lg" sticky="top" >
+      <Navbar bg="white" variant="light" className="shadow py-3" expand="lg" sticky="top" >
       <Container>
       
         <Link href="/" passHref>
@@ -90,7 +90,7 @@ componentDidMount = () => {
                   <Spinner animation="grow" variant="danger" size="sm" />
                   <Spinner animation="grow" variant="warning" size="sm" />
                 </>
-              :
+              : 
               <strong>
              {this.props.setting}
               </strong>
@@ -99,56 +99,24 @@ componentDidMount = () => {
            {this.props.brandName}
            </strong>
           </Navbar.Brand></Link>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav>
-        
-          </Nav>
-          
-         <SearchForm/>
-          
-          <Nav className="ms-auto">
-          
-          <Form inline>
+
+          <SearchForm/>
+  
+        <Nav>
+
           <Link href="/login" passHref>
-            <Button variant="light"><FaUser className="text-primary"/> Masuk</Button>
+            <Button variant="light"><FaUser size="1em" className="text-primary"/></Button>
             </Link>
-          </Form>
+    
+          <Cart cartCount={this.props.cartCount} />
+
           </Nav>
+
+   
       
-        </Navbar.Collapse>
         </Container>
       </Navbar>
 
-<Navbar bg="primary" variant="dark" className="shadow-sm" expand="lg" sticky="top" >
-<Container>
-
-  <Navbar.Toggle aria-controls="basic-navbar-nav" />
-  <Navbar.Collapse id="basic-navbar-nav">
-    <Nav className="me-auto">
-    <NavDropdown title="Produk Kami" id="basic-nav-dropdown">
-        <Link href="#" passHref><NavDropdown.Item>Action</NavDropdown.Item></Link>
-        <Link href="#" passHref><NavDropdown.Item>Another action</NavDropdown.Item></Link>
-        <Link href="#" passHref><NavDropdown.Item>Something</NavDropdown.Item></Link>
-        <NavDropdown.Divider />
-        <Link href="#" passHref><NavDropdown.Item>Separated link</NavDropdown.Item></Link>
-      </NavDropdown>
-
-      <Link href="/blog" passHref><Nav.Link>Produk</Nav.Link></Link>
-
-      <Link href="/blog" passHref><Nav.Link>Blog</Nav.Link></Link>
-    
-      <Link href="/blog" passHref><Nav.Link>Kontak</Nav.Link></Link>
-
-    </Nav>
-
-    <Nav>
-    <Cart cartCount={this.props.cartCount} />
-    </Nav>
-
-  </Navbar.Collapse>
-  </Container>
-</Navbar>
      </>
     );
   }

@@ -1,14 +1,3 @@
-html,
-body {
-    max-height: 100%;
-    margin: 0;
-}
-body {
-    background: linear-gradient(#5e72e4 55%, transparent 55%) no-repeat;
-    margin: 0;
-     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
 .alert-primary {
     border-left: 4px solid #1b00ff;
 }
@@ -42,6 +31,10 @@ body {
     margin: 0px 4px;
     font-size: 1.125rem;
     font-weight: 500;
+}
+.overflow-scrolling {
+    overflow:auto;
+    -webkit-overflow-scrolling: touch;
 }
 .auth {
   position: relative;
@@ -353,4 +346,13 @@ svg{margin: 0 auto !important;}
 #searchResult{
     position: absolute;
     z-index: 9999
+}
+.slick-prev:before, .slick-next:before {
+    color: #09529b !important;
+}
+.slick-prev {
+    z-index: 1;
+}
+.slick-next {
+    z-index: 1;
 }

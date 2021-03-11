@@ -9,6 +9,7 @@ import Skeleton from 'react-loading-skeleton';
 import Blog from '../components/blogs';
 import Catalog from '../components/catalog';
 import {FaExclamationTriangle} from 'react-icons/fa';
+import OverflowScrolling from 'react-overflow-scrolling';
 
 var options = {lines: 13,length: 20,width: 10,radius: 30,scale: 0.35,corners: 1,color: '#fff',opacity: 0.25,rotate: 0,direction: 1,speed: 1,trail: 60,fps: 20,zIndex: 2e9,top: '50%',left: '50%',shadow: false,hwaccel: false,position: 'absolute'};
 
@@ -67,7 +68,9 @@ class Index extends Component{
         :
         <>
         <Slideshow data={this.state.Slideshow} /> 
+
         </>
+       
         }
 
       <Catalog data={this.state.Catalog} /> 
@@ -82,12 +85,12 @@ class Index extends Component{
           :
           <>
           <section className="">
-          <h2 className="text-center">Produk Terlaris</h2>
+          <h5 className="border-bottom pb-2">Produk terlaris</h5>
 
           </section>
 
           <section className="">
-          <h2 className="text-center">Blog</h2>
+          <h5 className="border-bottom pb-2">Blog terbaru</h5>
             <Blog data={this.state.Posts} />
           </section>
 
