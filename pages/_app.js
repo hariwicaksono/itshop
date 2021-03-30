@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import '../styles/bootstrap.css';
+import '../styles/mobile.css';
 import '../styles/globals.css';
 import 'spin.js/spin.css';
 import 'react-toastify/dist/ReactToastify.css';
