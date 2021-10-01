@@ -1,12 +1,13 @@
-<?php namespace App\Controllers;
+<?php namespace App\Controllers\Api;
 
+use App\Controllers\BaseControllerApi;
 use App\Models\AuthModel;
 use CodeIgniter\HTTP\Response;
 use CodeIgniter\HTTP\ResponseInterface;
 use Exception;
 use ReflectionException;
 
-class Auth extends BaseController
+class Auth extends BaseControllerApi
 {
     /**
      * Authenticate Existing User
@@ -25,9 +26,9 @@ class Auth extends BaseController
             ]
         ];
 
-        $input = $this->getRequestInput($this->request);
+        $input = $this->getRequestInput();
 
-        if (!$this->validateRequest($input, $rules, $errors)) {
+        if (!$this->validate($rules, $errors)) {
             return $this
                 ->getResponse(
                     $this->validator->getErrors(),

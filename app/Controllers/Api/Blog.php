@@ -1,14 +1,12 @@
 <?php namespace App\Controllers;
 
+use App\Controllers\BaseControllerApi;
 use App\Models\BlogModel;
-use \Appkita\CI4Restfull\RestfullApi;
 
-class Blog extends RestfullApi
+class Blog extends BaseControllerApi
 {
     protected $format       = 'json';
-    protected $modelName    = 'App\Models\BlogModel';
-
-    protected $auth = ['key'];
+    protected $modelName    =  BlogModel::class;
 
 	public function index()
 	{
