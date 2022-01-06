@@ -18,28 +18,21 @@ class JWTAuthenticationFilter implements FilterInterface
         $authenticationHeader = $request->getServer('HTTP_AUTHORIZATION');
 
         try {
-
             helper('jwt');
             $encodedToken = getJWTFromRequest($authenticationHeader);
             validateJWTFromRequest($encodedToken);
             return $request;
-
         } catch (Exception $e) {
-
-            return Services::response()
-                ->setJSON(
-                    [
-                        'error' => $e->getMessage()
-                    ]
-                )
-                ->setStatusCode(ResponseInterface::HTTP_UNAUTHORIZED);
-
+            if($e->getMessage() == "Expired token"){
+                return Services::response()->setJSON(['expired'=> true,'message' => $e->getMessage(),'data'=>['url' => base_url("/logout")]])->setStatusCode(ResponseInterface::HTTP_OK);
+            } else {
+                return Services::response()->setJSON(['message' => $e->getMessage()])->setStatusCode(ResponseInterface::HTTP_UNAUTHORIZED);
+            }
         }
     }
 
-    public function after(RequestInterface $request,
-                          ResponseInterface $response,
-                          $arguments = null)
+    public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
     {
+
     }
 }

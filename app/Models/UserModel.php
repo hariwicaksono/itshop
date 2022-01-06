@@ -1,57 +1,89 @@
-<?php namespace App\Models;
+<?php
+
+namespace App\Models;
 
 use CodeIgniter\Model;
+use Exception;
 
 class UserModel extends Model
 {
-    protected $table = 'users';
-    protected $primaryKey = 'id';
+    protected $DBGroup              = 'default';
+    protected $table                = 'user';
+    protected $primaryKey           = 'user_id';
+    protected $useAutoIncrement     = true;
+    protected $insertID             = 0;
+    protected $returnType           = 'array';
+    protected $useSoftDeletes       = false;
+    protected $protectFields        = false;
+    protected $allowedFields        = [];
 
-    protected $useAutoIncrement = true;
+    // Dates
+    protected $useTimestamps        = true;
+    protected $dateFormat           = 'datetime';
+    protected $createdField         = 'created_at';
+    protected $updatedField         = 'updated_at';
+    protected $deletedField         = 'deleted_at';
 
-    protected $returnType     = 'array';
-    protected $useSoftDeletes = false;
+    // Validation
+    protected $validationRules      = [];
+    protected $validationMessages   = [];
+    protected $skipValidation       = false;
+    protected $cleanValidationRules = true;
 
-    protected $allowedFields = ['email', 'username', 'password', 'name', 'status_user', 'status_active', 'created_at', 'updated_at'];
+    // Callbacks
+    protected $allowCallbacks       = true;
+    protected $beforeInsert         = ['beforeInsert'];
+    protected $afterInsert          = [];
+    protected $beforeUpdate         = ['beforeUpdate'];
+    protected $afterUpdate          = [];
+    protected $beforeFind           = [];
+    protected $afterFind            = [];
+    protected $beforeDelete         = [];
+    protected $afterDelete          = [];
 
-    protected $useTimestamps = false;
-    protected $createdField  = 'created_at';
-    protected $updatedField  = 'updated_at';
-
-    protected $skipValidation     = true;
-
-    public function getUser($id = false)
+    protected function beforeInsert(array $data): array
     {
-        if($id === false){
-            return $this->findAll();
-        } else {
-            return $this->getWhere(['email' => $id])->getResultArray();
-        }  
-    }
-     
-    public function insertUser($data)
-    {
-        return $this->db->table($this->table)->insert($data);
-    }
- 
-    public function updateUser($data, $id)
-    {
-        return $this->db->table($this->table)->update($data, ['id' => $id]);
-    }
- 
-    public function deleteUser($id)
-    {
-        return $this->db->table($this->table)->delete(['id' => $id]);
-    }
-
-    public function updatePassword($data, $id)
-    {
-        return $this->db->table($this->table)->update($data, ['email' => $id]);
+        return $this->getUpdatedDataWithHashedPassword($data);
     }
 
-    public function count_user()
-	{
-		return $this->countAll();
-	}
+    protected function beforeUpdate(array $data): array
+    {
+        return $this->getUpdatedDataWithHashedPassword($data);
+    }
 
+    private function getUpdatedDataWithHashedPassword(array $data): array
+    {
+        if (isset($data['data']['password'])) {
+            $plaintextPassword = $data['data']['password'];
+            $data['data']['password'] = $this->hashPassword($plaintextPassword);
+        }
+        return $data;
+    }
+
+    private function hashPassword(string $plaintextPassword): string
+    {
+        return password_hash($plaintextPassword, PASSWORD_BCRYPT);
+    }
+
+    public function findUserByEmailAddress(string $emailAddress)
+    {
+        $user = $this
+            ->where(['email' => $emailAddress])
+            ->first();
+
+        if (!$user)
+            throw new Exception(lang("App.errorLogin"));
+
+        return $user;
+    }
+
+    public function findUser($id)
+    {
+        $this->select("{$this->table}.*, p.provinsi, k.nama_kabupaten");
+        $this->join("provinsi p", "p.provinsi_id = {$this->table}.provinsi_id", "left");
+        $this->join("kabupaten k", "k.kabupaten_id = {$this->table}.kabupaten_id", "left");
+        $this->where("{$this->table}.user_id", $id);
+        $query = $this->first();
+        return $query;
+    }
 }

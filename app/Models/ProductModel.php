@@ -1,87 +1,69 @@
-<?php namespace App\Models;
+<?php
+
+namespace App\Models;
 
 use CodeIgniter\Model;
 
 class ProductModel extends Model
-{ 
-    protected $table = 'products';
-    protected $primaryKey = 'id';
+{
+    protected $DBGroup              = 'default';
+    protected $table                = 'product';
+    protected $primaryKey           = 'product_id';
+    protected $useAutoIncrement     = true;
+    protected $insertID             = 0;
+    protected $returnType           = 'array';
+    protected $useSoftDeletes       = false;
+    protected $protectFields        = false;
+    protected $allowedFields        = [];
 
-    protected $useAutoIncrement = true;
+    // Dates
+    protected $useTimestamps        = true;
+    protected $dateFormat           = 'datetime';
+    protected $createdField         = 'created_at';
+    protected $updatedField         = 'updated_at';
+    protected $deletedField         = 'deleted_at';
 
-    protected $returnType     = 'array';
-    protected $useSoftDeletes = false;
+    // Validation
+    protected $validationRules      = [];
+    protected $validationMessages   = [];
+    protected $skipValidation       = false;
+    protected $cleanValidationRules = true;
 
-    protected $allowedFields = ['category_id', 'user_id', 'title', 'slug', 'summary', 'body', 'price', 'post_image', 'created_at', 'updated_at'];
+    // Callbacks
+    protected $allowCallbacks       = true;
+    protected $beforeInsert         = [];
+    protected $afterInsert          = [];
+    protected $beforeUpdate         = [];
+    protected $afterUpdate          = [];
+    protected $beforeFind           = [];
+    protected $afterFind            = [];
+    protected $beforeDelete         = [];
+    protected $afterDelete          = [];
 
-    protected $useTimestamps = false;
-    protected $createdField  = 'created_at';
-    protected $updatedField  = 'updated_at';
-
-    protected $skipValidation     = true;
-
-    public function getProduct($id = false)
+    public function getProduct($page = false, $limit = false)
     {
-        $db      = \Config\Database::connect();
-
-        if($id === false){
-            $builder = $db->table('products p');
-            $builder->select('p.*, c.name as category, u.name as user');
-            $builder->join('categories c', 'c.id = p.category_id','left');
-            $builder->join('users u', 'u.id = p.user_id');
-            $builder->where('c.group', 'product');
-            $builder->orderBy('p.id', 'DESC');
-            $query = $builder->get();
-            return $query->getResultArray();
-        } else {
-            $builder = $db->table('products p');
-            $builder->select('p.*, c.name as category, u.name as user');
-            $builder->join('categories c', 'c.id = p.category_id');
-            $builder->join('users u', 'u.id = p.user_id');
-            $builder->where('p.id', $id);
-            $builder->orWhere('p.slug', $id);
-            $query = $builder->get();
-            return $query->getResultArray();
-        }  
+        $offset = ($page - 1) * $limit;
+        $this->select("{$this->table}.*, m.media_path");
+        $this->join("media m", "m.media_id = {$this->table}.product_image", "left");
+        $this->orderBy("{$this->table}.product_id", "ASC");
+        $query = $this->findAll($limit, $offset);
+        return $query;
     }
-     
-    public function insertProduct($data)
+
+    public function showProduct($id)
     {
-        return $this->db->table($this->table)->insert($data);
+        $this->select("{$this->table}.*, m.media_path");
+        $this->join("media m", "m.media_id = {$this->table}.product_image", "left");
+        $this->where("{$this->table}.product_id", $id);
+        $this->orderBy("{$this->table}.product_id", "ASC");
+        $query = $this->findAll();
+        return $query;
     }
- 
-    public function updateProduct($data, $id)
+
+    public function countProduct($status = null)
     {
-        return $this->db->table($this->table)->update($data, ['id' => $id]);
+        return $this->db->table('product')
+            ->where('active', $status)
+            ->countAllResults();
     }
- 
-    public function deleteProduct($id)
-    {
-        return $this->db->table($this->table)->delete(['id' => $id]);
-    }
-
-    public function count_product()
-	{
-		return $this->countAll();
-	}
-
-    public function searchProduct($id){
-        $this->like("title", $id);
-        $this->orLike("body", $id);
-        $query = $this->get();
-        return $query->getResultArray();
-    }
-
-    public function searchTag($category){
-        $db      = \Config\Database::connect();
-        $builder = $db->table('products p');
-        $builder->select('p.*, c.name as category, u.name as user');
-        $builder->join('categories c', 'c.id = p.category_id');
-        $builder->join('users u', 'u.id = p.user_id');
-        $builder->where('c.name', $category);
-        $builder->orderBy('p.id', 'DESC');
-        $query = $builder->get();
-        return $query->getResultArray();
-    }
-
 }

@@ -1,101 +1,53 @@
-<?php namespace App\Controllers;
+<?php
 
+namespace App\Controllers\Api;
+
+use App\Controllers\BaseControllerApi;
 use App\Models\SettingModel;
-use \Appkita\CI4Restfull\RestfullApi;
 
-class Setting extends RestfullApi
+class Setting extends BaseControllerApi
 {
     protected $format       = 'json';
-    protected $modelName    = 'App\Models\SettingModel';
-    protected $auth = ['key'];
+    protected $modelName    = SettingModel::class;
 
-	public function index()
-	{
-        $id = '1';
-        $data = [
-            'status' => true,
-            'message' => 'Berhasil menampilkan data',
-            'data' => $this->model->getSetting($id)
-        ];
-
-        return $this->respond($data, 200);
-    }
-    
-    public function show($id = null)
+    public function index()
     {
-        $data = [
-            'status' => true,
-            'message' => 'Berhasil menampilkan data',
-            'data' => $this->model->find($id)
-        ];
-
-        return $this->respond($data, 200);
+        return $this->respond(["status" => true, "message" => lang('App.getSuccess'), "data" => $this->model->find(1)], 200);
     }
 
-    public function update($id = null)
+    public function update($id = NULL)
     {
-        if ($this->request)
-        {
-            //get request from Reactjs
-            if($this->request->getJSON()) {
-                $input = $this->request->getJSON();
-                $data = [
-                    'company' => $input->company,
-                    'website' => $input->website,
-                    'phone' => $input->phone,
-                    'email' => $input->email,
-                    'theme' => $input->theme,
-                    'updated_at' => date("Y-m-d H:i:s")
-                ];
+        $rules = [
+            'site_title' => [
+                'rules'  => 'required',
+                'errors' => []
+            ],
+        ];
 
-                if ($data > 0) {
-                    $this->model->update($input->id, $data);
+        if ($this->request->getJSON()) {
+            $json = $this->request->getJSON();
+            $data = [
+                'site_title' => $json->site_title,
+            ];
+        } else {
+            $data = $this->request->getRawInput();
+        }
 
-                    $response = [
-                        'status' => true,
-                        'message' => 'Berhasil menyimpan data',
-                        'data' => []
-                    ];
-                    return $this->respond($response, 200);
-                } else {
-                    $response = [
-                        'status' => false,
-                        'message' => 'Gagal menyimpan data',
-                        'data' => []
-                    ];
-                    return $this->respond($response, 200);
-                }
-                
-            } /**else {
-                //get request from PostMan and more
-                $input = $this->request->getRawInput();
-                $data = [
-                    'company' => $input['company'],
-                    'website' => $input['website'],
-                    'phone' => $input['phone'],
-                    'email' => $input['email'],
-                    'theme' => $input['theme'],
-                    'updated_at' => date("Y-m-d H:i:s")
-                ];
-    
-                if ($data > 0) {
-                    $this->model->update($id, $data);
-    
-                    $response = [
-                        'status' => '200',
-                        'data' => 'Success Update data'
-                    ];
-                    return $this->respond($response, 200);
-                } else {
-                    $response = [
-                        'status' => '404',
-                        'data' => 'Failed Update Data'
-                    ];
-                    return $this->respond($response, 404);
-                }      
-            }**/
+        if (!$this->validate($rules)) {
+            $response = [
+                'status' => false,
+                'message' => lang('App.updFailed'),
+                'data' => $this->validator->getErrors(),
+            ];
+            return $this->respond($response, 200);
+        } else {
+            $this->model->update($id, $data);
+            $response = [
+                'status' => true,
+                'message' => lang('App.updSuccess'),
+                'data' => [],
+            ];
+            return $this->respond($response, 200);
         }
     }
-    
-    
 }

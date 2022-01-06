@@ -1,161 +1,157 @@
-<?php namespace App\Controllers;
+<?php
 
+namespace App\Controllers\Api;
+
+use App\Controllers\BaseControllerApi;
 use App\Models\UserModel;
-use \Appkita\CI4Restfull\RestfullApi;
 
-class User extends RestfullApi
+class User extends BaseControllerApi
 {
     protected $format       = 'json';
-    protected $modelName    = 'App\Models\UserModel';
-    protected $auth = ['key'];
+    protected $modelName    = UserModel::class;
 
-	public function index()
-	{
-        $id = $this->request->getVar('id');
-        if ($id == null) {
-			$user = $this->model->getUser();
-		} else {
-			$user = $this->model->getUser($id);
-		}
-
-        if ($user) {
-            $response = [
-                'status' => true,
-                'message' => 'Berhasil menampilkan semua data',
-                'data' => $user
-            ];
-            return $this->respond($response, 200);
-        } else {
-            $response = [
-                'status' => false,
-                'message' => 'Tidak ada data',
-                'data' => []
-            ];
-            return $this->respond($response, 200);
-        }
+    public function index()
+    {
+        return $this->respond(["status" => true, "message" => lang('App.getSuccess'), "data" => $this->model->findAll()], 200);
     }
-    
+
     public function show($id = null)
     {
-        $data = [
-            'status' => true,
-            'message' => 'Berhasil menampilkan data',
-            'data' => $this->model->getUser($id),
-            //'data' => $this->model->find($id)
-        ];
-
-        return $this->respond($data, 200);
+        return $this->respond(['status' => true, 'message' => lang('App.getSuccess'), 'data' => $this->model->findUser($id)], 200);
     }
-
-    public function create()
+    
+    public function update($id = NULL)
     {
-        
-        $data = [
-            'email' => $this->request->getPost('email'),
-            'username' => $this->request->getPost('username'),
-            'password' => $this->request->getPost('password'),
-            'name' => $this->request->getPost('name'),
-            'status_user' => $this->request->getPost('status_user'),
-            'status_active' => $this->request->getPost('status_active'),
-            'created_at' => date("Y-m-d H:i:s")
+        $rules = [
+            'username' => [
+                'rules'  => 'required',
+                'errors' => []
+            ],
+            'nama_lengkap' => [
+                'rules'  => 'required',
+                'errors' => []
+            ],
         ];
 
-        if ($this->model->save($data) > 0) {
+        if ($this->request->getJSON()) {
+            $json = $this->request->getJSON();
+            $data = [
+                'username' => $json->username,
+                'nama_lengkap' => $json->nama_lengkap,
+                'alamat' => $json->alamat,
+                'provinsi_id' => $json->provinsi_id,
+                'kabupaten_id' => $json->kabupaten_id,
+                'kodepos' => $json->kodepos,
+            ];
+        } else {
+            $data = $this->request->getRawInput();
+        }
+
+        if (!$this->validate($rules)) {
             $response = [
-                'status' => true,
-                'message' => 'Berhasil menyimpan data',
-                'data' => []
+                'status' => false,
+                'message' => lang('App.updFailed'),
+                'data' => $this->validator->getErrors(),
             ];
             return $this->respond($response, 200);
         } else {
-            $response = [
-                'status' => false,
-                'message' => 'Gagal menyimpan data',
-                'data' => []
-            ];
-            return $this->respond($response, 200);
-        }
-    }
- 
-    public function update($id = null)
-    {
-        if ($this->request)
-        {
-            //get request from Reactjs
-            if($this->request->getJSON()) {
-                $input = $this->request->getJSON();
-                $data = [
-                    'email' => $input->email,
-                    'name' => $input->name,
-                    'updated_at' => date("Y-m-d H:i:s")
+
+            $simpan = $this->model->update($id, $data);
+            if ($simpan) {
+                $response = [
+                    'status' => true,
+                    'message' => lang('App.updSuccess'),
+                    'data' => [],
                 ];
-
-                if ($data > 0) {
-                    $this->model->update($input->id, $data);
-
-                    $response = [
-                        'status' => true,
-                        'message' => 'Berhasil memperbarui data',
-                        'data' => []
-                    ];
-                    return $this->respond($response, 200);
-                } else {
-                    $response = [
-                        'status' => false,
-                        'message' => 'Gagal memperbarui data',
-                        'data' => []
-                    ];
-                    return $this->respond($response, 200);
-                }
-                
-            } /**else {
-                //get request from PostMan and more
-                $input = $this->request->getRawInput();
-                $data = [
-                    'email' => $input['email'],
-                    'name' => $input['name'],
-                    'updated_at' => date("Y-m-d H:i:s")
-                ];
-    
-                if ($data > 0) {
-                    $this->model->update($id, $data);
-    
-                    $response = [
-                        'status' => '200',
-                        'data' => 'Success Update data'
-                    ];
-                    return $this->respond($response, 200);
-                } else {
-                    $response = [
-                        'status' => '404',
-                        'data' => 'Failed Update Data'
-                    ];
-                    return $this->respond($response, 404);
-                }      
-            }**/
+                return $this->respond($response, 200);
+            }
         }
-
     }
 
     public function delete($id = null)
     {
-        $id = $this->model->find($id);
-        if ($id) {
-                $this->model->delete($id);
-                $response = [
-                    'status' => true,
-                    'message' => 'Berhasil menghapus data',
-                    'data' => []
-                ];
-                return $this->respond($response, 200);
-        }  else {
-                $response = [
-                    'status' => false,
-                    'message' => 'Gagal menghapus data',
-                    'data' => []
-                ];
-                return $this->respond($response, 200);
-        }  
+        $hapus = $this->model->find($id);
+        if ($hapus) {
+            $this->model->delete($id);
+            $response = [
+                'status' => true,
+                'message' => lang('App.delSuccess'),
+                'data' => [],
+            ];
+            return $this->respond($response, 200);
+        } else {
+            $response = [
+                'status' => false,
+                'message' => lang('App.delFailed'),
+                'data' => [],
+            ];
+            return $this->respond($response, 200);
+        }
     }
-    
+
+    public function setActive($id = NULL)
+    {
+        if ($this->request->getJSON()) {
+            $json = $this->request->getJSON();
+            $data = [
+                'active' => $json->active
+            ];
+        } else {
+            $input = $this->request->getRawInput();
+            $data = [
+                'active' => $input['active']
+            ];
+        }
+
+        if ($data > 0) {
+            $this->model->update($id, $data);
+
+            $response = [
+                'status' => true,
+                'message' => lang('App.updSuccess'),
+                'data' => []
+            ];
+            return $this->respond($response, 200);
+        } else {
+            $response = [
+                'status' => false,
+                'message' => lang('App.updFailed'),
+                'data' => []
+            ];
+            return $this->respond($response, 200);
+        }
+    }
+
+    public function setRole($id = NULL)
+    {
+        if ($this->request->getJSON()) {
+            $json = $this->request->getJSON();
+            $data = [
+                'role' => $json->role
+            ];
+        } else {
+            $input = $this->request->getRawInput();
+            $data = [
+                'role' => $input['role']
+            ];
+        }
+
+        if ($data > 0) {
+            $this->model->update($id, $data);
+
+            $response = [
+                'status' => true,
+                'message' => lang('App.updSuccess'),
+                'data' => []
+            ];
+            return $this->respond($response, 200);
+        } else {
+            $response = [
+                'status' => false,
+                'message' => lang('App.updFailed'),
+                'data' => []
+            ];
+            return $this->respond($response, 200);
+        }
+    }
 }

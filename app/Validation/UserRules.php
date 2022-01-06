@@ -2,15 +2,15 @@
 
 namespace App\Validation;
 
-use App\Models\AuthModel;
+use App\Models\UserModel;
 use Exception;
 
-class AuthRules
+class UserRules
 {
     public function validateUser(string $str, string $fields, array $data): bool
     {
         try {
-            $model = new AuthModel();
+            $model = new UserModel();
             $user = $model->findUserByEmailAddress($data['email']);
             return password_verify($data['password'], $user['password']);
         } catch (Exception $e) {

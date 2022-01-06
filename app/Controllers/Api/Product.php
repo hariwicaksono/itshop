@@ -1,233 +1,266 @@
-<?php namespace App\Controllers;
+<?php
 
+namespace App\Controllers\Api;
+
+use App\Controllers\BaseControllerApi;
 use App\Models\ProductModel;
-use \Appkita\CI4Restfull\RestfullApi;
+use App\Models\MediaModel;
 
-class Product extends RestfullApi
+class Product extends BaseControllerApi
 {
     protected $format       = 'json';
-    protected $modelName    = 'App\Models\ProductModel';
-    protected $auth = ['key'];
+    protected $modelName    = ProductModel::class;
 
-	public function index()
-	{
-        $count = $this->model->count_product();
-        $id=$this->request->getVar('id');
+    public function index()
+    {
+        return $this->respond(["status" => true, "message" => lang('App.getSuccess'), "data" => $this->model->getProduct()], 200);
+    }
 
-        if ($id == null) {
-			$data = $this->model->getProduct();
-		} else {
-			$data = $this->model->getProduct($id);
-		}
-		
-        if ($data) {
+    public function show($id = null)
+    {
+        return $this->respond(['status' => true, 'message' => lang('App.getSuccess'), 'data' => $this->model->showProduct($id)], 200);
+    }
+
+    public function create()
+    {
+        $rules = [
+            'product_name' => [
+                'rules'  => 'required',
+                'errors' => []
+            ],
+            'product_price' => [
+                'rules'  => 'required',
+                'errors' => []
+            ],
+            'product_image' => [
+                'rules'  => 'required',
+                'errors' => []
+            ],
+        ];
+
+        if ($this->request->getJSON()) {
+            $json = $this->request->getJSON();
+            $data = [
+                'product_name' => $json->product_name,
+                'product_price' => $json->product_price,
+                'product_description' => $json->product_description,
+                'product_image' => $json->product_image,
+                'stock' => 0,
+                'active' => 1
+            ];
+        } else {
+            $data = [
+                'product_name' => $this->request->getPost('product_name'),
+                'product_price' => $this->request->getPost('product_price'),
+                'product_description' => $this->request->getPost('product_description'),
+                'product_image' => $this->request->getPost('product_image'),
+                'stock' => 0,
+                'active' => 1
+            ];
+        }
+
+        if (!$this->validate($rules)) {
+            $response = [
+                'status' => false,
+                'message' => lang('App.isRequired'),
+                'data' => $this->validator->getErrors(),
+            ];
+            return $this->respond($response, 200);
+        } else {
+            $this->model->save($data);
             $response = [
                 'status' => true,
-                'message' => 'Berhasil menampilkan semua data',
-                'data' => $data,
-                'jumlah' => $count
+                'message' => lang('App.productSuccess'),
+                'data' => [],
+            ];
+            return $this->respond($response, 200);
+        }
+    }
+
+    public function update($id = NULL)
+    {
+        $rules = [
+            'product_name' => [
+                'rules'  => 'required',
+                'errors' => []
+            ],
+            'product_price' => [
+                'rules'  => 'required',
+                'errors' => []
+            ],
+            'product_image' => [
+                'rules'  => 'required',
+                'errors' => []
+            ],
+        ];
+
+        if ($this->request->getJSON()) {
+            $json = $this->request->getJSON();
+            $data = [
+                'product_name' => $json->product_name,
+                'product_price' => $json->product_price,
+                'product_description' => $json->product_description,
+                'product_image' => $json->product_image
+            ];
+        } else {
+            $data = $this->request->getRawInput();
+        }
+
+        if (!$this->validate($rules)) {
+            $response = [
+                'status' => false,
+                'message' => lang('App.reqFailed'),
+                'data' => $this->validator->getErrors(),
+            ];
+            return $this->respond($response, 200);
+        } else {
+            $simpan = $this->model->update($id, $data);
+            if ($simpan) {
+                $response = [
+                    'status' => true,
+                    'message' => lang('App.productUpdated'),
+                    'data' => [],
+                ];
+                return $this->respond($response, 200);
+            }
+        }
+    }
+    public function delete($id = null)
+    {
+        $hapus = $this->model->find($id);
+
+        $media = new MediaModel();
+        $gambar = $media->find($hapus['product_image']);
+        if ($hapus) {
+            if (empty($gambar)) {
+                $this->model->delete($id);
+            } else {
+                $this->model->delete($id);
+                $media->delete($gambar['media_id']);
+                unlink($gambar['media_path']);
+            }
+
+            $response = [
+                'status' => true,
+                'message' => lang('App.productDeleted'),
+                'data' => [],
             ];
             return $this->respond($response, 200);
         } else {
             $response = [
                 'status' => false,
-                'message' => 'Tidak ada data',
+                'message' => lang('App.delFailed'),
+                'data' => [],
+            ];
+            return $this->respond($response, 200);
+        }
+    }
+
+    public function allProduct()
+    {
+        $input = $this->request->getVar();
+        $page = $input['page'];
+        $limit = 4;
+        return $this->respond(["status" => true, "message" => lang('App.getSuccess'), "data" => $this->model->getProduct($page, $limit), "per_page" => $limit, "total_page" => $this->model->countAllResults()], 200);
+    }
+
+    public function setPrice($id = NULL)
+    {
+
+        if ($this->request->getJSON()) {
+            $json = $this->request->getJSON();
+            $data = [
+                'product_price' => $json->product_price,
+            ];
+        } else {
+            $input = $this->request->getRawInput();
+            $data = [
+                'product_price' => $input['product_price'],
+            ];
+        }
+
+        if ($data > 0) {
+            $this->model->update($id, $data);
+
+            $response = [
+                'status' => true,
+                'message' => lang('App.productUpdated'),
+                'data' => []
+            ];
+            return $this->respond($response, 200);
+        } else {
+            $response = [
+                'status' => false,
+                'message' => lang('App.updFailed'),
                 'data' => []
             ];
             return $this->respond($response, 200);
         }
     }
-    
-    public function show($id = null)
+
+    public function setStock($id = NULL)
     {
-        $data = [
-            'status' => true,
-            'message' => 'Berhasil menampilkan data',
-            'data' => $this->model->getProduct($id)
-            //'data' => $this->model->find($id)
-        ];
-
-        return $this->respond($data, 200);
-    }
-
-    public function create()
-    {
-        if ($this->request)
-        {
-            //get request from Reactjs
-            if($this->request->getJSON()) {
-                $input = $this->request->getJSON();
-                $data = [
-                    'category_id' => $input->category_id,
-                    'user_id' => $input->user_id,
-                    'title' => $input->title,
-                    'summary' => $input->summary,
-                    'body' => $input->body,
-                    'price' => $input->price,
-                    'unit' => $input->unit,
-                    'post_image' => $input->foto,
-                    'date' => $input->date,
-                    'time' => $input->time,
-                    'created_at' => date("Y-m-d H:i:s")
-                ];
-
-                if ($data > 0) {
-                    $this->model->save($data);
-                    $response = [
-                        'status' => true,
-                        'message' => 'Berhasil menyimpan data',
-                        'data' => []
-                    ];
-                    return $this->respond($response, 201);
-                } else {
-                    $response = [
-                        'status' => false,
-                        'message' => 'Gagal menyimpan data',
-                        'data' => []
-                    ];
-                    return $this->respond($response, 422);
-                }
-
-            }
-            else {  
-                $response = [
-                    'status' => false,
-                    'message' => 'Metode tidak diizinkan',
-                    'data' => []
-                ];
-                return $this->respond($response, 200);
-                }
-             /**$data = [
-                    'category_id' => $this->request->getPost('category_id'),
-                    'user_id' => $this->request->getPost('user_id'),
-                    'title' => $this->request->getPost('title'),
-                    'summary' => $this->request->getPost('summary'),
-                    'body' => $this->request->getPost('body'),
-                    'price' => $this->request->getPost('price'),
-                    'unit' => $this->request->getPost('unit'),
-                    'post_image' => $this->request->getPost('foto'),
-                    'date' => $this->request->getPost('date'),
-                    'time' => $this->request->getPost('time'),
-                    'created_at' => date("Y-m-d H:i:s")
-                ];
-
-                if ($data > 0) {
-                    $this->model->save($data);
-                    $response = [
-                        'status' => '201',
-                        'data' => 'Success Post Data'
-                    ];
-                    return $this->respond($response, 201);
-                } else {
-                    $response = [
-                        'status' => '422',
-                        'data' => 'Failed Post Data'
-                    ];
-                    return $this->respond($response, 422);
-                }
-                **/
+        if ($this->request->getJSON()) {
+            $json = $this->request->getJSON();
+            $data = [
+                'stock' => $json->stock,
+            ];
+        } else {
+            $input = $this->request->getRawInput();
+            $data = [
+                'stock' => $input['stock'],
+            ];
         }
 
+        if ($data > 0) {
+            $this->model->update($id, $data);
+
+            $response = [
+                'status' => true,
+                'message' => lang('App.productUpdated'),
+                'data' => []
+            ];
+            return $this->respond($response, 200);
+        } else {
+            $response = [
+                'status' => false,
+                'message' => lang('App.updFailed'),
+                'data' => []
+            ];
+            return $this->respond($response, 200);
+        }
     }
 
-    public function update($id = null)
+    public function setActive($id = NULL)
     {
-        if ($this->request)
-        {
-            //get request from Reactjs
-            if($this->request->getJSON()) {
-                $input = $this->request->getJSON();
-                $data = [
-                    'title' => $input->title,
-                    'summary' => $input->summary,
-                    'body' => $input->body,
-                    'price' => $input->price,
-                    'unit' => $input->unit,
-                    'date' => $input->date,
-                    'time' => $input->time,
-                    'updated_at' => date("Y-m-d H:i:s")
-                ];
-
-                if ($data > 0) {
-                    $this->model->update($input->id, $data);
-
-                    $response = [
-                        'status' => true,
-                        'message' => 'Berhasil memperbarui data',
-                        'data' => []
-                    ];
-                    return $this->respond($response, 200);
-                } else {
-                    $response = [
-                        'status' => false,
-                        'message' => 'Gagal memperbarui data',
-                        'data' => []
-                    ];
-                    return $this->respond($response, 200);
-                }
-                
-            } 
-            else { 
-                $response = [
-                    'status' => false,
-                    'message' => 'Metode tidak diizinkan',
-                    'data' => []
-                ];
-                return $this->respond($response, 200);
-                }
-            /**else {
-                //get request from PostMan and more
-                $input = $this->request->getRawInput();
-                $data = [
-                    'title' => $input['title'],
-                    'summary' => $input['summary'],
-                    'body' => $input['body'],
-                    'price' => $input['price'],
-                    'unit' => $input['unit'],
-                    'date' => $input['date'],
-                    'time' => $input['time'],
-                    'updated_at' => date("Y-m-d H:i:s")
-                ];
-    
-                if ($data > 0) {
-                    $this->model->update($id, $data);
-    
-                    $response = [
-                        'status' => '200',
-                        'data' => 'Success Update data'
-                    ];
-                    return $this->respond($response, 200);
-                } else {
-                    $response = [
-                        'status' => '404',
-                        'data' => 'Failed Update Data'
-                    ];
-                    return $this->respond($response, 404);
-                }      
-            }**/
+        if ($this->request->getJSON()) {
+            $json = $this->request->getJSON();
+            $data = [
+                'active' => $json->active,
+            ];
+        } else {
+            $input = $this->request->getRawInput();
+            $data = [
+                'active' => $input['active'],
+            ];
         }
 
-    }
+        if ($data > 0) {
+            $this->model->update($id, $data);
 
-    public function delete($id = null)
-    {
-        $id = $this->model->find($id);
-        if ($id) {
-                $this->model->delete($id);
-                $response = [
-                    'status' => true,
-                    'message' => 'Berhasil menghapus data',
-                    'data' => []
-                ];
-                return $this->respond($response, 200);
-        }  else {
-                $response = [
-                    'status' => false,
-                    'message' => 'Gagal menghapus data',
-                    'data' => []
-                ];
-                return $this->respond($response, 200);
-        }  
+            $response = [
+                'status' => true,
+                'message' => lang('App.productUpdated'),
+                'data' => []
+            ];
+            return $this->respond($response, 200);
+        } else {
+            $response = [
+                'status' => false,
+                'message' => lang('App.updFailed'),
+                'data' => []
+            ];
+            return $this->respond($response, 200);
+        }
     }
-    
 }
