@@ -68,7 +68,7 @@ class UserModel extends Model
     public function findUserByEmailAddress(string $emailAddress)
     {
         $user = $this
-            ->where(['email' => $emailAddress])
+            ->where(['email' => $emailAddress, 'active' => 1])
             ->first();
 
         if (!$user)

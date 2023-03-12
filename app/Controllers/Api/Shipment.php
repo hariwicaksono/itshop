@@ -15,6 +15,11 @@ class Shipment extends BaseControllerApi
         return $this->respond(["status" => true, "message" => lang('App.getSuccess'), "data" => $this->model->where(['active' => 1])->findAll()], 200);
     }
 
+    public function all()
+    {
+        return $this->respond(["status" => true, "message" => lang('App.getSuccess'), "data" => $this->model->findAll()], 200);
+    }
+
     public function show($id = null)
     {
         return $this->respond(['status' => true, 'message' => lang('App.getSuccess'), 'data' => $this->model->find($id)], 200);
@@ -130,10 +135,5 @@ class Shipment extends BaseControllerApi
             ];
             return $this->respond($response, 200);
         }
-    }
-
-    public function all()
-    {
-        return $this->respond(["status" => true, "message" => lang('App.getSuccess'), "data" => $this->model->findAll()], 200);
     }
 }

@@ -57,7 +57,7 @@ class Language
     {
         $this->locale = $locale;
 
-        if (class_exists('MessageFormatter')) {
+        if (class_exists(MessageFormatter::class)) {
             $this->intlSupport = true;
         }
     }
@@ -115,7 +115,7 @@ class Language
             $output = $this->getTranslationOutput('en', $file, $parsedLine);
         }
 
-        $output = $output ?? $line;
+        $output ??= $line;
 
         return $this->formatMessage($output, $args);
     }
@@ -252,7 +252,9 @@ class Language
         }
 
         if (isset($strings[1])) {
-            $strings = array_replace_recursive(...$strings);
+            $string = array_shift($strings);
+
+            $strings = array_replace_recursive($string, ...$strings);
         } elseif (isset($strings[0])) {
             $strings = $strings[0];
         }

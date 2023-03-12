@@ -1,12 +1,12 @@
 <?php $this->extend("layouts/app-front"); ?>
 <?php $this->section("content"); ?>
 <v-container>
-    <h1 class="font-weight-regular mb-3"><?= lang('App.cart') ?></h1>
+    <h1 class="font-weight-medium mb-3"><?= lang('App.cart') ?></h1>
     <v-data-table height="250" :headers="tbheader" :fixed-header="true" :items="carts" item-key="cart_id" :loading="loading" loading-text="Memuat data, silahkan tunggu...">
         <template v-slot:item="{ item }">
             <tr>
                 <td>
-                    <v-avatar size="50px" rounded><img v-bind:src="'../' + item.media_path" /></v-avatar> {{item.product_name}}
+                    <v-avatar size="60px" class="mr-3" rounded><img v-bind:src="'<?= base_url(); ?>' + item.media_path" /></v-avatar> {{item.product_name}}
                 </td>
                 <td>
                     <v-edit-dialog :return-value.sync="item.qty" @save="setQuantity(item)" @cancel="" @open="" @close="">
@@ -27,8 +27,8 @@
             </tr>
         </template>
         <template slot="footer.prepend">
-             <v-text-field label="<?= lang('App.note') ?> *" v-model="note"></v-text-field>
-        </template>  
+            <v-text-field label="<?= lang('App.note') ?> *" v-model="note"></v-text-field>
+        </template>
     </v-data-table>
     <br />
     <v-row>
@@ -59,7 +59,7 @@
                     <h3 class="font-weight-medium"><?= lang('App.yourOrder'); ?></h3>
                     <v-row class="my-1" v-for="item in carts" :key="item.cart_id">
                         <v-col cols="2">
-                            <v-avatar size="50px" rounded><img v-bind:src="'../' + item.media_path" /></v-avatar>
+                            <v-avatar size="50px" rounded><img v-bind:src="'<?= base_url(); ?>' + item.media_path" /></v-avatar>
                         </v-col>
                         <v-col cols="10">
                             <strong>{{item.product_name}}</strong> - Qty: {{item.qty}} - <?= lang('app.price');?>: Rp.{{item.product_price}}
@@ -88,12 +88,12 @@
             </v-card>
         </v-dialog>
     </v-row>
-</template>              
+</template>
 <!-- End Modal Reset -->
-
+<br/>
 <?php $this->endSection("content") ?>
 
-<?php $this->section("js") ?> 
+<?php $this->section("js") ?>
 <script>
     computedVue = {
         ...computedVue,
@@ -157,7 +157,7 @@
         },
         getShipment: function() {
             this.loading = true;
-            axios.get(`/api/shipment`, options)
+            axios.get(`<?= base_url()?>api/shipment`, options)
                 .then(res => {
                     // handle success
                     var data = res.data;
@@ -171,7 +171,7 @@
         },
         getPayment: function() {
             this.loading = true;
-            axios.get(`/api/payment`, options)
+            axios.get(`<?= base_url()?>api/payment`, options)
                 .then(res => {
                     // handle success
                     var data = res.data;
@@ -186,7 +186,7 @@
         // Get User Cart
         getUserCart: function() {
             this.loading = true;
-            axios.get(`/api/cart/usercart`, options)
+            axios.get(`<?= base_url()?>api/cart/usercart`, options)
                 .then(res => {
                     // handle success
                     this.loading = false;
@@ -228,7 +228,7 @@
         // Save Cart
         saveCart: function(item) {
             this.loading = true;
-            axios.post(`/api/cart/save`, {
+            axios.post(`<?= base_url()?>api/cart/save`, {
                     product_id: item.product_id,
                     price: item.product_price,
                     stock: item.stock,
@@ -270,7 +270,7 @@
             this.cart_id = item.cart_id;
             this.qty = item.qty;
             this.product_id = item.product_id;
-            axios.put(`/api/cart/update/${this.cart_id}`, {
+            axios.put(`<?= base_url()?>api/cart/update/${this.cart_id}`, {
                     product_id: this.product_id,
                     qty: this.qty,
                 }, options)
@@ -297,7 +297,7 @@
         // Delete Item Keranjang
         removeItem: function(item) {
             this.loading = true;
-            axios.delete(`/api/cart/delete/${item.cart_id}`, options)
+            axios.delete(`<?= base_url()?>api/cart/delete/${item.cart_id}`, options)
                 .then(res => {
                     // handle success
                     this.loading = false;
@@ -327,7 +327,7 @@
             this.loading3 = true;
             const data = this.itemcart;
             //console.log(data);
-            axios.post(`/api/order/save`, {
+            axios.post(`<?= base_url()?>api/order/save`, {
                     data: data,
                     total: this.grandtotal,
                     user_id: '<?= session()->get('id'); ?>',

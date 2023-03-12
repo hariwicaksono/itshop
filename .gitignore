@@ -125,27 +125,3 @@ nb-configuration.xml
 /phpunit*.xml
 /.phpunit.*.cache
 
-#nextjs
-nextjs/node_modules/*
-
-nextjs/.pnp
-nextjs/.pnp.js
-
-# testing
-nextjs/coverage
-
-# next.js
-nextjs/.next/
-nextjs/out/
-
-# production
-nextjs/build
-
-# misc
-nextjs/.DS_Store
-nextjs/.env*
-
-# debug
-nextjs/npm-debug.log*
-nextjs/yarn-debug.log*
-nextjs/yarn-error.log*

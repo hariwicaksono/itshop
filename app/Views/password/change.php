@@ -1,6 +1,7 @@
 <?php $this->extend("layouts/app-front"); ?>
 <?php $this->section("content"); ?>
-<v-container class="orange darken-1 px-4 py-0 fill-height mt-n10" fluid>
+<template>
+<v-container class="indigo mt-n10" fill-height fluid>
 <v-layout flex align-center justify-center>
     <v-flex xs12 sm6 md6>
         <v-card elevation="2" outlined>
@@ -9,8 +10,8 @@
                 <h1 class="font-weight-normal text-center mb-8"><?= lang('App.newPassword')?></h1>
                 <v-alert v-if="notifType != ''" dense :type="notifType">{{notifMessage}}</v-alert>
                     <v-form v-model="valid" ref="form">
-                        <v-text-field v-model="password" :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'" :rules="[rules.required, rules.min]" :type="show1 ? 'text' : 'password'" label="Password" hint="<?= lang('App.minChar')?>" counter @click:append="show1 = !show1" outlined dense :disabled="submitted"></v-text-field>
-                        <v-text-field block v-model="verify" :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'" :rules="[rules.required, passwordMatch]" :type="show1 ? 'text' : 'password'" label="Confirm Password" counter @click:append="show1 = !show1" outlined dense :disabled="submitted"></v-text-field>
+                        <v-text-field v-model="password" :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'" :rules="[rules.required, rules.min]" :type="show1 ? 'text' : 'password'" label="Password" hint="<?= lang('App.minChar')?>" counter @click:append="show1 = !show1" outlined :disabled="submitted"></v-text-field>
+                        <v-text-field block v-model="verify" :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'" :rules="[rules.required, passwordMatch]" :type="show1 ? 'text' : 'password'" label="Confirm Password" counter @click:append="show1 = !show1" outlined :disabled="submitted"></v-text-field>
                         <v-layout class="mb-3">
                         <v-btn block color="primary" @click="submit" :loading="loading" :disabled="submitted">Submit</v-btn>
                         </v-layout>
@@ -20,9 +21,10 @@
     </v-flex>
 </v-layout>
 </v-container>
+</template>
 <?php $this->endSection("content") ?>
 
-<?php $this->section("js") ?> 
+<?php $this->section("js") ?>
 <script>
     computedVue = {
         ...computedVue,
@@ -48,7 +50,7 @@
             formData.append("token", this.token)
             formData.append("password", this.password)
             formData.append("verify", this.verify)
-            axios.post(`/auth/changePassword`,{
+            axios.post(`<?= base_url()?>auth/changePassword`,{
                   formData, 
                 })
                 .then(res => {

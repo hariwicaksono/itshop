@@ -48,6 +48,8 @@ class Commands
 
     /**
      * Runs a command given
+     *
+     * @return int|void
      */
     public function run(string $command, array $params)
     {
@@ -96,9 +98,9 @@ class Commands
         // Loop over each file checking to see if a command with that
         // alias exists in the class.
         foreach ($files as $file) {
-            $className = $locator->findQualifiedNameFromPath($file);
+            $className = $locator->getClassname($file);
 
-            if (empty($className) || ! class_exists($className)) {
+            if ($className === '' || ! class_exists($className)) {
                 continue;
             }
 

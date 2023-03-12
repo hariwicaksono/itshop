@@ -79,7 +79,7 @@
 </template>-->
 <?php $this->endSection("content") ?>
 
-<?php $this->section("js") ?> 
+<?php $this->section("js") ?>
 <script>
     const token = JSON.parse(localStorage.getItem('access_token'));
     const options = {
@@ -105,7 +105,7 @@
         ...methodsVue,
         getChart1: function() {
                 this.show = true;
-                axios.get(`/api/chart1`, options)
+                axios.get(`<?= base_url()?>api/chart1`, options)
                     .then(res => {
                         // handle success
                         var data = res.data;
@@ -133,7 +133,7 @@
         // Get Product
         getProducts: function() {
             this.show = true;
-            axios.get(`/api/product/all?page=${this.currentPage}`, options)
+            axios.get(`<?= base_url()?>api/product/all?page=${this.currentPage}`, options)
                 .then(res => {
                     // handle success
                     var data = res.data;
@@ -160,7 +160,7 @@
         },
         handlePagination: function(pageNumber) {
             this.show = true;
-            axios.get(`/api/product/all?page=${pageNumber}`, options)
+            axios.get(`<?= base_url()?>api/product/all?page=${pageNumber}`, options)
                 .then((res) => {
                     var data = res.data;
                     this.products = data.data;

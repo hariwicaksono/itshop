@@ -11,8 +11,8 @@
 
 namespace CodeIgniter\HTTP;
 
+use BadMethodCallException;
 use CodeIgniter\HTTP\Exceptions\HTTPException;
-use InvalidArgumentException;
 
 /**
  * Abstraction for a uniform resource identifier (URI).
@@ -35,6 +35,11 @@ class URI
      * @var string
      */
     protected $uriString;
+
+    /**
+     * The Current baseURL.
+     */
+    private ?string $baseURL = null;
 
     /**
      * List of URI segments.
@@ -82,6 +87,11 @@ class URI
 
     /**
      * URI path.
+     *
+     * Note: The constructor of the IncomingRequest class changes the path of
+     *      the URI object held by the IncomingRequest class to a path relative
+     *      to the baseURL. If the baseURL contains subfolders, this value
+     *      will be different from the current URI path.
      *
      * @var string
      */
@@ -138,14 +148,17 @@ class URI
     /**
      * Builds a representation of the string from the component parts.
      *
-     * @param string $scheme
-     * @param string $authority
-     * @param string $path
-     * @param string $query
-     * @param string $fragment
+     * @param string|null $scheme URI scheme. E.g., http, ftp
+     *
+     * @return string URI string with only passed parts. Maybe incomplete as a URI.
      */
-    public static function createURIString(?string $scheme = null, ?string $authority = null, ?string $path = null, ?string $query = null, ?string $fragment = null): string
-    {
+    public static function createURIString(
+        ?string $scheme = null,
+        ?string $authority = null,
+        ?string $path = null,
+        ?string $query = null,
+        ?string $fragment = null
+    ): string {
         $uri = '';
         if (! empty($scheme)) {
             $uri .= $scheme . '://';
@@ -156,7 +169,9 @@ class URI
         }
 
         if (isset($path) && $path !== '') {
-            $uri .= substr($uri, -1, 1) !== '/' ? '/' . ltrim($path, '/') : ltrim($path, '/');
+            $uri .= substr($uri, -1, 1) !== '/'
+                ? '/' . ltrim($path, '/')
+                : ltrim($path, '/');
         }
 
         if ($query) {
@@ -225,9 +240,12 @@ class URI
     /**
      * Constructor.
      *
-     * @param string $uri
+     * @param string|null $uri The URI to parse.
      *
-     * @throws InvalidArgumentException
+     * @throws HTTPException
+     *
+     * @TODO null for param $uri should be removed.
+     *      See https://www.php-fig.org/psr/psr-17/#26-urifactoryinterface
      */
     public function __construct(?string $uri = null)
     {
@@ -266,6 +284,8 @@ class URI
      * Sets and overwrites any current URI information.
      *
      * @return URI
+     *
+     * @throws HTTPException
      */
     public function setURI(?string $uri = null)
     {
@@ -581,12 +601,34 @@ class URI
         $path   = $this->getPath();
         $scheme = $this->getScheme();
 
+        // If the hosts matches then assume this should be relative to baseURL
+        [$scheme, $path] = $this->changeSchemeAndPath($scheme, $path);
+
+        return static::createURIString(
+            $scheme,
+            $this->getAuthority(),
+            $path, // Absolute URIs should use a "/" for an empty path
+            $this->getQuery(),
+            $this->getFragment()
+        );
+    }
+
+    /**
+     * Change the path (and scheme) assuming URIs with the same host as baseURL
+     * should be relative to the project's configuration.
+     *
+     * @deprecated This method will be deleted.
+     */
+    private function changeSchemeAndPath(string $scheme, string $path): array
+    {
         // Check if this is an internal URI
         $config  = config('App');
         $baseUri = new self($config->baseURL);
 
-        // If the hosts matches then assume this should be relative to baseURL
-        if ($this->getHost() === $baseUri->getHost()) {
+        if (
+            substr($this->getScheme(), 0, 4) === 'http'
+            && $this->getHost() === $baseUri->getHost()
+        ) {
             // Check for additional segments
             $basePath = trim($baseUri->getPath(), '/') . '/';
             $trimPath = ltrim($path, '/');
@@ -601,13 +643,7 @@ class URI
             }
         }
 
-        return static::createURIString(
-            $scheme,
-            $this->getAuthority(),
-            $path, // Absolute URIs should use a "/" for an empty path
-            $this->getQuery(),
-            $this->getFragment()
-        );
+        return [$scheme, $path];
     }
 
     /**
@@ -645,10 +681,8 @@ class URI
      */
     public function setScheme(string $str)
     {
-        $str = strtolower($str);
-        $str = preg_replace('#:(//)?$#', '', $str);
-
-        $this->scheme = $str;
+        $str          = strtolower($str);
+        $this->scheme = preg_replace('#:(//)?$#', '', $str);
 
         return $this;
     }
@@ -721,6 +755,30 @@ class URI
         $this->segments = ($tempPath === '') ? [] : explode('/', $tempPath);
 
         return $this;
+    }
+
+    /**
+     * Sets the current baseURL.
+     *
+     * @interal
+     */
+    public function setBaseURL(string $baseURL): void
+    {
+        $this->baseURL = $baseURL;
+    }
+
+    /**
+     * Returns the current baseURL.
+     *
+     * @interal
+     */
+    public function getBaseURL(): string
+    {
+        if ($this->baseURL === null) {
+            throw new BadMethodCallException('The $baseURL is not set.');
+        }
+
+        return $this->baseURL;
     }
 
     /**
@@ -878,9 +936,7 @@ class URI
         // Encode characters
         $path = preg_replace_callback(
             '/(?:[^' . static::CHAR_UNRESERVED . ':@&=\+\$,\/;%]+|%(?![A-Fa-f0-9]{2}))/',
-            static function (array $matches) {
-                return rawurlencode($matches[0]);
-            },
+            static fn (array $matches) => rawurlencode($matches[0]),
             $path
         );
 
@@ -918,8 +974,7 @@ class URI
         // Port
         if (isset($parts['port']) && $parts['port'] !== null) {
             // Valid port numbers are enforced by earlier parse_url or setPort()
-            $port       = $parts['port'];
-            $this->port = $port;
+            $this->port = $parts['port'];
         }
 
         if (isset($parts['pass'])) {
@@ -1025,20 +1080,18 @@ class URI
         $return = [];
         $query  = explode('&', $query);
 
-        $params = array_map(static function (string $chunk) {
-            return preg_replace_callback('/^(?<key>[^&=]+?)(?:\[[^&=]*\])?=(?<value>[^&=]+)/', static function (array $match) {
-                return str_replace($match['key'], bin2hex($match['key']), $match[0]);
-            }, urldecode($chunk));
-        }, $query);
+        $params = array_map(static fn (string $chunk) => preg_replace_callback(
+            '/^(?<key>[^&=]+?)(?:\[[^&=]*\])?=(?<value>[^&=]+)/',
+            static fn (array $match) => str_replace($match['key'], bin2hex($match['key']), $match[0]),
+            urldecode($chunk)
+        ), $query);
 
         $params = implode('&', $params);
-        parse_str($params, $params);
+        parse_str($params, $result);
 
-        foreach ($params as $key => $value) {
+        foreach ($result as $key => $value) {
             $return[hex2bin($key)] = $value;
         }
-
-        $query = $params = null;
 
         return $return;
     }

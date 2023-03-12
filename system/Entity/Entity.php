@@ -17,6 +17,7 @@ use CodeIgniter\Entity\Cast\CastInterface;
 use CodeIgniter\Entity\Cast\CSVCast;
 use CodeIgniter\Entity\Cast\DatetimeCast;
 use CodeIgniter\Entity\Cast\FloatCast;
+use CodeIgniter\Entity\Cast\IntBoolCast;
 use CodeIgniter\Entity\Cast\IntegerCast;
 use CodeIgniter\Entity\Cast\JsonCast;
 use CodeIgniter\Entity\Cast\ObjectCast;
@@ -25,6 +26,7 @@ use CodeIgniter\Entity\Cast\TimestampCast;
 use CodeIgniter\Entity\Cast\URICast;
 use CodeIgniter\Entity\Exceptions\CastException;
 use CodeIgniter\I18n\Time;
+use DateTime;
 use Exception;
 use JsonSerializable;
 use ReturnTypeWillChange;
@@ -41,7 +43,7 @@ class Entity implements JsonSerializable
      *
      * Example:
      *  $datamap = [
-     *      'class_name' => 'db_name'
+     *      'class_property_name' => 'db_column_name'
      *  ];
      */
     protected $datamap = [];
@@ -70,7 +72,7 @@ class Entity implements JsonSerializable
      *
      * @var array<string, string>
      */
-    private $defaultCastHandlers = [
+    private array $defaultCastHandlers = [
         'array'     => ArrayCast::class,
         'bool'      => BooleanCast::class,
         'boolean'   => BooleanCast::class,
@@ -80,6 +82,7 @@ class Entity implements JsonSerializable
         'float'     => FloatCast::class,
         'int'       => IntegerCast::class,
         'integer'   => IntegerCast::class,
+        'int-bool'  => IntBoolCast::class,
         'json'      => JsonCast::class,
         'object'    => ObjectCast::class,
         'string'    => StringCast::class,
@@ -105,10 +108,8 @@ class Entity implements JsonSerializable
 
     /**
      * Holds info whenever properties have to be casted
-     *
-     * @var bool
      */
-    private $_cast = true;
+    private bool $_cast = true;
 
     /**
      * Allows filling in Entity parameters during construction.
@@ -148,20 +149,18 @@ class Entity implements JsonSerializable
      * __get() magic method so will have any casts, etc applied to them.
      *
      * @param bool $onlyChanged If true, only return values that have changed since object creation
-     * @param bool $cast        If true, properties will be casted.
-     * @param bool $recursive   If true, inner entities will be casted as array as well.
+     * @param bool $cast        If true, properties will be cast.
+     * @param bool $recursive   If true, inner entities will be cast as array as well.
      */
     public function toArray(bool $onlyChanged = false, bool $cast = true, bool $recursive = false): array
     {
         $this->_cast = $cast;
 
-        $keys = array_filter(array_keys($this->attributes), static function ($key) {
-            return strpos($key, '_') !== 0;
-        });
+        $keys = array_filter(array_keys($this->attributes), static fn ($key) => strpos($key, '_') !== 0);
 
         if (is_array($this->datamap)) {
             $keys = array_unique(
-                array_merge(array_diff($keys, $this->datamap), array_keys($this->datamap))
+                [...array_diff($keys, $this->datamap), ...array_keys($this->datamap)]
             );
         }
 
@@ -193,7 +192,7 @@ class Entity implements JsonSerializable
      * Returns the raw values of the current attributes.
      *
      * @param bool $onlyChanged If true, only return values that have changed since object creation
-     * @param bool $recursive   If true, inner entities will be casted as array as well.
+     * @param bool $recursive   If true, inner entities will be cast as array as well.
      */
     public function toRawArray(bool $onlyChanged = false, bool $recursive = false): array
     {
@@ -251,7 +250,7 @@ class Entity implements JsonSerializable
      * was created. Or, without a parameter, checks if any
      * properties have changed.
      *
-     * @param string $key
+     * @param string|null $key class property
      */
     public function hasChanged(?string $key = null): bool
     {
@@ -259,6 +258,8 @@ class Entity implements JsonSerializable
         if ($key === null) {
             return $this->original !== $this->attributes;
         }
+
+        $key = $this->mapProperty($key);
 
         // Key doesn't exist in either
         if (! array_key_exists($key, $this->original) && ! array_key_exists($key, $this->attributes)) {
@@ -288,10 +289,10 @@ class Entity implements JsonSerializable
     }
 
     /**
-     * Checks the datamap to see if this column name is being mapped,
-     * and returns the mapped name, if any, or the original name.
+     * Checks the datamap to see if this property name is being mapped,
+     * and returns the db column name, if any, or the original property name.
      *
-     * @return mixed|string
+     * @return string db column name
      */
     protected function mapProperty(string $key)
     {
@@ -310,11 +311,11 @@ class Entity implements JsonSerializable
      * Converts the given string|timestamp|DateTime|Time instance
      * into the "CodeIgniter\I18n\Time" object.
      *
-     * @param mixed $value
+     * @param DateTime|float|int|string|Time $value
+     *
+     * @return Time
      *
      * @throws Exception
-     *
-     * @return mixed|Time
      */
     protected function mutateDate($value)
     {
@@ -326,13 +327,13 @@ class Entity implements JsonSerializable
      * Add ? at the beginning of $type  (i.e. ?string) to get NULL
      * instead of casting $value if $value === null
      *
-     * @param mixed  $value     Attribute value
-     * @param string $attribute Attribute name
-     * @param string $method    Allowed to "get" and "set"
+     * @param bool|float|int|string|null $value     Attribute value
+     * @param string                     $attribute Attribute name
+     * @param string                     $method    Allowed to "get" and "set"
+     *
+     * @return array|bool|float|int|object|string|null
      *
      * @throws CastException
-     *
-     * @return mixed
      */
     protected function castAs($value, string $attribute, string $method = 'get')
     {
@@ -426,11 +427,11 @@ class Entity implements JsonSerializable
      *  $this->my_property = $p;
      *  $this->setMyProperty() = $p;
      *
-     * @param mixed|null $value
-     *
-     * @throws Exception
+     * @param array|bool|float|int|object|string|null $value
      *
      * @return $this
+     *
+     * @throws Exception
      */
     public function __set(string $key, $value = null)
     {
@@ -471,9 +472,11 @@ class Entity implements JsonSerializable
      *  $p = $this->my_property
      *  $p = $this->getMyProperty()
      *
+     * @return array|bool|float|int|object|string|null
+     *
      * @throws Exception
      *
-     * @return mixed
+     * @params string $key class property
      */
     public function __get(string $key)
     {
@@ -484,7 +487,7 @@ class Entity implements JsonSerializable
         // Convert to CamelCase for the method
         $method = 'get' . str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $key)));
 
-        // if a set* method exists for this key,
+        // if a get* method exists for this key,
         // use that method to insert this value.
         if (method_exists($this, $method)) {
             $result = $this->{$method}();
@@ -514,6 +517,10 @@ class Entity implements JsonSerializable
      */
     public function __isset(string $key): bool
     {
+        if ($this->isMappedDbColumn($key)) {
+            return false;
+        }
+
         $key = $this->mapProperty($key);
 
         $method = 'get' . str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $key)));
@@ -530,6 +537,37 @@ class Entity implements JsonSerializable
      */
     public function __unset(string $key): void
     {
+        if ($this->isMappedDbColumn($key)) {
+            return;
+        }
+
+        $key = $this->mapProperty($key);
+
         unset($this->attributes[$key]);
+    }
+
+    /**
+     * Whether this key is mapped db column name?
+     */
+    protected function isMappedDbColumn(string $key): bool
+    {
+        $maybeColumnName = $this->mapProperty($key);
+
+        // Property name which has mapped column name
+        if ($key !== $maybeColumnName) {
+            return false;
+        }
+
+        return $this->hasMappedProperty($key);
+    }
+
+    /**
+     * Whether this key has mapped property?
+     */
+    protected function hasMappedProperty(string $key): bool
+    {
+        $property = array_search($key, $this->datamap, true);
+
+        return $property !== false;
     }
 }

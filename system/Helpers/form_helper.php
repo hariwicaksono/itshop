@@ -9,7 +9,7 @@
  * the LICENSE file that was distributed with this source code.
  */
 
-use Config\App;
+use CodeIgniter\Validation\Exceptions\ValidationException;
 use Config\Services;
 
 // CodeIgniter Form Helpers
@@ -50,7 +50,7 @@ if (! function_exists('form_open')) {
             $attributes .= ' method="post"';
         }
         if (stripos($attributes, 'accept-charset=') === false) {
-            $config = config(App::class);
+            $config = config('App');
             $attributes .= ' accept-charset="' . strtolower($config->charset) . '"';
         }
 
@@ -63,10 +63,8 @@ if (! function_exists('form_open')) {
             $form .= csrf_field($csrfId ?? null);
         }
 
-        if (is_array($hidden)) {
-            foreach ($hidden as $name => $value) {
-                $form .= form_hidden($name, $value);
-            }
+        foreach ($hidden as $name => $value) {
+            $form .= form_hidden($name, $value);
         }
 
         return $form;
@@ -139,8 +137,8 @@ if (! function_exists('form_input')) {
      * Text Input Field. If 'type' is passed in the $type field, it will be
      * used as the input type, for making 'email', 'phone', etc input fields.
      *
-     * @param mixed $data
-     * @param mixed $extra
+     * @param array|string        $data
+     * @param array|object|string $extra string, array, object that can be cast to array
      */
     function form_input($data = '', string $value = '', $extra = '', string $type = 'text'): string
     {
@@ -150,7 +148,7 @@ if (! function_exists('form_input')) {
             'value' => $value,
         ];
 
-        return '<input ' . parse_form_attributes($data, $defaults) . stringify_attributes($extra) . " />\n";
+        return '<input ' . parse_form_attributes($data, $defaults) . stringify_attributes($extra) . _solidus() . ">\n";
     }
 }
 
@@ -160,8 +158,8 @@ if (! function_exists('form_password')) {
      *
      * Identical to the input function but adds the "password" type
      *
-     * @param mixed $data
-     * @param mixed $extra
+     * @param array|string        $data
+     * @param array|object|string $extra string, array, object that can be cast to array
      */
     function form_password($data = '', string $value = '', $extra = ''): string
     {
@@ -180,8 +178,8 @@ if (! function_exists('form_upload')) {
      *
      * Identical to the input function but adds the "file" type
      *
-     * @param mixed $data
-     * @param mixed $extra
+     * @param array|string        $data
+     * @param array|object|string $extra string, array, object that can be cast to array
      */
     function form_upload($data = '', string $value = '', $extra = ''): string
     {
@@ -196,7 +194,7 @@ if (! function_exists('form_upload')) {
 
         $data['type'] = 'file';
 
-        return '<input ' . parse_form_attributes($data, $defaults) . stringify_attributes($extra) . " />\n";
+        return '<input ' . parse_form_attributes($data, $defaults) . stringify_attributes($extra) . _solidus() . ">\n";
     }
 }
 
@@ -204,8 +202,8 @@ if (! function_exists('form_textarea')) {
     /**
      * Textarea field
      *
-     * @param mixed $data
-     * @param mixed $extra
+     * @param array|string        $data
+     * @param array|object|string $extra string, array, object that can be cast to array
      */
     function form_textarea($data = '', string $value = '', $extra = ''): string
     {
@@ -240,8 +238,8 @@ if (! function_exists('form_multiselect')) {
     /**
      * Multi-select menu
      *
-     * @param mixed $name
-     * @param mixed $extra
+     * @param array|string        $name
+     * @param array|object|string $extra string, array, object that can be cast to array
      */
     function form_multiselect($name = '', array $options = [], array $selected = [], $extra = ''): string
     {
@@ -259,10 +257,10 @@ if (! function_exists('form_dropdown')) {
     /**
      * Drop-down Menu
      *
-     * @param mixed $data
-     * @param mixed $options
-     * @param mixed $selected
-     * @param mixed $extra
+     * @param array|string        $data
+     * @param array|string        $options
+     * @param array|string        $selected
+     * @param array|object|string $extra    string, array, object that can be cast to array
      */
     function form_dropdown($data = '', $options = [], $selected = [], $extra = ''): string
     {
@@ -342,8 +340,8 @@ if (! function_exists('form_checkbox')) {
     /**
      * Checkbox Field
      *
-     * @param mixed $data
-     * @param mixed $extra
+     * @param array|string        $data
+     * @param array|object|string $extra string, array, object that can be cast to array
      */
     function form_checkbox($data = '', string $value = '', bool $checked = false, $extra = ''): string
     {
@@ -355,6 +353,7 @@ if (! function_exists('form_checkbox')) {
 
         if (is_array($data) && array_key_exists('checked', $data)) {
             $checked = $data['checked'];
+
             if ($checked === false) {
                 unset($data['checked']);
             } else {
@@ -364,11 +363,9 @@ if (! function_exists('form_checkbox')) {
 
         if ($checked === true) {
             $defaults['checked'] = 'checked';
-        } elseif (isset($defaults['checked'])) {
-            unset($defaults['checked']);
         }
 
-        return '<input ' . parse_form_attributes($data, $defaults) . stringify_attributes($extra) . " />\n";
+        return '<input ' . parse_form_attributes($data, $defaults) . stringify_attributes($extra) . _solidus() . ">\n";
     }
 }
 
@@ -376,8 +373,8 @@ if (! function_exists('form_radio')) {
     /**
      * Radio Button
      *
-     * @param mixed $data
-     * @param mixed $extra
+     * @param array|string        $data
+     * @param array|object|string $extra string, array, object that can be cast to array
      */
     function form_radio($data = '', string $value = '', bool $checked = false, $extra = ''): string
     {
@@ -394,8 +391,8 @@ if (! function_exists('form_submit')) {
     /**
      * Submit Button
      *
-     * @param mixed $data
-     * @param mixed $extra
+     * @param array|string        $data
+     * @param array|object|string $extra string, array, object that can be cast to array
      */
     function form_submit($data = '', string $value = '', $extra = ''): string
     {
@@ -407,8 +404,8 @@ if (! function_exists('form_reset')) {
     /**
      * Reset Button
      *
-     * @param mixed $data
-     * @param mixed $extra
+     * @param array|string        $data
+     * @param array|object|string $extra string, array, object that can be cast to array
      */
     function form_reset($data = '', string $value = '', $extra = ''): string
     {
@@ -420,8 +417,8 @@ if (! function_exists('form_button')) {
     /**
      * Form Button
      *
-     * @param mixed $data
-     * @param mixed $extra
+     * @param array|string        $data
+     * @param array|object|string $extra string, array, object that can be cast to array
      */
     function form_button($data = '', string $content = '', $extra = ''): string
     {
@@ -486,13 +483,13 @@ if (! function_exists('form_datalist')) {
 
         $out = form_input($data) . "\n";
 
-        $out .= "<datalist id='" . $name . '_list' . "'>";
+        $out .= "<datalist id='" . $name . "_list'>";
 
         foreach ($options as $option) {
-            $out .= "<option value='{$option}'>" . "\n";
+            $out .= "<option value='{$option}'>\n";
         }
 
-        return $out . ('</datalist>' . "\n");
+        return $out . ("</datalist>\n");
     }
 }
 
@@ -571,7 +568,6 @@ if (! function_exists('set_select')) {
      * Set Select
      *
      * Let's you set the selected value of a <select> menu via data in the POST array.
-     * If Form Validation is active it retrieves the info from the validation class
      */
     function set_select(string $field, string $value = '', bool $default = false): string
     {
@@ -608,7 +604,6 @@ if (! function_exists('set_checkbox')) {
      * Set Checkbox
      *
      * Let's you set the selected value of a checkbox via the value in the POST array.
-     * If Form Validation is active it retrieves the info from the validation class
      */
     function set_checkbox(string $field, string $value = '', bool $default = false): string
     {
@@ -646,21 +641,27 @@ if (! function_exists('set_radio')) {
      * Set Radio
      *
      * Let's you set the selected value of a radio field via info in the POST array.
-     * If Form Validation is active it retrieves the info from the validation class
      */
     function set_radio(string $field, string $value = '', bool $default = false): string
     {
         $request = Services::request();
 
         // Try any old input data we may have first
-        $input = $request->getOldInput($field);
-        if ($input === null) {
-            $input = $request->getPost($field) ?? $default;
+        $oldInput = $request->getOldInput($field);
+
+        $postInput = $request->getPost($field);
+
+        if ($oldInput !== null) {
+            $input = $oldInput;
+        } elseif ($postInput !== null) {
+            $input = $postInput;
+        } else {
+            $input = $default;
         }
 
         if (is_array($input)) {
             // Note: in_array('', array(0)) returns TRUE, do not use it
-            foreach ($input as &$v) {
+            foreach ($input as $v) {
                 if ($value === $v) {
                     return ' checked="checked"';
                 }
@@ -670,16 +671,91 @@ if (! function_exists('set_radio')) {
         }
 
         // Unchecked checkbox and radio inputs are not even submitted by browsers ...
-        $result = '';
-        if ((string) $input === '0' || ! empty($input = $request->getPost($field)) || ! empty($input = old($field))) {
-            $result = ($input === $value) ? ' checked="checked"' : '';
+        if ($oldInput !== null || $postInput !== null) {
+            return ((string) $input === $value) ? ' checked="checked"' : '';
         }
 
-        if (empty($result)) {
-            $result = ($default === true) ? ' checked="checked"' : '';
+        return ($default === true) ? ' checked="checked"' : '';
+    }
+}
+
+if (! function_exists('validation_errors')) {
+    /**
+     * Returns the validation errors.
+     *
+     * First, checks the validation errors that are stored in the session.
+     * To store the errors in the session, you need to use `withInput()` with `redirect()`.
+     *
+     * The returned array should be in the following format:
+     *     [
+     *         'field1' => 'error message',
+     *         'field2' => 'error message',
+     *     ]
+     *
+     * @return array<string, string>
+     */
+    function validation_errors()
+    {
+        session();
+
+        // Check the session to see if any were
+        // passed along from a redirect withErrors() request.
+        if (isset($_SESSION['_ci_validation_errors']) && (ENVIRONMENT === 'testing' || ! is_cli())) {
+            return $_SESSION['_ci_validation_errors'];
         }
 
-        return $result;
+        $validation = Services::validation();
+
+        return $validation->getErrors();
+    }
+}
+
+if (! function_exists('validation_list_errors')) {
+    /**
+     * Returns the rendered HTML of the validation errors.
+     *
+     * See Validation::listErrors()
+     */
+    function validation_list_errors(string $template = 'list'): string
+    {
+        $config = config('Validation');
+        $view   = Services::renderer();
+
+        if (! array_key_exists($template, $config->templates)) {
+            throw ValidationException::forInvalidTemplate($template);
+        }
+
+        return $view->setVar('errors', validation_errors())
+            ->render($config->templates[$template]);
+    }
+}
+
+if (! function_exists('validation_show_error')) {
+    /**
+     * Returns a single error for the specified field in formatted HTML.
+     *
+     * See Validation::showError()
+     */
+    function validation_show_error(string $field, string $template = 'single'): string
+    {
+        $config = config('Validation');
+        $view   = Services::renderer();
+
+        $errors = array_filter(validation_errors(), static fn ($key) => preg_match(
+            '/^' . str_replace(['\.\*', '\*\.'], ['\..+', '.+\.'], preg_quote($field, '/')) . '$/',
+            $key
+        ), ARRAY_FILTER_USE_KEY);
+
+        if ($errors === []) {
+            return '';
+        }
+
+        if (! array_key_exists($template, $config->templates)) {
+            throw ValidationException::forInvalidTemplate($template);
+        }
+
+        return $view->setVar('error', implode("\n", $errors))
+            ->render($config->templates[$template]);
     }
 }
 
@@ -688,6 +764,8 @@ if (! function_exists('parse_form_attributes')) {
      * Parse the form attributes
      *
      * Helper function used by some of the form helpers
+     *
+     * @internal
      *
      * @param array|string $attributes List of attributes
      * @param array        $default    Default values

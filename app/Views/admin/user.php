@@ -1,6 +1,6 @@
 <?php $this->extend("layouts/app-admin"); ?>
 <?php $this->section("content"); ?>
-<h1 class="mb-2 font-weight-regular"><?= lang('App.listUser') ?></h1>
+<h1 class="mb-3 font-weight-medium"><?= lang('App.listUser') ?></h1>
 <v-row class="fill-height">
     <v-col>
         <!-- Table List -->
@@ -33,11 +33,9 @@
                         </td>
                     </tr>
                 </template>
-                                    
             </v-data-table>
-        </v-card>                     
+        </v-card>
         <!-- End Table List -->
-
     </v-col>
 </v-row>
 
@@ -82,7 +80,7 @@
             </v-card>
         </v-dialog>
     </v-row>
-</template>  
+</template>
 <!-- End Modal Edit Product -->
 
 <!-- Modal Delete Product -->
@@ -94,17 +92,17 @@
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn color="blue darken-1" text @click="modalDelete = false"><?= lang("App.no") ?></v-btn>
-                     <v-btn color="blue darken-1" dark @click="deleteUser" :loading="loading"><?= lang("App.yes") ?></v-btn>
+                    <v-btn color="blue darken-1" dark @click="deleteUser" :loading="loading"><?= lang("App.yes") ?></v-btn>
                     <v-spacer></v-spacer>
                 </v-card-actions>
             </v-card>
         </v-dialog>
     </v-row>
-</template>              
+</template>
 <!-- End Modal Delete Product -->
 <?php $this->endSection("content") ?>
 
-<?php $this->section("js") ?> 
+<?php $this->section("js") ?>
 <script>
     const token = JSON.parse(localStorage.getItem('access_token'));
     const options = {
@@ -186,7 +184,7 @@
         // Get User
         getUsers: function() {
             this.loading = true;
-            axios.get('/api/user', options)
+            axios.get('<?= base_url()?>api/user', options)
                 .then(res => {
                     // handle success
                     this.loading = false;
@@ -215,7 +213,7 @@
         // Save User
         saveUser: function() {
             this.loading = true;
-            axios.post(`/api/user/save`, {
+            axios.post(`<?= base_url()?>api/user/save`, {
                     username: this.userName,
                     email: this.email,
                     active: this.active,
@@ -270,7 +268,7 @@
         //Update
         updateUser: function() {
             this.loading = true;
-            axios.put(`/api/user/update/${this.userIdEdit}`, {
+            axios.put(`<?= base_url()?>api/user/update/${this.userIdEdit}`, {
                     username: this.userNameEdit,
                     email: this.emailEdit,
                 }, options)
@@ -315,7 +313,7 @@
         // Delete
         deleteUser: function() {
             this.loading = true;
-            axios.delete(`/api/user/delete/${this.userIdDelete}`, options)
+            axios.delete(`<?= base_url()?>api/user/delete/${this.userIdDelete}`, options)
                 .then(res => {
                     // handle success
                     this.loading = false;
@@ -350,7 +348,7 @@
             this.loading = true;
             this.userIdEdit = user.user_id;
             this.active = user.active;
-            axios.put(`/api/user/setactive/${this.userIdEdit}`, {
+            axios.put(`<?= base_url()?>api/user/setactive/${this.userIdEdit}`, {
                     active: this.active,
                 }, options)
                 .then(res => {
@@ -380,7 +378,7 @@
             this.loading = true;
             this.userIdEdit = user.user_id;
             this.role = user.role;
-            axios.put(`/api/user/setrole/${this.userIdEdit}`, {
+            axios.put(`<?= base_url()?>api/user/setrole/${this.userIdEdit}`, {
                     role: this.role,
                 }, options)
                 .then(res => {

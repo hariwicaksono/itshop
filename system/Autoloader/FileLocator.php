@@ -71,13 +71,13 @@ class FileLocator
         $namespaces = $this->autoloader->getNamespace();
 
         foreach (array_keys($namespaces) as $namespace) {
-            if (substr($file, 0, strlen($namespace)) === $namespace) {
+            if (substr($file, 0, strlen($namespace) + 1) === $namespace . '\\') {
+                $fileWithoutNamespace = substr($file, strlen($namespace));
+
                 // There may be sub-namespaces of the same vendor,
                 // so overwrite them with namespaces found later.
-                $paths = $namespaces[$namespace];
-
-                $fileWithoutNamespace = substr($file, strlen($namespace));
-                $filename             = ltrim(str_replace('\\', '/', $fileWithoutNamespace), '/');
+                $paths    = $namespaces[$namespace];
+                $filename = ltrim(str_replace('\\', '/', $fileWithoutNamespace), '/');
             }
         }
 
@@ -108,7 +108,7 @@ class FileLocator
     }
 
     /**
-     * Examines a file and returns the fully qualified domain name.
+     * Examines a file and returns the fully qualified class name.
      */
     public function getClassname(string $file): string
     {
@@ -186,7 +186,7 @@ class FileLocator
         }
 
         if (! $prioritizeApp && ! empty($appPaths)) {
-            $foundPaths = array_merge($foundPaths, $appPaths);
+            $foundPaths = [...$foundPaths, ...$appPaths];
         }
 
         // Remove any duplicates
@@ -212,7 +212,7 @@ class FileLocator
     /**
      * Return the namespace mappings we know about.
      *
-     * @return array|string
+     * @return array<int, array<string, string>>
      */
     protected function getNamespaces()
     {
@@ -289,6 +289,8 @@ class FileLocator
     /**
      * Scans the defined namespaces, returning a list of all files
      * that are contained within the subpath specified by $path.
+     *
+     * @return string[] List of file paths
      */
     public function listFiles(string $path): array
     {
@@ -307,7 +309,7 @@ class FileLocator
                 continue;
             }
 
-            $tempFiles = get_filenames($fullPath, true);
+            $tempFiles = get_filenames($fullPath, true, false, false);
 
             if (! empty($tempFiles)) {
                 $files = array_merge($files, $tempFiles);
@@ -319,7 +321,9 @@ class FileLocator
 
     /**
      * Scans the provided namespace, returning a list of all files
-     * that are contained within the subpath specified by $path.
+     * that are contained within the sub path specified by $path.
+     *
+     * @return string[] List of file paths
      */
     public function listNamespaceFiles(string $prefix, string $path): array
     {
@@ -339,7 +343,7 @@ class FileLocator
                 continue;
             }
 
-            $tempFiles = get_filenames($fullPath, true);
+            $tempFiles = get_filenames($fullPath, true, false, false);
 
             if (! empty($tempFiles)) {
                 $files = array_merge($files, $tempFiles);

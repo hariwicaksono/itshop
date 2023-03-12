@@ -190,7 +190,7 @@ class Order extends BaseControllerApi
             $this->model->delete($id);
             $response = [
                 'status' => true,
-                'message' => lang('App.productDeleted'),
+                'message' => lang('App.delSuccess'),
                 'data' => [],
             ];
             return $this->respond($response, 200);

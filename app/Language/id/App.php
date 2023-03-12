@@ -87,7 +87,7 @@ return [
     'listUser' => 'Daftar User',
     'newPassword' => 'Buat Password Baru',
     
-    //Cart & 
+    //Cart & Order
     'orderSuccess' => 'Pesanan Sukses',
     'noOrder' => 'Nomor Invoice',
     'order' => 'Pesanan',
@@ -111,4 +111,5 @@ return [
     'status' => 'Status',
     'date' => 'Tanggal',
     'pleaseTransfer' => 'Silahkan Transfer sejumlah uang',
+    'cod' => 'COD'
 ];

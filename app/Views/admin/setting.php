@@ -1,6 +1,6 @@
 <?php $this->extend("layouts/app-admin"); ?>
 <?php $this->section("content"); ?>
-<h1 class="mb-2 font-weight-regular"><?= lang('App.setting') ?></h1>
+<h1 class="mb-3 font-weight-medium"><?= lang('App.setting') ?></h1>
 <template>
     <v-card outlined elevation="1">
         <v-card-text>
@@ -12,7 +12,7 @@
             </v-btn>
         </v-card-text>
     </v-card>
-</template>             
+</template>
 
 <v-dialog v-model="loading" hide-overlay persistent width="300">
     <v-card>
@@ -24,7 +24,7 @@
 </v-dialog>
 <?php $this->endSection("content") ?>
 
-<?php $this->section("js") ?> 
+<?php $this->section("js") ?>
 <script>
     const token = JSON.parse(localStorage.getItem('access_token'));
     const options = {
@@ -49,7 +49,7 @@
         // Get
         getSetting: function() {
             this.loading = true;
-            axios.get('/api/setting', options)
+            axios.get('<?= base_url()?>api/setting', options)
                 .then(res => {
                     // handle success
                     this.loading = false;
@@ -79,7 +79,7 @@
         //Update
         updateSetting: function() {
             this.loading2 = true;
-            axios.put(`/api/setting/update/${this.settingId}`, {
+            axios.put(`<?= base_url()?>api/setting/update/${this.settingId}`, {
                     site_title: this.siteTitle,
                 }, options)
                 .then(res => {

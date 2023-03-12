@@ -26,7 +26,7 @@
 
 <?php $this->endSection("content") ?>
 
-<?php $this->section("js") ?> 
+<?php $this->section("js") ?>
 <script>
     computedVue = {
         ...computedVue,

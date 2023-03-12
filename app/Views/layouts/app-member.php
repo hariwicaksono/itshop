@@ -5,22 +5,11 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
-    <title>App Member</title>
-    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet"> 
-    <link href="<?= base_url('assets/css/materialdesignicons.min.css') ?>" rel="stylesheet"> 
-    <link href="<?= base_url('assets/css/vuetify.min.css') ?>" rel="stylesheet"> 
-    <link href="<?= base_url('assets/css/styles.css') ?>" rel="stylesheet"> 
-    <style>
-        .v-data-table>.v-data-table__wrapper>table>thead>tr>th {
-            font-weight: normal;
-            font-size: 18px;
-        }
-
-        .v-data-table>.v-data-table__wrapper>table>tbody>tr>td {
-            font-weight: normal;
-            font-size: 16px;
-        }
-    </style>
+    <title>Member | <?= env('appName'); ?></title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    <link href="<?= base_url('assets/css/materialdesignicons.min.css') ?>" rel="stylesheet">
+    <link href="<?= base_url('assets/css/vuetify.min.css') ?>" rel="stylesheet">
+    <link href="<?= base_url('assets/css/styles.css') ?>" rel="stylesheet">
 </head>
 
 <body>
@@ -45,28 +34,40 @@
     <!-- preloader end -->
     <div id="app">
         <v-app>
-            <v-app-bar app color="white" elevation="2">
+            <v-app-bar app color="white">
                 <v-app-bar-nav-icon @click.stop="sidebarMenu = !sidebarMenu"></v-app-bar-nav-icon>
                 <v-toolbar-title>Member</v-toolbar-title>
                 <v-spacer></v-spacer>
-                <v-badge :content="cartCounter" :value="cartCounter" color="red" class="mr-3" overlap>
-                    <v-btn icon small href="<?= base_url('/cart') ?>" elevation="0">
+                <v-btn icon class="mr-3" href="<?= base_url('cart') ?>" elevation="0">
+                    <v-badge :content="cartCounter" :value="cartCounter" color="red" overlap>
                         <v-icon>mdi-cart</v-icon>
-                    </v-btn>
-                </v-badge>
+                    </v-badge>
+                </v-btn>
                 <?php if (!empty(session()->get('username'))) : ?>
                     <v-menu offset-y>
                         <template v-slot:activator="{ on, attrs }">
-                            <v-btn text v-bind="attrs" v-on="on">
+                            <v-btn text class="mr-3" v-bind="attrs" v-on="on">
                                 <?= session()->get('username') ?> <v-icon>mdi-chevron-down</v-icon>
                             </v-btn>
                         </template>
 
                         <v-list>
+                            <v-list-item class="d-flex justify-center">
+                                <v-list-item-avatar size="100">
+                                    <v-img src="<?= base_url('assets/images/default.png'); ?>"></v-img>
+                                </v-list-item-avatar>
+                            </v-list-item>
+                            <v-list-item link>
+                                <v-list-item-content>
+                                    <v-list-item-title class="text-h6">
+                                        Hallo, <?= session()->get('username') ?>
+                                    </v-list-item-title>
+                                    <v-list-item-subtitle><?= session()->get('email') ?></v-list-item-subtitle>
+                                </v-list-item-content>
+                            </v-list-item>
                             <v-subheader>Login: &nbsp;<v-chip color="primary" small><?= session()->get('role') == 1 ? 'admin' : 'user'; ?></v-chip>
                             </v-subheader>
-                            <v-list-item>Email: <?= session()->get('email') ?></v-list-item>
-                            <v-list-item link href="/">
+                            <v-list-item link href="<?= base_url(); ?>">
                                 <v-list-item-icon>
                                     <v-icon>mdi-home</v-icon>
                                 </v-list-item-icon>
@@ -74,7 +75,7 @@
                                     <v-list-item-title><?= lang('App.backtoHome') ?></v-list-item-title>
                                 </v-list-item-content>
                             </v-list-item>
-                            <v-list-item link href="/logout" @click="localStorage.removeItem('access_token')">
+                            <v-list-item link href="<?= base_url('logout'); ?>" @click="localStorage.removeItem('access_token')">
                                 <v-list-item-icon>
                                     <v-icon>mdi-logout</v-icon>
                                 </v-list-item-icon>
@@ -91,8 +92,8 @@
                 </v-btn>
             </v-app-bar>
 
-            <v-navigation-drawer v-model="sidebarMenu" app floating :permanent="sidebarMenu" :mini-variant.sync="mini" v-if="!isMobile">
-                <v-list dense elevation="2">
+            <v-navigation-drawer class="elevation-3" v-model="sidebarMenu" app floating :permanent="sidebarMenu" :mini-variant.sync="mini" v-if="!isMobile">
+                <v-list dense elevation="1">
                     <v-list-item>
                         <v-list-item-action>
                             <v-icon @click.stop="toggleMini = !toggleMini">mdi-chevron-left</v-icon>
@@ -115,7 +116,7 @@
                 <v-divider></v-divider>
                 <v-list>
                     <?php $uri = new \CodeIgniter\HTTP\URI(current_url());?>
-                    <v-list-item-group color="orange darken-3">
+                    <v-list-item-group color="primary">
                         <?php if (session()->get('role') == 2) : ?>
                             <v-list-item link href="<?= base_url('member'); ?>" <?php if($uri->getSegment(2)==""){echo 'class="v-item--active v-list-item--active"';}?> >
                                 <v-list-item-icon>
@@ -127,7 +128,7 @@
                             </v-list-item>
                             <v-list-item link href="<?= base_url('member/order-list'); ?>" <?php if($uri->getSegment(2)=="order-list"){echo 'class="v-item--active v-list-item--active"';}?> >
                                 <v-list-item-icon>
-                                    <v-icon>mdi-receipt</v-icon>
+                                    <v-icon>mdi-receipt-text</v-icon>
                                 </v-list-item-icon>
                                 <v-list-item-content>
                                     <v-list-item-title><?= lang('App.orderList') ?></v-list-item-title>
@@ -147,7 +148,7 @@
 
                 <template v-slot:append>
                     <v-divider></v-divider>
-                    <div class="pa-3 text-center">
+                    <div class="pa-3 text-center text-caption">
                         <span>&copy; {{ new Date().getFullYear() }}</span>
                     </div>
                 </template>
@@ -158,7 +159,7 @@
                 <template v-slot:prepend>
                     <v-list-item>
                         <v-list-item-content>
-                            <v-list-item-title>Pengaturan</v-list-item-title>
+                            <v-list-item-title>Settings</v-list-item-title>
                         </v-list-item-content>
                     </v-list-item>
                 </template>
@@ -186,10 +187,10 @@
                     </v-list-item-content>
                     <v-list-item-action>
                         <v-btn-toggle>
-                            <v-btn text small link href="/lang/id">
+                            <v-btn text small link href="<?= base_url('lang/id'); ?>">
                                 ID
                             </v-btn>
-                            <v-btn text small link href="/lang/en">
+                            <v-btn text small link href="<?= base_url('lang/en'); ?>">
                                 EN
                             </v-btn>
                         </v-btn-toggle>
@@ -210,7 +211,7 @@
                         ok
                     </v-btn>
                 </template>
-            </v-snackbar>   
+            </v-snackbar>
         </v-app>
     </div>
 
@@ -306,7 +307,7 @@
                 localStorage.setItem("dark_theme", this.$vuetify.theme.dark.toString());
             },
             getCartCount() {
-                axios.get(`/openapi/cart/count`)
+                axios.get(`<?= base_url(); ?>openapi/cart/count`)
                     .then(res => {
                         // handle success
                         var data = res.data;

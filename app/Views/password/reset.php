@@ -1,6 +1,7 @@
 <?php $this->extend("layouts/app-front"); ?>
 <?php $this->section("content"); ?>
-<v-container class="orange darken-1 px-4 py-0 fill-height mt-n10" fluid>
+<template>
+<v-container class="indigo mt-n10" fill-height fluid>
     <v-layout flex align-center justify-center>
         <v-flex xs12 sm6 md6>
             <v-card elevation="2" outlined>
@@ -9,21 +10,22 @@
                     <h1 class="font-weight-normal text-center mb-8"><?= lang('App.forgotPass') ?></h1>
                     <v-alert v-if="notifType != ''" dense :type="notifType">{{notifMessage}}</v-alert>
                     <v-form v-model="valid" ref="form">
-                        <v-text-field label="<?= lang('App.labelEmail') ?>" v-model="email" :rules="[rules.required, rules.email]" outlined dense :disabled="submitted"></v-text-field>
+                        <v-text-field label="<?= lang('App.labelEmail') ?>" v-model="email" :rules="[rules.required, rules.email]" outlined :disabled="submitted"></v-text-field>
                         <v-layout justify-space-between>
-                            <a href="<?= base_url('/login') ?>">Login</a>
+                            <a href="<?= base_url('login') ?>">Login</a>
                             <v-btn @click="submit" color="primary" :loading="loading" :disabled="submitted">Reset Password</v-btn>
                         </v-layout>
-                        <a href="<?= base_url('/register') ?>"><?= lang('App.register') ?></a>
+                        <a href="<?= base_url('register') ?>"><?= lang('App.register') ?></a>
                     </v-form>
                 </v-card-text>
             </v-card>
         </v-flex>
     </v-layout>
 </v-container>
+</template>
 <?php $this->endSection("content") ?>
 
-<?php $this->section("js") ?> 
+<?php $this->section("js") ?>
 <script>
     computedVue = {
         ...computedVue,
@@ -38,7 +40,7 @@
         ...methodsVue,
         submit() {
             this.loading = true;
-            axios.post(`/auth/resetPassword`, {
+            axios.post(`<?= base_url()?>auth/resetPassword`, {
                     email: this.email
                 })
                 .then(res => {

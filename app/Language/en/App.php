@@ -110,4 +110,5 @@ return [
     'status' => 'Status',
     'date' => 'Date',
     'pleaseTransfer' => 'Please Transfer ammount money',
+    'cod' => 'COD'
 ];

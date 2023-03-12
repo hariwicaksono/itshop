@@ -225,6 +225,12 @@ class GDHandler extends BaseHandler
 
         $this->ensureResource();
 
+        // for png and webp we can actually preserve transparency
+        if (in_array($this->image()->imageType, $this->supportTransparency, true)) {
+            imagealphablending($this->resource, false);
+            imagesavealpha($this->resource, true);
+        }
+
         switch ($this->image()->imageType) {
             case IMAGETYPE_GIF:
                 if (! function_exists('imagegif')) {
@@ -322,9 +328,9 @@ class GDHandler extends BaseHandler
      * @param string $path      Image path
      * @param int    $imageType Image type
      *
-     * @throws ImageException
-     *
      * @return bool|resource
+     *
+     * @throws ImageException
      */
     protected function getImageResource(string $path, int $imageType)
     {
@@ -451,7 +457,7 @@ class GDHandler extends BaseHandler
          * Get the rest of the string and split it into 2-length
          * hex values:
          */
-        $opacity = ($options['opacity'] * 127);
+        $opacity = (int) ($options['opacity'] * 127);
 
         // Allow opacity to be applied to the text
         imagealphablending($src, true);

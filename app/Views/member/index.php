@@ -17,7 +17,7 @@
 </v-row>
 <?php $this->endSection("content") ?>
 
-<?php $this->section("js") ?> 
+<?php $this->section("js") ?>
 <script>
     const token = JSON.parse(localStorage.getItem('access_token'));
     const options = {

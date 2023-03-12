@@ -118,11 +118,11 @@ class UploadedFile extends File implements UploadedFileInterface
      * @param bool   $overwrite  State for indicating whether to overwrite the previously generated file with the same
      *                           name or not.
      *
+     * @return bool
+     *
      * @throws InvalidArgumentException if the $path specified is invalid.
      * @throws RuntimeException         on any error during the move operation.
      * @throws RuntimeException         on the second or subsequent call to the method.
-     *
-     * @return bool
      */
     public function move(string $targetPath, ?string $name = null, bool $overwrite = false)
     {
@@ -137,7 +137,7 @@ class UploadedFile extends File implements UploadedFileInterface
             throw HTTPException::forInvalidFile();
         }
 
-        $name        = $name ?? $this->getName();
+        $name ??= $this->getName();
         $destination = $overwrite ? $targetPath . $name : $this->getDestination($targetPath . $name);
 
         try {
@@ -283,7 +283,7 @@ class UploadedFile extends File implements UploadedFileInterface
      * type but will return the clientExtension if it fails to do so.
      *
      * This method will always return a more or less helpfull extension
-     * but might be insecure if the mime type is not machted. Consider
+     * but might be insecure if the mime type is not matched. Consider
      * using guessExtension for a more safe version.
      */
     public function getExtension(): string
@@ -335,7 +335,7 @@ class UploadedFile extends File implements UploadedFileInterface
     public function store(?string $folderName = null, ?string $fileName = null): string
     {
         $folderName = rtrim($folderName ?? date('Ymd'), '/') . '/';
-        $fileName   = $fileName ?? $this->getRandomName();
+        $fileName ??= $this->getRandomName();
 
         // Move the uploaded file to a new location.
         $this->move(WRITEPATH . 'uploads/' . $folderName, $fileName);

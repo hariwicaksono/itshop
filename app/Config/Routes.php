@@ -21,6 +21,10 @@ $routes->setDefaultController('Home');
 $routes->setDefaultMethod('index');
 $routes->setTranslateURIDashes(false);
 $routes->set404Override();
+// The Auto Routing (Legacy) is very dangerous. It is easy to create vulnerable apps
+// where controller filters or CSRF protection are bypassed.
+// If you don't want to define all routes, please use the Auto Routing (Improved).
+// Set `$autoRoutesImproved` to true in `app/Config/Feature.php` and set the following to true.
 $routes->setAutoRoute(false);
 
 /**
@@ -32,7 +36,8 @@ $routes->setAutoRoute(false);
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
 $routes->get('/', 'Home::index');
-$routes->get("/lang/{locale}", "Home::setLanguage");
+$routes->get('/product/(:segment)', 'Home::show/$1');
+$routes->get('/lang/{locale}', 'Home::setLanguage');
 $routes->get('/login', 'Auth::login');
 $routes->get('/register', 'Auth::register');
 $routes->get('/logout', 'Auth::logout');
@@ -123,7 +128,7 @@ $routes->group('api', ['filter' => 'jwtauth', 'namespace' => $routes->getDefault
 	$routes->delete('payment/delete/(:segment)', 'Payment::delete/$1');
 	$routes->put('payment/setactive/(:segment)', 'Payment::setActive/$1');
 	$routes->put('payment/setcod/(:segment)', 'Payment::setCod/$1');
-	$routes->get('payment/get/(:segment)','Payment::getConfirm/$1');
+	$routes->get('payment/get/(:segment)', 'Payment::getConfirm/$1');
 	$routes->post('payment/confirm', 'Payment::confirm');
 
 	$routes->get('shipment', 'Shipment::index');
@@ -138,12 +143,13 @@ $routes->group('api', ['filter' => 'jwtauth', 'namespace' => $routes->getDefault
 	$routes->put('setting/update/(:segment)', 'Setting::update/$1');
 
 	$routes->get('kabupaten', 'Kabupaten::index');
-    $routes->get('kabupaten/get', 'Kabupaten::getProvinsi');
-    $routes->get('provinsi', 'Provinsi::index');
+	$routes->get('kabupaten/get', 'Kabupaten::getProvinsi');
+	$routes->get('provinsi', 'Provinsi::index');
 });
 //Contoh Routes untuk Open Api
 $routes->group('openapi', ['namespace' => $routes->getDefaultNamespace() . 'Api'], function ($routes) {
 	$routes->get('product/all', 'Product::allProduct');
+	$routes->get('product/(:segment)', 'Product::show/$1');
 	$routes->get('cart/count', 'Cart::countUserCart');
 });
 

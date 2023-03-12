@@ -1,5 +1,5 @@
 # Disable directory browsing
-Options All -Indexes
+Options -Indexes
 
 # ----------------------------------------------------------------------
 # Rewrite engine
@@ -31,19 +31,23 @@ Options All -Indexes
 	# request to the front controller, index.php
 	RewriteCond %{REQUEST_FILENAME} !-f
 	RewriteCond %{REQUEST_FILENAME} !-d
-	RewriteRule ^([\s\S]*)$ index.php?/$1 [L,NC,QSA]
+	RewriteRule ^([\s\S]*)$ index.php/$1 [L,NC,QSA]
 
 	# Ensure Authorization header is passed along
 	RewriteCond %{HTTP:Authorization} .
 	RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+	# Rewrite "http -> https"
+	#RewriteCond %{HTTPS} off
+	#RewriteRule ^.*$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 </IfModule>
 
 <IfModule !mod_rewrite.c>
-	# If we don't have mod_rewrite installed, all 404's
-	# can be sent to index.php, and everything works as normal.
-	ErrorDocument 404 index.php
+    # If we don't have mod_rewrite installed, all 404's
+    # can be sent to index.php, and everything works as normal.
+    ErrorDocument 404 index.php
 </IfModule>
 
 # Disable server signature start
-	ServerSignature Off
+    ServerSignature Off
 # Disable server signature end

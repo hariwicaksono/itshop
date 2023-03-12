@@ -1,6 +1,6 @@
 <?php $this->extend("layouts/app-admin"); ?>
 <?php $this->section("content"); ?>
-<h2 class="mb-2">Export PDF</h2>
+<h1 class="mb-3 font-weight-medium">Export PDF</h1>
 
 <v-card class="mb-3" outlined elevation="1">
     <v-card-title>TCPDF</v-card-title>
@@ -290,7 +290,7 @@
                         &lt;meta charset="utf-8"&gt;
                         &lt;meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"&gt;
                         &lt;link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous"&gt;
-                         
+                        
                         &lt;title&gt;Print PDF&lt;/title&gt;
                         &lt;style&gt;
                             table {
@@ -354,7 +354,7 @@
 
 <?php $this->endSection("content") ?>
 
-<?php $this->section("js") ?> 
+<?php $this->section("js") ?>
 <script>
     const token = JSON.parse(localStorage.getItem('access_token'));
     const options = {

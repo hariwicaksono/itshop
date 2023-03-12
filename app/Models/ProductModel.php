@@ -45,7 +45,7 @@ class ProductModel extends Model
         $offset = ($page - 1) * $limit;
         $this->select("{$this->table}.*, m.media_path");
         $this->join("media m", "m.media_id = {$this->table}.product_image", "left");
-        $this->orderBy("{$this->table}.product_id", "ASC");
+        $this->orderBy("{$this->table}.product_id", "DESC");
         $query = $this->findAll($limit, $offset);
         return $query;
     }
@@ -55,8 +55,8 @@ class ProductModel extends Model
         $this->select("{$this->table}.*, m.media_path");
         $this->join("media m", "m.media_id = {$this->table}.product_image", "left");
         $this->where("{$this->table}.product_id", $id);
-        $this->orderBy("{$this->table}.product_id", "ASC");
-        $query = $this->findAll();
+        //$this->orderBy("{$this->table}.product_id", "ASC");
+        $query = $this->first();
         return $query;
     }
 

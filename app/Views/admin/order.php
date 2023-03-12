@@ -1,6 +1,6 @@
 <?php $this->extend("layouts/app-admin"); ?>
 <?php $this->section("content"); ?>
-<h1 class="mb-2 font-weight-regular"><?= lang('App.orderList') ?></h1>
+<h1 class="mb-3 font-weight-medium"><?= lang('App.orderList') ?></h1>
 <v-row class="fill-height">
     <v-col>
         <!-- Table List Order -->
@@ -31,11 +31,10 @@
                             </v-btn>
                         </td>
                     </tr>
-                </template>              
+                </template>
             </v-data-table>
-        </v-card>                     
+        </v-card>
         <!-- End Table List -->
-
     </v-col>
 </v-row>
 
@@ -90,7 +89,7 @@
             </v-card>
         </v-dialog>
     </v-row>
-</template>              
+</template>
 <!-- End Modal -->
 <template>
     <v-row justify="center">
@@ -113,11 +112,11 @@
             </v-card>
         </v-dialog>
     </v-row>
-</template>     
+</template>
 <!-- End Modal Save -->
 <?php $this->endSection("content") ?>
 
-<?php $this->section("js") ?> 
+<?php $this->section("js") ?>
 <script>
     const token = JSON.parse(localStorage.getItem('access_token'));
     const options = {
@@ -213,7 +212,7 @@
         // Get Order
         getOrder: function() {
             this.loading = true;
-            axios.get('/api/order', options)
+            axios.get('<?= base_url()?>api/order', options)
                 .then(res => {
                     // handle success
                     this.loading = false;
@@ -251,7 +250,7 @@
         //Get Item Order
         getItemOrder: function() {
             this.show = true;
-            axios.get(`/api/cart/order/${this.idOrder}`, options)
+            axios.get(`<?= base_url()?>api/cart/order/${this.idOrder}`, options)
                 .then(res => {
                     // handle success
                     this.loading3 = false;
@@ -279,7 +278,7 @@
             this.loading = true;
             this.idOrder = item.order_id;
             this.status = item.status;
-            axios.put(`/api/order/setstatus/${this.idOrder}`, {
+            axios.put(`<?= base_url()?>api/order/setstatus/${this.idOrder}`, {
                     status: this.status,
                 }, options)
                 .then(res => {
@@ -317,7 +316,7 @@
         //Get
         getConfirmation: function() {
             this.show = true;
-            axios.get(`/api/payment/get/${this.idOrder}`, options)
+            axios.get(`<?= base_url()?>api/payment/get/${this.idOrder}`, options)
                 .then(res => {
                     // handle success
                     this.loading3 = false;

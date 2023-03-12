@@ -160,7 +160,7 @@ class Product extends BaseControllerApi
     {
         $input = $this->request->getVar();
         $page = $input['page'];
-        $limit = 4;
+        $limit = 6;
         return $this->respond(["status" => true, "message" => lang('App.getSuccess'), "data" => $this->model->getProduct($page, $limit), "per_page" => $limit, "total_page" => $this->model->countAllResults()], 200);
     }
 

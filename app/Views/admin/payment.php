@@ -1,12 +1,12 @@
 <?php $this->extend("layouts/app-admin"); ?>
 <?php $this->section("content"); ?>
-<h1 class="mb-2 font-weight-regular"><?= lang('App.payment') ?></h1>
+<h1 class="mb-3 font-weight-medium"><?= lang('App.payment') ?></h1>
 <template>
     <!-- Table List -->
     <v-card outlined elevation="1">
         <v-card-title>
             <!-- Button Add New -->
-             <v-btn color="primary" dark @click="modalAddOpen"><?= lang('App.add') ?></v-btn>
+            <v-btn large color="primary" dark @click="modalAddOpen"><?= lang('App.add') ?></v-btn>
             <v-spacer></v-spacer>
             <v-text-field v-model="search" append-icon="mdi-magnify" label="<?= lang('App.search') ?>" single-line hide-details>
             </v-text-field>
@@ -31,9 +31,9 @@
                         </v-btn>
                     </td>
                 </tr>
-            </template>         
+            </template>
         </v-data-table>
-    </v-card>                     
+    </v-card>
     <!-- End Table List -->
 </template>
 
@@ -68,7 +68,7 @@
             </v-card>
         </v-dialog>
     </v-row>
-</template>     
+</template>
 <!-- End Modal Save -->
 
 <!-- Modal Edit -->
@@ -98,9 +98,9 @@
             </v-card>
         </v-dialog>
     </v-row>
-</template>  
+</template>
 <!-- End Modal Edit -->
-                
+
 <!-- Modal Delete -->
 <template>
     <v-row justify="center">
@@ -110,17 +110,17 @@
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn color="blue darken-1" text @click="modalDelete = false"><?= lang('App.no') ?></v-btn>
-                     <v-btn color="blue darken-1" dark @click="deletePayment" :loading="loading"><?= lang('App.yes') ?></v-btn>
+                    <v-btn color="blue darken-1" dark @click="deletePayment" :loading="loading"><?= lang('App.yes') ?></v-btn>
                     <v-spacer></v-spacer>
                 </v-card-actions>
             </v-card>
         </v-dialog>
     </v-row>
-</template>              
+</template>
 <!-- End Modal Delete -->
 <?php $this->endSection("content") ?>
 
-<?php $this->section("js") ?> 
+<?php $this->section("js") ?>
 <script>
     const token = JSON.parse(localStorage.getItem('access_token'));
     const options = {
@@ -183,7 +183,7 @@
         // Get Payment
         getPayment: function() {
             this.loading = true;
-            axios.get('/api/payment/all', options)
+            axios.get('<?= base_url() ?>api/payment/all', options)
                 .then(res => {
                     // handle success
                     this.loading = false;
@@ -210,7 +210,7 @@
         // Save
         savePayment: function() {
             this.loading = true;
-            axios.post(`/api/payment/save`, {
+            axios.post(`<?= base_url() ?>api/payment/save`, {
                     payment: this.payment,
                     account: this.account,
                     number: this.number,
@@ -261,7 +261,7 @@
         //Update
         updatePayment: function() {
             this.loading = true;
-            axios.put(`/api/payment/update/${this.paymentIdEdit}`, {
+            axios.put(`<?= base_url() ?>api/payment/update/${this.paymentIdEdit}`, {
                     payment: this.paymentEdit,
                     account: this.accountEdit,
                     number: this.numberEdit,
@@ -304,7 +304,7 @@
         // Delete
         deletePayment: function() {
             this.loading = true;
-            axios.delete(`/api/payment/delete/${this.paymentId}`, options)
+            axios.delete(`<?= base_url() ?>api/payment/delete/${this.paymentId}`, options)
                 .then(res => {
                     // handle success
                     this.loading = false;
@@ -337,7 +337,7 @@
             this.loading = true;
             this.paymentId = item.payment_id;
             this.active = item.active;
-            axios.put(`/api/payment/setactive/${this.paymentId}`, {
+            axios.put(`<?= base_url() ?>api/payment/setactive/${this.paymentId}`, {
                     active: this.active,
                 }, options)
                 .then(res => {
@@ -366,7 +366,7 @@
             this.loading = true;
             this.paymentId = item.payment_id;
             this.cod = item.cod;
-            axios.put(`/api/payment/setcod/${this.paymentId}`, {
+            axios.put(`<?= base_url() ?>api/payment/setcod/${this.paymentId}`, {
                     cod: this.cod,
                 }, options)
                 .then(res => {

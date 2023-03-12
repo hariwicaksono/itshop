@@ -1,13 +1,13 @@
 <?php $this->extend("layouts/app-admin"); ?>
 <?php $this->section("content"); ?>
-<h1 class="mb-2 font-weight-regular"><?= lang('App.listProduct') ?></h1>
+<h1 class="mb-3 font-weight-medium"><?= lang('App.listProduct') ?></h1>
 <v-row class="fill-height">
     <v-col>
         <!-- Table List Product -->
         <v-card outlined elevation="1">
             <v-card-title>
                 <!-- Button Add New Product -->
-                 <v-btn color="primary" dark @click="modalAddOpen"><?= lang('App.addProduct') ?></v-btn>
+                <v-btn large color="primary" dark @click="modalAddOpen"><?= lang('App.addProduct') ?></v-btn>
                 <v-spacer></v-spacer>
                 <v-text-field v-model="search" append-icon="mdi-magnify" label="<?= lang('App.search') ?>" single-line hide-details>
                 </v-text-field>
@@ -18,10 +18,10 @@
                     <tr>
                         <td>{{item.product_id}}</td>
                         <td>
-                            <v-avatar size="60px" rounded><img v-bind:src="'../' + item.media_path" /></v-avatar>
+                            <v-avatar size="60px" rounded><img v-bind:src="'<?= base_url(); ?>' + item.media_path" /></v-avatar>
                         </td>
                         <td>
-                            <h3>{{item.product_name}}</h3>
+                            {{item.product_name}}
                         </td>
                         <td>
                             <v-edit-dialog :return-value.sync="item.product_price" @save="setPrice(item)" @cancel="" @open="" @close="">
@@ -55,9 +55,9 @@
                         </td>
                     </tr>
                 </template>
-                                    
+                
             </v-data-table>
-        </v-card>                     
+        </v-card>
         <!-- End Table List Product -->
 
     </v-col>
@@ -118,14 +118,14 @@
                 <v-divider></v-divider>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" @click="saveProduct" :loading="loading">
+                    <v-btn large color="primary" @click="saveProduct" :loading="loading">
                         <v-icon>mdi-content-save</v-icon> <?= lang('App.save') ?>
                     </v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
     </v-row>
-</template>     
+</template>
 <!-- End Modal Save Product -->
 
 <!-- Modal Show Product -->
@@ -173,7 +173,7 @@
                                 <v-hover>
                                     <template v-slot:default="{ hover }">
                                         <v-card max-width="450">
-                                            <v-img v-model="mediaID" v-bind:src="'../' + mediaPathEdit" />
+                                            <v-img v-model="mediaID" v-bind:src="'<?= base_url(); ?>' + mediaPathEdit" />
                                             </v-img>
                                         </v-card>
                                     </template>
@@ -185,9 +185,9 @@
             </v-card>
         </v-dialog>
     </v-row>
-</template>  
+</template>
 <!-- End Modal Show Product -->
-                  
+
 <!-- Modal Edit Product -->
 <template>
     <v-row justify="center">
@@ -236,7 +236,7 @@
                                     <v-hover>
                                         <template v-slot:default="{ hover }">
                                             <v-card max-width="450">
-                                                <v-img v-model="mediaID" v-bind:src="'../' + mediaPathEdit" />
+                                                <v-img v-model="mediaID" v-bind:src="'<?= base_url(); ?>' + mediaPathEdit" />
                                                 </v-img>
 
                                                 <v-fade-transition>
@@ -260,16 +260,16 @@
                 <v-divider></v-divider>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" @click="updateProduct" :loading="loading">
+                    <v-btn large color="primary" @click="updateProduct" :loading="loading">
                         <v-icon>mdi-content-save</v-icon> <?= lang('App.save') ?>
                     </v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
     </v-row>
-</template>  
+</template>
 <!-- End Modal Edit Product -->
-                
+
 <!-- Modal Delete Product -->
 <template>
     <v-row justify="center">
@@ -278,18 +278,18 @@
                 <v-card-title class="text-h5"><?= lang('App.delConfirm') ?></v-card-title>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="blue darken-1" text @click="modalDelete = false"><?= lang('App.no') ?></v-btn>
-                     <v-btn color="blue darken-1" dark @click="deleteProduct" :loading="loading"><?= lang('App.yes') ?></v-btn>
+                    <v-btn large color="blue darken-1" text @click="modalDelete = false"><?= lang('App.no') ?></v-btn>
+                    <v-btn large color="blue darken-1" dark @click="deleteProduct" :loading="loading"><?= lang('App.yes') ?></v-btn>
                     <v-spacer></v-spacer>
                 </v-card-actions>
             </v-card>
         </v-dialog>
     </v-row>
-</template>              
+</template>
 <!-- End Modal Delete Product -->
 <?php $this->endSection("content") ?>
 
-<?php $this->section("js") ?> 
+<?php $this->section("js") ?>
 <script>
     function b64toBlob(b64Data, contentType, sliceSize) {
         contentType = contentType || '';
@@ -403,7 +403,7 @@
         // Get Product
         getProducts: function() {
             this.loading = true;
-            axios.get('/api/product', options)
+            axios.get('<?= base_url()?>api/product', options)
                 .then(res => {
                     // handle success
                     this.loading = false;
@@ -443,7 +443,7 @@
             // Convert it to a blob to upload
             var blob = b64toBlob(realData, contentType);
             formData.append('productImage', blob);
-            axios.post(`/api/media/save`, formData, options)
+            axios.post(`<?= base_url()?>api/media/save`, formData, options)
                 .then(res => {
                     // handle success
                     this.loading = false
@@ -471,7 +471,7 @@
         // Delete Product
         deleteMedia: function() {
             this.loading = true;
-            axios.delete(`/api/media/delete/${this.mediaID}`, options)
+            axios.delete(`<?= base_url()?>api/media/delete/${this.mediaID}`, options)
                 .then(res => {
                     // handle success
                     this.loading = false
@@ -500,7 +500,7 @@
         // Save Product
         saveProduct: function() {
             this.loading = true;
-            axios.post(`/api/product/save`, {
+            axios.post(`<?= base_url()?>api/product/save`, {
                     product_name: this.productName,
                     product_price: this.productPrice,
                     product_description: this.productDescription,
@@ -573,7 +573,7 @@
         //Update Product
         updateProduct: function() {
             this.loading = true;
-            axios.put(`/api/product/update/${this.productIdEdit}`, {
+            axios.put(`<?= base_url()?>api/product/update/${this.productIdEdit}`, {
                     product_name: this.productNameEdit,
                     product_price: this.productPriceEdit,
                     product_description: this.productDescriptionEdit,
@@ -618,7 +618,7 @@
         // Delete Product
         deleteProduct: function() {
             this.loading = true;
-            axios.delete(`/api/product/delete/${this.productIdDelete}`, options)
+            axios.delete(`<?= base_url()?>api/product/delete/${this.productIdDelete}`, options)
                 .then(res => {
                     // handle success
                     this.loading = false;
@@ -651,7 +651,7 @@
             this.loading = true;
             this.productIdEdit = product.product_id;
             this.product_price = product.product_price;
-            axios.put(`/api/product/setprice/${this.productIdEdit}`, {
+            axios.put(`<?= base_url()?>api/product/setprice/${this.productIdEdit}`, {
                     product_price: this.product_price,
                 }, options)
                 .then(res => {
@@ -681,7 +681,7 @@
             this.loading = true;
             this.productIdEdit = product.product_id;
             this.stock = product.stock;
-            axios.put(`/api/product/setstock/${this.productIdEdit}`, {
+            axios.put(`<?= base_url()?>api/product/setstock/${this.productIdEdit}`, {
                     stock: this.stock,
                 }, options)
                 .then(res => {
@@ -711,7 +711,7 @@
             this.loading = true;
             this.productIdEdit = product.product_id;
             this.active = product.active;
-            axios.put(`/api/product/setactive/${this.productIdEdit}`, {
+            axios.put(`<?= base_url()?>api/product/setactive/${this.productIdEdit}`, {
                     active: this.active,
                 }, options)
                 .then(res => {

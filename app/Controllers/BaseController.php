@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controllers;
 
 use CodeIgniter\Controller;
@@ -17,17 +18,14 @@ use Psr\Log\LoggerInterface;
  *     class Home extends BaseController
  *
  * For security be sure to declare any new methods as protected or private.
- *
- * @package CodeIgniter
  */
-class BaseController extends Controller
+abstract class BaseController extends Controller
 {
 	/**
-     * Instance of the main Request object.
-     *
-     * @var CLIRequest|IncomingRequest
-     */
-    protected $request;
+	 * Instance of the main Request object.
+	 *
+	 */
+	protected $request;
 
 	/**
 	 * An array of helpers to be loaded automatically upon
@@ -39,23 +37,25 @@ class BaseController extends Controller
 	protected $helpers = [];
 
 	/**
-	 * Constructor.
+	 * Be sure to declare properties for any property fetch you initialized.
+	 * The creation of dynamic property is deprecated in PHP 8.2.
 	 */
-
 	protected $session;
 
+	/**
+	 * Constructor.
+	 */
 	public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
 	{
 		// Do Not Edit This Line
 		parent::initController($request, $response, $logger);
-		
-		//--------------------------------------------------------------------
+
 		// Preload any models, libraries, etc, here.
-		//--------------------------------------------------------------------
+
+        // E.g.: $this->session = \Config\Services::session();
 		$config = config("App");
 		$this->session = \Config\Services::session();
 		$language = \Config\Services::language();
 		$language->setLocale($this->session->lang ?? $config->defaultLocale);
 	}
-
 }

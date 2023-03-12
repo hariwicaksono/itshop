@@ -1,12 +1,12 @@
 <?php $this->extend("layouts/app-admin"); ?>
 <?php $this->section("content"); ?>
-<h1 class="mb-2 font-weight-regular"><?= lang('App.shipment') ?></h1>
+<h1 class="mb-3 font-weight-medium"><?= lang('App.shipment') ?></h1>
 <template>
     <!-- Table List -->
     <v-card outlined elevation="1">
         <v-card-title>
             <!-- Button Add New -->
-             <!--<v-btn color="primary" dark @click="modalAddOpen"><?//= lang('App.add') ?></v-btn>-->
+            <!--<v-btn color="primary" dark @click="modalAddOpen"><?//= lang('App.add') ?></v-btn>-->
             <v-spacer></v-spacer>
             <v-text-field v-model="search" append-icon="mdi-magnify" label="<?= lang('App.search') ?>" single-line hide-details>
             </v-text-field>
@@ -29,9 +29,9 @@
                         </v-btn>-->
                     </td>
                 </tr>
-            </template>         
+            </template>
         </v-data-table>
-    </v-card>                     
+    </v-card>
     <!-- End Table List -->
 </template>
 
@@ -55,14 +55,14 @@
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" @click="saveShipment" :loading="loading">
+                    <v-btn large color="primary" @click="saveShipment" :loading="loading">
                         <v-icon>mdi-content-save</v-icon> <?= lang('App.save') ?>
                     </v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
     </v-row>
-</template>     
+</template>
 <!-- End Modal Save -->
 
 <!-- Modal Edit -->
@@ -83,16 +83,16 @@
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" @click="updateShipment" :loading="loading">
+                    <v-btn large color="primary" @click="updateShipment" :loading="loading">
                         <v-icon>mdi-content-save</v-icon> <?= lang('App.save') ?>
                     </v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
     </v-row>
-</template>  
+</template>
 <!-- End Modal Edit -->
-                
+
 <!-- Modal Delete -->
 <!--<template>
     <v-row justify="center">
@@ -108,11 +108,11 @@
             </v-card>
         </v-dialog>
     </v-row>
-</template>-->          
+</template>-->
 <!-- End Modal Delete -->
 <?php $this->endSection("content") ?>
 
-<?php $this->section("js") ?> 
+<?php $this->section("js") ?>
 <script>
     const token = JSON.parse(localStorage.getItem('access_token'));
     const options = {
@@ -168,7 +168,7 @@
         // Get Shipment
         getShipment: function() {
             this.loading = true;
-            axios.get('/api/shipment/all', options)
+            axios.get('<?= base_url()?>api/shipment/all', options)
                 .then(res => {
                     // handle success
                     this.loading = false;
@@ -195,7 +195,7 @@
         // Save
         saveShipment: function() {
             this.loading = true;
-            axios.post(`/api/shipment/save`, {
+            axios.post(`<?= base_url()?>api/shipment/save`, {
                     shipment: this.shipment,
                 }, options)
                 .then(res => {
@@ -243,7 +243,7 @@
         //Update
         updateShipment: function() {
             this.loading = true;
-            axios.put(`/api/shipment/update/${this.shipmentId}`, {
+            axios.put(`<?= base_url()?>api/shipment/update/${this.shipmentId}`, {
                     shipment: this.shipmentEdit,
                 }, options)
                 .then(res => {
@@ -285,7 +285,7 @@
         // Delete
         deleteShipment: function() {
             this.loading = true;
-            axios.delete(`/api/shipment/delete/${this.shipmentId}`, options)
+            axios.delete(`<?= base_url()?>api/shipment/delete/${this.shipmentId}`, options)
                 .then(res => {
                     // handle success
                     this.loading = false;
@@ -318,7 +318,7 @@
             this.loading = true;
             this.shipmentId = item.shipment_id;
             this.active = item.active;
-            axios.put(`/api/shipment/setactive/${this.shipmentId}`, {
+            axios.put(`<?= base_url()?>api/shipment/setactive/${this.shipmentId}`, {
                     active: this.active,
                 }, options)
                 .then(res => {

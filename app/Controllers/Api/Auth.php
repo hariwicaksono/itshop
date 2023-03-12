@@ -76,14 +76,13 @@ class Auth extends BaseControllerApi
     public function login()
     {
         $rules = [
-            'email' => 'required|min_length[6]|max_length[50]|valid_email',
+            'email' => 'required|min_length[6]|max_length[50]|valid_email|validateUser[email,password]',
             'password' => 'required|min_length[8]|max_length[255]|validateUser[email, password]'
         ];
 
         $errors = [
-            'password' => [
-                'validateUser' => lang('App.invalid')
-            ]
+            'email' => ['validateUser' => lang('App.errorLogin')],
+            'password' => ['validateUser' => lang('App.errorPassword')]
         ];
 
         $input = $this->getRequestInput();
@@ -92,7 +91,8 @@ class Auth extends BaseControllerApi
             return $this->getResponse(
                 [
                     'status' => false,
-                    'message' => $this->validator->getErrors()
+                    'message' => lang('App.invalid'),
+                    'data' => $this->validator->getErrors()
                 ],
                 ResponseInterface::HTTP_OK
             );
@@ -231,6 +231,8 @@ class Auth extends BaseControllerApi
             ];
 
             $this->session->set($setSession);
+			
+			setcookie("access_token", getSignedJWTForUser($emailAddress), time()+7200, "/", "", false, true);
 
             return $this->getResponse(
                 [

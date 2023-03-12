@@ -1,10 +1,9 @@
 <?php $this->extend("layouts/app-member"); ?>
 <?php $this->section("content"); ?>
-<h1 class="mb-2 font-weight-regular"><?= lang('App.orderList') ?></h1>
-
 <template>
+    <h1 class="mb-3 font-weight-medium"><?= lang('App.orderList') ?></h1>
     <v-card>
-        <v-tabs color="orange accent-3">
+        <v-tabs color="primary">
             <v-tab>All</v-tab>
             <v-tab @click="getOrderPending">Pending</v-tab>
             <v-tab @click="getOrderDelivered">Delivered</v-tab>
@@ -158,7 +157,7 @@
             </v-card>
         </v-dialog>
     </v-row>
-</template>              
+</template>
 <!-- End Modal -->
 
 <!-- Modal Save -->
@@ -192,12 +191,12 @@
             </v-card>
         </v-dialog>
     </v-row>
-</template>     
+</template>
 <!-- End Modal Save -->
 
 <?php $this->endSection("content") ?>
 
-<?php $this->section("js") ?> 
+<?php $this->section("js") ?>
 <script>
     const token = JSON.parse(localStorage.getItem('access_token'));
     const options = {
@@ -233,7 +232,7 @@
         // Get Order
         getOrders: function() {
             this.loader = true;
-            axios.get('/api/order/user/<?= session()->get('id'); ?>', options)
+            axios.get('<?= base_url() ?>api/order/user/<?= session()->get('id'); ?>', options)
                 .then(res => {
                     // handle success
                     this.loader = false;
@@ -260,7 +259,7 @@
         },
         getOrderPending: function() {
             this.loader = true;
-            axios.get('/api/order/pending/<?= session()->get('id'); ?>', options)
+            axios.get('<?= base_url() ?>api/order/pending/<?= session()->get('id'); ?>', options)
                 .then(res => {
                     // handle success
                     this.loader = false;
@@ -286,7 +285,7 @@
         },
         getOrderDelivered: function() {
             this.loader = true;
-            axios.get('/api/order/delivered/<?= session()->get('id'); ?>', options)
+            axios.get('<?= base_url() ?>api/order/delivered/<?= session()->get('id'); ?>', options)
                 .then(res => {
                     // handle success
                     this.loader = false;
@@ -312,7 +311,7 @@
         },
         getOrderCanceled: function() {
             this.loader = true;
-            axios.get('/api/order/canceled/<?= session()->get('id'); ?>', options)
+            axios.get('<?= base_url() ?>api/order/canceled/<?= session()->get('id'); ?>', options)
                 .then(res => {
                     // handle success
                     this.loader = false;
@@ -350,7 +349,7 @@
         //Get Item Order
         getItemOrder: function() {
             this.show = true;
-            axios.get(`/api/cart/order/${this.idOrder}`, options)
+            axios.get(`<?= base_url() ?>api/cart/order/${this.idOrder}`, options)
                 .then(res => {
                     // handle success
                     this.loading3 = false;
@@ -387,7 +386,7 @@
         // Save
         saveConfirm: function() {
             this.loading2 = true;
-            axios.post(`/api/payment/confirm`, {
+            axios.post(`<?= base_url() ?>api/payment/confirm`, {
                     order_id: this.idOrder,
                     payment_id: this.idPayment,
                     bank: this.bank,
@@ -410,12 +409,12 @@
                         this.modalAdd = false;
                         this.getOrders();
                         this.order_id = "",
-                        this.payment_id = "",
-                        this.bank = "",
-                        this.nama = "",
-                        this.norekening = "",
-                        this.nominal = "",
-                        this.$refs.form.resetValidation();
+                            this.payment_id = "",
+                            this.bank = "",
+                            this.nama = "",
+                            this.norekening = "",
+                            this.nominal = "",
+                            this.$refs.form.resetValidation();
                     } else {
                         this.modalAdd = true;
                         this.snackbar = true;

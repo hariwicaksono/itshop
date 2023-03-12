@@ -1,31 +1,33 @@
 <?php $this->extend("layouts/app-member"); ?>
 <?php $this->section("content"); ?>
-<h1 class="mb-2 font-weight-regular"><?= lang('App.profile') ?></h1>
-<v-card>
-    <v-card-text>
-        <v-form ref="form" v-model="valid">
-            <v-text-field label="<?= lang('App.email') ?> *" v-model="email" :rules="[rules.required]" disabled outlined></v-text-field>
-            <v-text-field label="<?= lang('App.username') ?> *" v-model="username" :rules="[rules.required]" outlined></v-text-field>
-            <v-text-field label="<?= lang('App.namalengkap') ?> *" v-model="namaLengkap" :rules="[rules.required]" outlined></v-text-field>
-            <v-text-field label="<?= lang('App.alamat') ?> *" v-model="alamat" :rules="[rules.required]" outlined></v-text-field>
-            <v-row>
-                <v-col>
-                    <v-select label="<?= lang('App.provinsi') ?> *" v-model="select_provinsi" :items="list_provinsi" item-text="provinsi" item-value="provinsi_id" :eager="true" :loading="loading2" outlined></v-select>
-                </v-col>
-                <v-col>
-                    <v-select label="<?= lang('App.kabupaten') ?> *" v-model="select_kabupaten" :items="list_kabupaten" item-text="nama_kabupaten" item-value="kabupaten_id" :eager="true" :loading="loading2" outlined></v-select>
-                </v-col>
-            </v-row>
-            <v-text-field label="<?= lang('App.kodepos') ?> *" v-model="kodepos" :rules="[rules.required]" outlined></v-text-field>
-        </v-form>
-        <v-btn color="primary" @click="updateProfile" :loading="loading3">
-            <v-icon>mdi-content-save</v-icon> <?= lang('App.save') ?>
-        </v-btn>
-    </v-card-text>
-</v-card>
+<template>
+    <h1 class="mb-3 font-weight-medium"><?= lang('App.myProfile') ?></h1>
+    <v-card>
+        <v-card-text>
+            <v-form ref="form" v-model="valid">
+                <v-text-field label="Email *" v-model="email" :rules="[rules.required]" disabled outlined></v-text-field>
+                <v-text-field label="Username *" v-model="username" :rules="[rules.required]" outlined></v-text-field>
+                <v-text-field label="Nama Lengkap *" v-model="namaLengkap" :rules="[rules.required]" outlined></v-text-field>
+                <v-text-field label="Alamat *" v-model="alamat" :rules="[rules.required]" outlined></v-text-field>
+                <v-row>
+                    <v-col>
+                        <v-select label="Provinsi *" v-model="select_provinsi" :items="list_provinsi" item-text="provinsi" item-value="provinsi_id" :eager="true" :loading="loading2" outlined></v-select>
+                    </v-col>
+                    <v-col>
+                        <v-select label="Kabupaten *" v-model="select_kabupaten" :items="list_kabupaten" item-text="nama_kabupaten" item-value="kabupaten_id" :eager="true" :loading="loading2" outlined></v-select>
+                    </v-col>
+                </v-row>
+                <v-text-field label="Kodepos *" v-model="kodepos" :rules="[rules.required]" outlined></v-text-field>
+            </v-form>
+            <v-btn color="primary" @click="updateProfile" :loading="loading3">
+                <v-icon>mdi-content-save</v-icon> <?= lang('App.save') ?>
+            </v-btn>
+        </v-card-text>
+    </v-card>
+</template>
 <?php $this->endSection("content") ?>
 
-<?php $this->section("js") ?> 
+<?php $this->section("js") ?>
 <script>
     const token = JSON.parse(localStorage.getItem('access_token'));
     const options = {
@@ -70,7 +72,7 @@
         // Get
         getProfile: function() {
             this.loading = true;
-            axios.get(`/api/user/<?= session()->get('id'); ?>`, options)
+            axios.get(`<?= base_url() ?>api/user/<?= session()->get('id'); ?>`, options)
                 .then(res => {
                     // handle success
                     this.loading = false;
@@ -106,7 +108,7 @@
         },
         getProvinsi: function() {
             this.loading2 = true;
-            axios.get(`/api/provinsi`, options)
+            axios.get(`<?= base_url() ?>api/provinsi`, options)
                 .then(res => {
                     // handle success
                     var data = res.data;
@@ -120,7 +122,7 @@
         },
         getKabupaten: function() {
             this.loading2 = true;
-            axios.get(`/api/kabupaten/get?provinsi=${this.select_provinsi}`, options)
+            axios.get(`<?= base_url() ?>api/kabupaten/get?provinsi=${this.select_provinsi}`, options)
                 .then(res => {
                     // handle success
                     var data = res.data;
@@ -135,7 +137,7 @@
         //Update
         updateProfile: function() {
             this.loading3 = true;
-            axios.put(`/api/user/update/${this.userId}`, {
+            axios.put(`<?= base_url() ?>api/user/update/${this.userId}`, {
                     username: this.username,
                     nama_lengkap: this.namaLengkap,
                     alamat: this.alamat,

@@ -15,6 +15,12 @@
  */
 defined('APP_NAMESPACE') || define('APP_NAMESPACE', 'App');
 
+// Custom
+$version = 'v'.'1.0.0';
+defined('COMPANY_NAME') || define('COMPANY_NAME', 'PT GLOBAL ITSHOP PURWOKERTO');
+defined('APP_NAME') || define('APP_NAME', 'CI4VUE.JS');
+defined('APP_VERSION') || define('APP_VERSION', $version);
+
 /*
  | --------------------------------------------------------------------------
  | Composer Path
@@ -38,9 +44,9 @@ defined('MINUTE') || define('MINUTE', 60);
 defined('HOUR')   || define('HOUR', 3600);
 defined('DAY')    || define('DAY', 86400);
 defined('WEEK')   || define('WEEK', 604800);
-defined('MONTH')  || define('MONTH', 2592000);
-defined('YEAR')   || define('YEAR', 31536000);
-defined('DECADE') || define('DECADE', 315360000);
+defined('MONTH')  || define('MONTH', 2_592_000);
+defined('YEAR')   || define('YEAR', 31_536_000);
+defined('DECADE') || define('DECADE', 315_360_000);
 
 /*
  | --------------------------------------------------------------------------
@@ -77,3 +83,28 @@ defined('EXIT_USER_INPUT')     || define('EXIT_USER_INPUT', 7); // invalid user 
 defined('EXIT_DATABASE')       || define('EXIT_DATABASE', 8); // database error
 defined('EXIT__AUTO_MIN')      || define('EXIT__AUTO_MIN', 9); // lowest automatically-assigned error code
 defined('EXIT__AUTO_MAX')      || define('EXIT__AUTO_MAX', 125); // highest automatically-assigned error code
+
+/**
+ * @deprecated Use \CodeIgniter\Events\Events::PRIORITY_LOW instead.
+ */
+define('EVENT_PRIORITY_LOW', 200);
+
+/**
+ * @deprecated Use \CodeIgniter\Events\Events::PRIORITY_NORMAL instead.
+ */
+define('EVENT_PRIORITY_NORMAL', 100);
+
+/**
+ * @deprecated Use \CodeIgniter\Events\Events::PRIORITY_HIGH instead.
+ */
+define('EVENT_PRIORITY_HIGH', 10);
+
+/*
+ | --------------------------------------------------------------------------
+ | BASE_URL
+ | Dynamic base url on Codeigniter 4
+ | --------------------------------------------------------------------------
+ */
+$server_name = !empty($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost:8080';
+$base_url = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ? 'https://'.$server_name.str_replace(basename($_SERVER['SCRIPT_NAME']),"",$_SERVER['SCRIPT_NAME']) : 'http://'.$server_name.str_replace(basename($_SERVER['SCRIPT_NAME']),"",$_SERVER['SCRIPT_NAME']);
+defined('BASE_URL') || define('BASE_URL', $base_url);
