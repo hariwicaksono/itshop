@@ -11,6 +11,17 @@ class Product extends BaseControllerApi
     protected $format       = 'json';
     protected $modelName    = ProductModel::class;
 
+    /**
+     * Update the provided string to a slug-safe format.
+     *
+     * @param string $string
+     * @return string
+     */
+    function slugify($string)
+    {
+        return strtolower(trim(preg_replace('~[^0-9a-z]+~i', '-', html_entity_decode(preg_replace('~&([a-z]{1,2})(?:acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml);~i', '$1',htmlentities(preg_replace('/[&]/', ' and ', $string), ENT_QUOTES, 'UTF-8')), ENT_QUOTES, 'UTF-8')), '-'));
+    }
+
     public function index()
     {
         return $this->respond(["status" => true, "message" => lang('App.getSuccess'), "data" => $this->model->getProduct()], 200);
@@ -43,19 +54,23 @@ class Product extends BaseControllerApi
             $data = [
                 'product_name' => $json->product_name,
                 'product_price' => $json->product_price,
-                'product_description' => $json->product_description,
+                'product_description' => nl2br($json->product_description),
                 'product_image' => $json->product_image,
                 'stock' => 0,
-                'active' => 1
+                'active' => 1,
+                'user_id' => session()->get('id'),
+                'slug' => $this->slugify($json->product_name)
             ];
         } else {
             $data = [
                 'product_name' => $this->request->getPost('product_name'),
                 'product_price' => $this->request->getPost('product_price'),
-                'product_description' => $this->request->getPost('product_description'),
+                'product_description' => nl2br($this->request->getPost('product_description')),
                 'product_image' => $this->request->getPost('product_image'),
                 'stock' => 0,
-                'active' => 1
+                'active' => 1,
+                'user_id' => session()->get('id'),
+                'slug' => $this->slugify($this->request->getPost('product_name'))
             ];
         }
 
@@ -99,11 +114,17 @@ class Product extends BaseControllerApi
             $data = [
                 'product_name' => $json->product_name,
                 'product_price' => $json->product_price,
-                'product_description' => $json->product_description,
+                'product_description' => nl2br($json->product_description),
                 'product_image' => $json->product_image
             ];
         } else {
-            $data = $this->request->getRawInput();
+            $input = $this->request->getRawInput();
+            $data = [
+                'product_name' => $input['product_name'],
+                'product_price' => $input['product_price'],
+                'product_description' => nl2br($input['product_description']),
+                'product_image' => $input['product_image']
+            ];
         }
 
         if (!$this->validate($rules)) {

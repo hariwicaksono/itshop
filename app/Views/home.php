@@ -29,9 +29,9 @@
             <v-col v-masonry-tile class="item" v-for="item in products" :key="item.product_id" cols="12" md="4">
                 <v-card min-height="150">
                     <v-img v-bind:src="'<?= base_url(); ?>' + item.media_path" height="380px"></v-img>
-                    <v-card-title class="subtitle-1"><a link :href="'<?= base_url('product/'); ?>' + item.slug" class="font-weight-regular text-decoration-none" title="" alt="">{{ item.product_name }}</a></v-card-title>
+                    <v-card-title class="subtitle-1"><a link :href="'<?= base_url('source-code/'); ?>' + item.slug" class="font-weight-regular text-decoration-none" title="" alt="">{{ item.product_name }}</a></v-card-title>
                     <v-card-subtitle class="text-h6 black--text font-weight-bold">
-                        Rp.{{ item.product_price }}
+                        {{ RibuanLocale(item.product_price) }}
                         <v-btn class="float-end" color="primary" @click="saveCart(item)" elevation="1">
                             <v-icon>mdi-cart</v-icon> Buy
                         </v-btn>

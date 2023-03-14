@@ -6,6 +6,9 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
     <title>Dashboard | <?= env('appName'); ?></title>
+    <meta name="theme-color" content="#FFFFFF" />
+    <link rel="apple-touch-icon" href="<?= base_url('images/logo.png') ?>">
+    <link rel="shortcut icon" href="<?= base_url('images/logo.png') ?>">
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
     <link href="<?= base_url('assets/css/materialdesignicons.min.css')?>" rel="stylesheet">
     <link href="<?= base_url('assets/css/vuetify.min.css')?>" rel="stylesheet">
@@ -16,7 +19,7 @@
     <!-- ========================= preloader start ========================= -->
     <div class="preloader">
         <div class="loader">
-            <div class="loader-logo"><img src="<?= base_url('images/Logo.jpg') ?>" alt="Preloader" width="64"></div>
+            <div class="loader-logo"><img src="<?= base_url('images/logo.png') ?>" alt="Preloader" width="64"></div>
             <div class="spinner">
                 <div class="spinner-container">
                     <div class="spinner-rotator">
@@ -35,15 +38,15 @@
     <div id="app">
         <v-app>
 
-            <v-app-bar app color="primary" dark>
+            <v-app-bar app color="indigo" dark>
                 <v-app-bar-nav-icon @click.stop="sidebarMenu = !sidebarMenu"></v-app-bar-nav-icon>
-                <v-toolbar-title>App Dashboard</v-toolbar-title>
+                <v-toolbar-title>Dashboard</v-toolbar-title>
                 <v-spacer></v-spacer>
                 <?php if (!empty(session()->get('username'))) : ?>
                     <v-menu offset-y>
                         <template v-slot:activator="{ on, attrs }">
                             <v-btn text class="mr-3" v-bind="attrs" v-on="on">
-                                <?= session()->get('username') ?> <v-icon>mdi-chevron-down</v-icon>
+                            <v-icon>mdi-account-circle</v-icon>&nbsp;<span class="d-none d-sm-flex d-md-flex d-lg-flex d-xl-flex"><?= session()->get('email') ?></span> <v-icon>mdi-chevron-down</v-icon>
                             </v-btn>
                         </template>
 
@@ -89,7 +92,7 @@
             </v-app-bar>
 
             <v-navigation-drawer class="elevation-3" v-model="sidebarMenu" app floating :permanent="sidebarMenu" :mini-variant.sync="mini" v-if="!isMobile">
-                <v-list color="primary" dark dense elevation="1">
+                <v-list color="indigo" dark dense elevation="1">
                     <v-list-item>
                         <v-list-item-action>
                             <v-icon @click.stop="toggleMini = !toggleMini">mdi-chevron-left</v-icon>
@@ -126,7 +129,7 @@
 
                         <v-list-item link href="<?= base_url('admin/product'); ?>" <?php if($uri->getSegment(2)=="product"){echo 'class="v-item--active v-list-item--active"';}?> >
                             <v-list-item-icon>
-                                <v-icon>mdi-package</v-icon>
+                                <v-icon>mdi-package-variant-closed</v-icon>
                             </v-list-item-icon>
                             <v-list-item-content>
                                 <v-list-item-title><?= lang('App.product') ?></v-list-item-title>

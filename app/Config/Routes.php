@@ -36,7 +36,7 @@ $routes->setAutoRoute(false);
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
 $routes->get('/', 'Home::index');
-$routes->get('/product/(:segment)', 'Home::show/$1');
+$routes->get('/source-code/(:segment)', 'Home::show/$1');
 $routes->get('/lang/{locale}', 'Home::setLanguage');
 $routes->get('/login', 'Auth::login');
 $routes->get('/register', 'Auth::register');
@@ -151,6 +151,7 @@ $routes->group('openapi', ['namespace' => $routes->getDefaultNamespace() . 'Api'
 	$routes->get('product/all', 'Product::allProduct');
 	$routes->get('product/(:segment)', 'Product::show/$1');
 	$routes->get('cart/count', 'Cart::countUserCart');
+	$routes->get('shipment', 'Shipment::index');
 });
 
 /**

@@ -10,14 +10,14 @@
     <?php if ($uri->getSegment(1) == "") { ?>
         <title>PT GLOBAL ITSHOP PURWOKERTO - DIGITAL STORE - <?= env('appName'); ?></title>
         <meta name="description" content="Toko Online PT GLOBAL ITSHOP PURWOKERTO - <?= env('appName'); ?>">
-    <?php } else if ($uri->getSegment(1) == "product") { ?>
+    <?php } else if ($uri->getSegment(1) != "") { ?>
         <title>Source Code <?= $title ?? ""; ?> - PT GLOBAL ITSHOP PURWOKERTO</title>
         <meta name="description" content="Source Code <?= $title ?? ""; ?> produk dari PT GLOBAL ITSHOP PURWOKERTO - <?= env('appName'); ?>">
     <?php } else { ?>
         <title>PT GLOBAL ITSHOP PURWOKERTO - DIGITAL STORE - <?= env('appName'); ?></title>
         <meta name="description" content="Toko Online PT GLOBAL ITSHOP PURWOKERTO - <?= env('appName'); ?>">
     <?php } ?>
-  
+
     <meta name="theme-color" content="#FFFFFF" />
     <link rel="apple-touch-icon" href="<?= base_url('images/logo.png') ?>">
     <link rel="shortcut icon" href="<?= base_url('images/logo.png') ?>">
@@ -70,7 +70,7 @@
                     <v-menu offset-y>
                         <template v-slot:activator="{ on, attrs }">
                             <v-btn text class="mr-3" v-bind="attrs" v-on="on">
-                                <?= session()->get('username') ?> <v-icon>mdi-chevron-down</v-icon>
+                                <v-icon>mdi-account-circle</v-icon>&nbsp;<span class="d-none d-sm-flex d-md-flex d-lg-flex d-xl-flex"><?= session()->get('email') ?></span> <v-icon>mdi-chevron-down</v-icon>
                             </v-btn>
                         </template>
 
@@ -312,7 +312,37 @@
                         // handle error
                         console.log(err.response);
                     })
-            }
+            },
+
+            // Format Ribuan Rupiah versi 1
+            RibuanLocale(key) {
+                const rupiah = 'Rp ' + Number(key).toLocaleString('id-ID');
+                return rupiah
+            },
+            RibuanLocaleNoRp(key) {
+                const rupiah = Number(key).toLocaleString('id-ID');
+                return rupiah
+            },
+
+            // Format Ribuan Rupiah versi 2
+            Ribuan(key) {
+                // versi 1
+                /* var number_string = key.toString(),
+                    sisa = number_string.length % 3,
+                    rupiah = number_string.substr(0, sisa),
+                    ribuan = number_string.substr(sisa).match(/\d{3}/g);
+
+                if (ribuan) {
+                    separator = sisa ? '.' : '';
+                    rupiah += separator + ribuan.join('.');
+                } */
+
+                const format = key.toString().split('').reverse().join('');
+                const convert = format.match(/\d{1,3}/g);
+                const rupiah = 'Rp ' + convert.join('.').split('').reverse().join('');
+                return rupiah;
+            },
+
         }
         Vue.component('paginate', VuejsPaginate)
         var VueMasonryPlugin = window["vue-masonry-plugin"].VueMasonryPlugin;

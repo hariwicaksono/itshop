@@ -192,11 +192,9 @@
 }
 
 .v-data-table>.v-data-table__wrapper>table>thead>tr>th {
-  font-weight: normal;
-  font-size: 18px;
+  font-size: 14px;
 }
 
 .v-data-table>.v-data-table__wrapper>table>tbody>tr>td {
-  font-weight: normal;
-  font-size: 16px;
+  font-size: 14px;
 }

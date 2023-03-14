@@ -93,6 +93,7 @@ return [
     'orderList' => 'Order List',
     'buy' => 'Buy',
     'cart' => 'Your Cart',
+    'carts' => 'Cart',
     'checkout' => 'Payment Checkout',
     'note' => 'Write a Note',
     'yourNote' => 'Your Note',

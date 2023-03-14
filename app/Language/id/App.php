@@ -94,6 +94,7 @@ return [
     'orderList' => 'Daftar Pesanan',
     'buy' => 'Beli',
     'cart' => 'Keranjang Anda',
+    'carts' => 'Keranjang',
     'checkout' => 'Checkout Pembayaran',
     'note' => 'Tulis Catatan',
     'yourNote' => 'Catatan Anda',

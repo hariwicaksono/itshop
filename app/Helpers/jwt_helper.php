@@ -1,4 +1,10 @@
 <?php
+/*
+PT. GLOBAL ITSHOP PURWOKERTO
+Toko Online: ITShop Purwokerto (Tokopedia, Shopee, Bukalapak, Blibli)
+Dibuat oleh: Hari Wicaksono, S.Kom
+06-2022
+*/
 
 use App\Models\UserModel;
 use Firebase\JWT\JWT;

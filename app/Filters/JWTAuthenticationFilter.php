@@ -1,6 +1,12 @@
 <?php
 
 namespace App\Filters;
+/*
+PT. GLOBAL ITSHOP PURWOKERTO
+Toko Online: ITShop Purwokerto (Tokopedia, Shopee, Bukalapak, Blibli)
+Dibuat oleh: Hari Wicaksono, S.Kom
+02-2023
+*/
 
 use CodeIgniter\API\ResponseTrait;
 use CodeIgniter\Filters\FilterInterface;
