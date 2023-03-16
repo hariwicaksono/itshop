@@ -5,6 +5,8 @@ namespace App\Controllers\Api;
 use App\Controllers\BaseControllerApi;
 use App\Models\ProductModel;
 use App\Models\MediaModel;
+use Ramsey\Uuid\Uuid;
+use ShortUUID\ShortUUID;
 
 class Product extends BaseControllerApi
 {
@@ -34,6 +36,9 @@ class Product extends BaseControllerApi
 
     public function create()
     {
+        $uuid = Uuid::uuid4();
+		$suuid = new ShortUUID();
+
         $rules = [
             'product_name' => [
                 'rules'  => 'required',
@@ -52,10 +57,15 @@ class Product extends BaseControllerApi
         if ($this->request->getJSON()) {
             $json = $this->request->getJSON();
             $data = [
+                'product_uuid' => $suuid->encode($uuid),
                 'product_name' => $json->product_name,
                 'product_price' => $json->product_price,
                 'product_description' => nl2br($json->product_description),
                 'product_image' => $json->product_image,
+                'product_image1' => $json->product_image1,
+                'product_image2' => $json->product_image2,
+                'product_image3' => $json->product_image3,
+                'product_image4' => $json->product_image4,
                 'stock' => 0,
                 'active' => 1,
                 'user_id' => session()->get('id'),
@@ -63,10 +73,15 @@ class Product extends BaseControllerApi
             ];
         } else {
             $data = [
+                'product_uuid' => $suuid->encode($uuid),
                 'product_name' => $this->request->getPost('product_name'),
                 'product_price' => $this->request->getPost('product_price'),
-                'product_description' => nl2br($this->request->getPost('product_description')),
+                'product_description' => nl2br($this->request->getPost('product_description') ?? ""),
                 'product_image' => $this->request->getPost('product_image'),
+                'product_image1' => $this->request->getPost('product_image1'),
+                'product_image2' => $this->request->getPost('product_image2'),
+                'product_image3' => $this->request->getPost('product_image3'),
+                'product_image4' => $this->request->getPost('product_image4'),
                 'stock' => 0,
                 'active' => 1,
                 'user_id' => session()->get('id'),
@@ -115,7 +130,12 @@ class Product extends BaseControllerApi
                 'product_name' => $json->product_name,
                 'product_price' => $json->product_price,
                 'product_description' => nl2br($json->product_description),
-                'product_image' => $json->product_image
+                'product_image' => $json->product_image,
+                'product_image1' => $json->product_image1,
+                'product_image2' => $json->product_image2,
+                'product_image3' => $json->product_image3,
+                'product_image4' => $json->product_image4,
+                'slug' => $this->slugify($json->product_name)
             ];
         } else {
             $input = $this->request->getRawInput();
@@ -123,7 +143,12 @@ class Product extends BaseControllerApi
                 'product_name' => $input['product_name'],
                 'product_price' => $input['product_price'],
                 'product_description' => nl2br($input['product_description']),
-                'product_image' => $input['product_image']
+                'product_image' => $input['product_image'],
+                'product_image1' => $input['product_image1'],
+                'product_image2' => $input['product_image2'],
+                'product_image3' => $input['product_image3'],
+                'product_image4' => $input['product_image4'],
+                'slug' => $this->slugify($input['product_name'])
             ];
         }
 

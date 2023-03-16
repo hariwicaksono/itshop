@@ -29,6 +29,20 @@ $routes->setAutoRoute(false);
 
 /**
  * --------------------------------------------------------------------
+ * HMVC Routing
+ * --------------------------------------------------------------------
+ */
+
+foreach(glob(APPPATH . 'Modules/*', GLOB_ONLYDIR) as $item_dir)
+{
+	if (file_exists($item_dir . '/Config/Routes.php'))
+	{
+		require_once($item_dir . '/Config/Routes.php');
+	}	
+}
+
+/**
+ * --------------------------------------------------------------------
  * Route Definitions
  * --------------------------------------------------------------------
  */
@@ -58,7 +72,6 @@ $routes->group('admin', ['filter' => 'auth'], function ($routes) {
 	$routes->get('product', 'Admin::product');
 	$routes->get('payment', 'Admin::payment');
 	$routes->get('shipment', 'Admin::shipment');
-	$routes->get('setting', 'Admin::setting');
 	$routes->get('export', 'Admin::export');
 	$routes->get('export-tcpdf', 'Admin::exportTcpdf');
 	$routes->get('export-mpdf', 'Admin::exportMpdf');

@@ -73,7 +73,7 @@ class CartModel extends Model
         $this->select("{$this->table}.*, p.product_name, o.no_order, o.total, py.payment_id, py.payment, sh.shipment, u.username, u.email");
         $this->join("orders o", "o.order_id = {$this->table}.order");
         $this->join("product p", "p.product_id = {$this->table}.product_id");
-        $this->join("user u", "u.user_id = {$this->table}.user_id");
+        $this->join("users u", "u.user_id = {$this->table}.user_id");
         $this->join("payment py", "py.payment_id = o.payment");
         $this->join("shipment sh", "sh.shipment_id = o.shipment");
         $this->where("{$this->table}.order", $id);

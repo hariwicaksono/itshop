@@ -1,45 +1,60 @@
 <?php $this->extend("layouts/app-admin"); ?>
 <?php $this->section("content"); ?>
-<v-row>
-    <v-col lg="4" cols="sm" class="pb-2">
-        <v-card elevation="2">
-            <v-row class="no-gutters">
-                <div class="col-auto">
-                    <div class="blue fill-height">&nbsp;</div>
-                </div>
-                <div class="col pa-3 py-4">
-                    <h3 class="text-truncate text-uppercase"><?= lang('App.product') ?></h3>
+<template>
+    <?php if (session()->getFlashdata('success')) { ?>
+        <v-alert text outlined type="success" dense dismissible>
+            <?= session()->getFlashdata('success') ?>
+        </v-alert>
+    <?php } ?>
+    <v-row>
+        <v-col lg="4" cols="sm" class="pb-2">
+            <v-card link href="<?= base_url('nota'); ?>" min-height="130px">
+                <div class="pa-5">
+                    <h2 class="text-h5 font-weight-medium mb-2"><?= lang('App.order'); ?>
+                        <v-icon x-large class="green--text text--lighten-1 float-right">mdi-cart</v-icon>
+                    </h2>
                     <h1 class="text-h3"><?= $jmlProduct; ?></h1>
                 </div>
-            </v-row>
-        </v-card>
-    </v-col>
-    <v-col lg="4" cols="sm" class="pb-2">
-        <v-card elevation="2">
-            <v-row class="no-gutters">
-                <div class="col-auto">
-                    <div class="warning fill-height">&nbsp;</div>
-                </div>
-                <div class="col pa-3 py-4">
-                    <h3 class="text-truncate text-uppercase">User</h3>
-                    <h1 class="text-h3"><?= $jmlUser; ?></h1>
-                </div>
-            </v-row>
-    </v-col>
-    <v-col lg="4" cols="sm" class="pb-2">
-        <v-card elevation="2">
-            <v-row class="no-gutters">
-                <div class="col-auto">
-                    <div class="green fill-height">&nbsp;</div>
-                </div>
-                <div class="col pa-3 py-4">
-                    <h3 class="text-truncate text-uppercase"><?= lang('App.order'); ?></h3>
-                    <h1 class="text-h3"><?= $jmlOrder; ?></h1>
-                </div>
-            </v-row>
-        </v-card>
-    </v-col>
-</v-row>
+            </v-card>
+            <v-card elevation="2">
+                <v-row class="no-gutters">
+                    <div class="col-auto">
+                        <div class="blue fill-height">&nbsp;</div>
+                    </div>
+                    <div class="col pa-3 py-4">
+                        <h3 class="text-truncate text-uppercase"><?= lang('App.product') ?></h3>
+                        <h1 class="text-h3"><?= $jmlProduct; ?></h1>
+                    </div>
+                </v-row>
+            </v-card>
+        </v-col>
+        <v-col lg="4" cols="sm" class="pb-2">
+            <v-card elevation="2">
+                <v-row class="no-gutters">
+                    <div class="col-auto">
+                        <div class="warning fill-height">&nbsp;</div>
+                    </div>
+                    <div class="col pa-3 py-4">
+                        <h3 class="text-truncate text-uppercase">User</h3>
+                        <h1 class="text-h3"><?= $jmlUser; ?></h1>
+                    </div>
+                </v-row>
+        </v-col>
+        <v-col lg="4" cols="sm" class="pb-2">
+            <v-card elevation="2">
+                <v-row class="no-gutters">
+                    <div class="col-auto">
+                        <div class="green fill-height">&nbsp;</div>
+                    </div>
+                    <div class="col pa-3 py-4">
+                        <h3 class="text-truncate text-uppercase"><?= lang('App.order'); ?></h3>
+                        <h1 class="text-h3"><?= $jmlOrder; ?></h1>
+                    </div>
+                </v-row>
+            </v-card>
+        </v-col>
+    </v-row>
+</template>
 
 <template>
     <v-card class="mx-auto text-center mt-5" elevation="1">
@@ -48,7 +63,7 @@
         </v-card-title>
         <v-sparkline :value="sparklineData" :labels="sparklineLabel" padding="18" label-size="4" color="cyan" :gradient="['#007bff','cyan']" :line-width="2" :stroke-linecap="'round'">
         </v-sparkline>
-        
+
     </v-card>
 </template>
 
@@ -104,36 +119,36 @@
     methodsVue = {
         ...methodsVue,
         getChart1: function() {
-                this.show = true;
-                axios.get(`<?= base_url()?>api/chart1`, options)
-                    .then(res => {
-                        // handle success
-                        var data = res.data;
-                        if (data.expired == true) {
-                            this.snackbar = true;
-                            this.snackbarMessage = data.message;
-                            setTimeout(() => window.location.href = data.data.url, 1000);
-                        }
-                        if (data.status == true) {
-                            var datas = data.data;
-                            this.sparklineLabel = datas.map(x => (x.tahun));
-                            this.sparklineData = datas.map(x => (parseInt(x.jumlah)));
-                            console.log(this.sparklineLabel)
-                            console.log(this.sparklineData)
-                        } else {
-                            this.snackbar = true;
-                            this.snackbarMessage = data.message;
-                        }
-                    })
-                    .catch(err => {
-                        // handle error
-                        console.log(err.response);
-                    })
-            },
+            this.show = true;
+            axios.get(`<?= base_url() ?>api/chart1`, options)
+                .then(res => {
+                    // handle success
+                    var data = res.data;
+                    if (data.expired == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = data.message;
+                        setTimeout(() => window.location.href = data.data.url, 1000);
+                    }
+                    if (data.status == true) {
+                        var datas = data.data;
+                        this.sparklineLabel = datas.map(x => (x.tahun));
+                        this.sparklineData = datas.map(x => (parseInt(x.jumlah)));
+                        console.log(this.sparklineLabel)
+                        console.log(this.sparklineData)
+                    } else {
+                        this.snackbar = true;
+                        this.snackbarMessage = data.message;
+                    }
+                })
+                .catch(err => {
+                    // handle error
+                    console.log(err.response);
+                })
+        },
         // Get Product
         getProducts: function() {
             this.show = true;
-            axios.get(`<?= base_url()?>api/product/all?page=${this.currentPage}`, options)
+            axios.get(`<?= base_url() ?>api/product/all?page=${this.currentPage}`, options)
                 .then(res => {
                     // handle success
                     var data = res.data;
@@ -160,7 +175,7 @@
         },
         handlePagination: function(pageNumber) {
             this.show = true;
-            axios.get(`<?= base_url()?>api/product/all?page=${pageNumber}`, options)
+            axios.get(`<?= base_url() ?>api/product/all?page=${pageNumber}`, options)
                 .then((res) => {
                     var data = res.data;
                     this.products = data.data;

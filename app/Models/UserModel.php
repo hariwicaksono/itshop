@@ -8,7 +8,7 @@ use Exception;
 class UserModel extends Model
 {
     protected $DBGroup              = 'default';
-    protected $table                = 'user';
+    protected $table                = 'users';
     protected $primaryKey           = 'user_id';
     protected $useAutoIncrement     = true;
     protected $insertID             = 0;

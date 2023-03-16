@@ -91,7 +91,7 @@
                 </v-btn>
             </v-app-bar>
 
-            <v-navigation-drawer class="elevation-3" v-model="sidebarMenu" app floating :permanent="sidebarMenu" :mini-variant.sync="mini" v-if="!isMobile">
+            <v-navigation-drawer light class="elevation-3" v-model="sidebarMenu" app floating :permanent="sidebarMenu" :mini-variant.sync="mini" v-if="!isMobile">
                 <v-list color="indigo" dark dense elevation="1">
                     <v-list-item>
                         <v-list-item-action>
@@ -105,9 +105,9 @@
                     </v-list-item>
                 </v-list>
                 <v-divider></v-divider>
-                <v-list>
+                <v-list nav>
                     <?php $uri = new \CodeIgniter\HTTP\URI(current_url());?>
-                    <v-list-item-group color="primary">
+                  
                     <?php if (session()->get('role') == 1) : ?>
                         <v-list-item link href="<?= base_url('admin'); ?>" <?php if($uri->getSegment(2)==""){echo 'class="v-item--active v-list-item--active"';}?> >
                             <v-list-item-icon>
@@ -158,23 +158,23 @@
 
                         <v-divider></v-divider>
 
-                        <v-list-item link href="<?= base_url('admin/export'); ?>" <?php if($uri->getSegment(2)=="export"){echo 'class="v-item--active v-list-item--active"';}?>>
-                            <v-list-item-icon>
-                                <v-icon>mdi-file-pdf-box</v-icon>
-                            </v-list-item-icon>
-                            <v-list-item-content>
-                                <v-list-item-title>PDF</v-list-item-title>
-                            </v-list-item-content>
-                        </v-list-item>
+                        <v-list-group v-for="(item, i) in exports" :key="item.title" v-model="item.active" :prepend-icon="item.action" color="grey darken-4">
+                            <template v-slot:activator>
+                                <v-list-item-content>
+                                    <v-list-item-title v-text="item.title"></v-list-item-title>
+                                </v-list-item-content>
+                            </template>
 
-                        <v-list-item link href="<?= base_url('admin/export-excel'); ?>" <?php if($uri->getSegment(2)=="export-excel"){echo 'class="v-item--active v-list-item--active"';}?> >
-                            <v-list-item-icon>
-                                <v-icon>mdi-file-excel-box</v-icon>
-                            </v-list-item-icon>
-                            <v-list-item-content>
-                                <v-list-item-title>Excel</v-list-item-title>
-                            </v-list-item-content>
-                        </v-list-item>
+                            <v-list-item v-for="child in item.items" :key="child.title" link :href="child.url" v-model="child.active">
+                                <v-list-item-icon>
+                                    <v-icon>{{child.icon}}</v-icon>
+                                </v-list-item-icon>
+                                <v-list-item-content>
+                                    <v-list-item-title v-text="child.title"></v-list-item-title>
+                                </v-list-item-content>
+                            </v-list-item>
+                        </v-list-group>
+
 
                         <v-divider></v-divider>
 
@@ -186,8 +186,26 @@
                                 <v-list-item-title>Users</v-list-item-title>
                             </v-list-item-content>
                         </v-list-item>
+
+                        <v-list-group v-for="(item, i) in settings" :key="item.title" v-model="item.active" :prepend-icon="item.action" color="grey darken-4">
+                            <template v-slot:activator>
+                                <v-list-item-content>
+                                    <v-list-item-title v-text="item.title"></v-list-item-title>
+                                </v-list-item-content>
+                            </template>
+
+                            <v-list-item v-for="child in item.items" :key="child.title" link :href="child.url" v-model="child.active">
+                                <v-list-item-icon>
+                                    <v-icon>{{child.icon}}</v-icon>
+                                </v-list-item-icon>
+                                <v-list-item-content>
+                                    <v-list-item-title v-text="child.title"></v-list-item-title>
+                                </v-list-item-content>
+                            </v-list-item>
+                        </v-list-group>
+
                     <?php endif; ?>
-                    </v-list-item-group>
+             
                 </v-list>
 
                 <template v-slot:append>
@@ -321,7 +339,13 @@
             group: null,
             search: '',
             loading: false,
+            loading1: false,
             loading2: false,
+            loading3: false,
+            loading4: false,
+            loading5: false,
+            loading6: false,
+            loading7: false,
             valid: true,
             notifMessage: '',
             notifType: '',
@@ -342,6 +366,45 @@
                 number: v => Number.isInteger(Number(v)) || "<?= lang('App.isNumber');?>",
                 zero:  v => v > 0 || "<?= lang('App.isZero');?>"
             },
+            exports: [{
+                title: 'Export',
+                action: 'mdi-file',
+                active: <?php if ($uri->getSegment(2) == "export" || $uri->getSegment(2) == "export-excel") { ?><?php echo 'true'; ?><?php } else { ?><?php echo 'false'; ?><?php } ?>,
+                items: [{
+                        title: 'PDF',
+                        icon: 'mdi-file-pdf-box',
+                        url: '<?= base_url('admin/export'); ?>',
+                        active: <?php if ($uri->getSegment(2) == "export") { ?><?php echo 'true'; ?><?php } else { ?><?php echo 'false'; ?><?php } ?>,
+                    },
+                    {
+                        title: 'Excel',
+                        icon: 'mdi-file-excel-box',
+                        url: '<?= base_url('admin/export-excel'); ?>',
+                        active: <?php if ($uri->getSegment(2) == "export-excel") { ?><?php echo 'true'; ?><?php } else { ?><?php echo 'false'; ?><?php } ?>,
+                    },
+                    
+                ],
+
+            }, ],
+            settings: [{
+                title: 'Settings',
+                action: 'mdi-cog',
+                active: <?php if ($uri->getSegment(2) == "settings" || $uri->getSegment(2) == "backup") { ?><?php echo 'true'; ?><?php } else { ?><?php echo 'false'; ?><?php } ?>,
+                items: [{
+                        title: 'Settings',
+                        icon: 'mdi-cog-outline',
+                        url: '<?= base_url('admin/settings'); ?>',
+                        active: <?php if ($uri->getSegment(2) == "settings") { ?><?php echo 'true'; ?><?php } else { ?><?php echo 'false'; ?><?php } ?>,
+                    },
+                    {
+                        title: 'Backup DB',
+                        icon: 'mdi-database',
+                        url: '<?= base_url('admin/backup'); ?>',
+                        active: <?php if ($uri->getSegment(2) == "backup") { ?><?php echo 'true'; ?><?php } else { ?><?php echo 'false'; ?><?php } ?>,
+                    },
+                ],
+
+            }, ],
         }
         var methodsVue = {
             toggleTheme() {

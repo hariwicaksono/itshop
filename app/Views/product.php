@@ -11,7 +11,7 @@
             <v-col cols="12" sm="5">
                 <h1 class="text-h5 font-weight-bold mb-4">{{name}}</h1>
                 <h2 class="text-h4 font-weight-bold mb-4">{{RibuanLocale(price)}}</h2>
-                <v-chip class="mb-3" title="Stock" alt="Stock"><v-icon>mdi-package-variant-closed</v-icon>&nbsp;{{stock}}</v-chip>
+               <!--  <v-chip class="mb-3" title="" alt=""></v-chip> -->
 
                 <h4 class="mb-4 mt-3">Detail Product:</h4>
                 <p v-html="products.product_description"></p>
@@ -28,7 +28,8 @@
                     <v-card-title>Atur jumlah pesanan</v-card-title>
                     <v-card-text>
                         <v-text-field v-model="qty" type="number" single-line prepend-icon="mdi-minus" append-outer-icon="mdi-plus" @click:append-outer="increment(products)" @click:prepend="decrement(products)" min="1" :error-messages="qtyError"></v-text-field>
-                        <h2 class="mb-5 mt-2"><span class="text-subtitle-1 font-weight-regular">Subtotal:</span> {{RibuanLocale(subTotal)}}</h2>
+                        <span class="text-subtitle-1 font-weight-regular">Stock: <strong class="black--text">{{stock}}</strong></span>
+                        <h2 class="mb-5 mt-2"><span class="text-subtitle-1 font-weight-regular">Subtotal:</span> <span class="black--text">{{RibuanLocale(subTotal)}}</span></h2>
                         <v-btn large block color="primary" @click="saveCart(products)" elevation="0">
                             + <?= lang('App.carts'); ?>
                         </v-btn>

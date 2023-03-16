@@ -6,16 +6,18 @@
 	"license": "MIT",
 	"require": {
 		"php": "^7.4 || ^8.0",
-        "ext-intl": "*",
-        "ext-json": "*",
-        "ext-mbstring": "*",
-        "laminas/laminas-escaper": "^2.9",
-        "psr/log": "^1.1",
+		"ext-intl": "*",
+		"ext-json": "*",
+		"ext-mbstring": "*",
 		"firebase/php-jwt": "^6.0",
-		"tecnickcom/tcpdf": "^6.4",
-		"phpoffice/phpspreadsheet": "^1.18",
+		"laminas/laminas-escaper": "^2.9",
 		"mpdf/mpdf": "^8.0",
-		"spipu/html2pdf": "^5.2"
+		"phpoffice/phpspreadsheet": "^1.18",
+		"psr/log": "^1.1",
+		"pusher/pusher-php-server": "^7.2",
+		"pyyoshi/shortuuid-php": "^1.0",
+		"spipu/html2pdf": "^5.2",
+		"tecnickcom/tcpdf": "^6.4"
 	},
 	"require-dev": {
 		"kint-php/kint": "^5.0.3",

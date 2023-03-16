@@ -10,7 +10,7 @@
     <?php if ($uri->getSegment(1) == "") { ?>
         <title>PT GLOBAL ITSHOP PURWOKERTO - DIGITAL STORE - <?= env('appName'); ?></title>
         <meta name="description" content="Toko Online PT GLOBAL ITSHOP PURWOKERTO - <?= env('appName'); ?>">
-    <?php } else if ($uri->getSegment(1) != "") { ?>
+    <?php } else if ($uri->getSegment(1) == "source-code") { ?>
         <title>Source Code <?= $title ?? ""; ?> - PT GLOBAL ITSHOP PURWOKERTO</title>
         <meta name="description" content="Source Code <?= $title ?? ""; ?> produk dari PT GLOBAL ITSHOP PURWOKERTO - <?= env('appName'); ?>">
     <?php } else { ?>
@@ -164,7 +164,7 @@
                 <?= $this->renderSection('content') ?>
 
                 <v-footer dark padless>
-                    <v-card flat tile width="100%" class="flex">
+                    <v-card flat tile width="100%" class="flex py-4">
                         <v-card-text>
                             <v-container>
                                 <h2 class="font-weight-medium subheading">Temukan Toko Online Official kami:</h2>
@@ -206,6 +206,8 @@
     <script src="<?= base_url('assets/js/vuejs-paginate.min.js') ?>" type="text/javascript"></script>
     <script src="<?= base_url('assets/js/main.js') ?>" type="text/javascript"></script>
     <script src="<?= base_url('assets/js/vue-masonry-plugin-window.js') ?>"></script>
+    <script src="<?= base_url('assets/js/vue-carousel.min.js') ?>" type="text/javascript"></script>
+    <script src="<?= base_url('assets/js/pusher.min.js') ?>"></script>
 
     <script>
         var computedVue = {
@@ -358,7 +360,11 @@
             mounted: mountedVue,
             created: createdVue,
             watch: watchVue,
-            methods: methodsVue
+            methods: methodsVue,
+            components: {
+                'carousel': VueCarousel.Carousel,
+                'slide': VueCarousel.Slide,
+            }
         })
     </script>
 </body>
