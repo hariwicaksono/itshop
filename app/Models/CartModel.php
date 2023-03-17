@@ -42,9 +42,13 @@ class CartModel extends Model
 
     public function getCart()
     {
-        $this->select("{$this->table}.*, p.product_name, p.product_price, m.media_path");
+        $this->select("{$this->table}.*, p.product_code, p.product_name, p.product_price, m.media_path, m1.media_path as media_path1,  m2.media_path as media_path2, m3.media_path as media_path3,  m4.media_path as media_path4");
         $this->join("product p", "p.product_id = {$this->table}.product_id");
         $this->join("media m", "m.media_id = p.product_image", "left");
+        $this->join("media m1", "m1.media_id = p.product_image1", "left");
+        $this->join("media m2", "m2.media_id = p.product_image2", "left");
+        $this->join("media m3", "m3.media_id = p.product_image3", "left");
+        $this->join("media m4", "m4.media_id = p.product_image4", "left");
         $this->orderBy("{$this->table}.cart_id", "ASC");
         $query = $this->findAll();
         return $query;
@@ -52,11 +56,15 @@ class CartModel extends Model
 
     public function getUserCart($userid = null)
     {
-        $this->select("{$this->table}.*, p.product_name, p.product_price, m.media_path");
+        $this->select("{$this->table}.*, p.product_code, p.product_name, p.product_price, m.media_path, m1.media_path as media_path1,  m2.media_path as media_path2, m3.media_path as media_path3,  m4.media_path as media_path4");
         $this->join("product p", "p.product_id = {$this->table}.product_id");
         $this->join("media m", "m.media_id = p.product_image", "left");
-        $this->where('user_id', $userid);
-        $this->where('order', null);
+        $this->join("media m1", "m1.media_id = p.product_image1", "left");
+        $this->join("media m2", "m2.media_id = p.product_image2", "left");
+        $this->join("media m3", "m3.media_id = p.product_image3", "left");
+        $this->join("media m4", "m4.media_id = p.product_image4", "left");
+        $this->where("{$this->table}.user_id", $userid);
+        $this->where("{$this->table}.order", null);
         $this->orderBy("{$this->table}.cart_id", "ASC");
         $query = $this->findAll();
         return $query;

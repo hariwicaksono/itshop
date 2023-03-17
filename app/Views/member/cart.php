@@ -1,49 +1,55 @@
 <?php $this->extend("layouts/app-front"); ?>
 <?php $this->section("content"); ?>
-<v-container>
-    <h1 class="font-weight-medium mb-3"><?= lang('App.cart') ?></h1>
-    <v-data-table height="250" :headers="tbheader" :fixed-header="true" :items="carts" item-key="cart_id" :loading="loading" loading-text="Memuat data, silahkan tunggu...">
-        <template v-slot:item="{ item }">
-            <tr>
-                <td>
-                    <v-avatar size="60px" class="mr-3" rounded><img v-bind:src="'<?= base_url(); ?>' + item.media_path" /></v-avatar> {{item.product_name}}
-                </td>
-                <td>
-                    <v-edit-dialog :return-value.sync="item.qty" @save="setQuantity(item)" @cancel="" @open="" @close="">
-                        {{item.qty}}
-                        <template v-slot:input>
-                            <v-text-field v-model="item.qty" type="number" single-line></v-text-field>
-                        </template>
-                    </v-edit-dialog>
-                </td>
-                <td>Rp.{{item.total}}</td>
-                <td>
-                    <v-btn icon @click="removeItem(item)">
-                        <v-icon color="red">
-                            mdi-delete
-                        </v-icon>
-                    </v-btn>
-                </td>
-            </tr>
-        </template>
-        <template slot="footer.prepend">
-            <v-text-field label="<?= lang('App.note') ?> *" v-model="note"></v-text-field>
-        </template>
-    </v-data-table>
-    <br />
-    <v-row>
-        <v-col cols="12" md="9">
-            <h1 class="font-weight-regular float-end"><?= lang('App.totalPrice'); ?> <strong>Rp.{{ sumTotal('total') }}</strong></h1>
-        </v-col>
-        <v-col cols="12" md="3">
-            <v-btn color="success" block large :loading="loading2" @click="modalCheckoutOpen" :disabled="carts == '' ? true:false">
-                <v-icon>mdi-cart</v-icon> <?= lang('App.buy') ?>
-            </v-btn>
-        </v-col>
-    </v-row>
-</v-container>
+<template>
+    <v-container>
+        <h1 class="font-weight-medium mb-3"><?= lang('App.cart') ?></h1>
+        <v-data-table height="250" :headers="tbheader" :fixed-header="true" :items="carts" item-key="cart_id" :loading="loading" loading-text="Memuat data, silahkan tunggu...">
+            <template v-slot:item="{ item }">
+                <tr>
+                    <td>
+                        <v-list-item class="ma-n3 pa-n3" two-line>
+                            <v-list-item-avatar size="80" rounded>
+                                <v-img :src="'<?= base_url() ?>' + item.media_path" v-if="item.media_path != null"></v-img>
+                                <v-img src="<?= base_url('images/no_image.jpg') ?>" v-else></v-img>
+                            </v-list-item-avatar>
+                            <v-list-item-content>
+                                <p class="text-subtitle-1 text-underlined">{{item.product_name}}</p>
+                                <p class="mb-0">Code: {{item.product_code ?? "-"}}</p>
+                            </v-list-item-content>
+                        </v-list-item>
+                    </td>
+                    <td width="200">
+                        <v-text-field v-model="item.qty" type="number" single-line prepend-icon="mdi-minus" append-outer-icon="mdi-plus" @click:append-outer="increment(item)" @click:prepend="decrement(item)" @input="setQuantity(item)" min="1" hide-details></v-text-field>
+                    </td>
+                    <td width="200">{{RibuanLocale(item.total)}}</td>
+                    <td>
+                        <v-btn icon @click="removeItem(item)">
+                            <v-icon color="red">
+                                mdi-delete
+                            </v-icon>
+                        </v-btn>
+                    </td>
+                </tr>
+            </template>
+            <template slot="footer.prepend">
+                <v-text-field label="<?= lang('App.note') ?> Order *" v-model="note" class="mt-3  mr-3" hint="Cantumkan disini alamat email Gmail Anda" persistent-hint></v-text-field>
+            </template>
+        </v-data-table>
+        <br />
+        <v-row>
+            <v-col cols="12" md="9">
+                <h1 class="font-weight-regular float-end"><?= lang('App.totalPrice'); ?> <strong>{{ RibuanLocale(sumTotal('total')) }}</strong></h1>
+            </v-col>
+            <v-col cols="12" md="3">
+                <v-btn color="success" block large :loading="loading2" @click="modalCheckoutOpen" :disabled="carts == '' ? true:false">
+                    <v-icon>mdi-cart</v-icon> <?= lang('App.buy') ?>
+                </v-btn>
+            </v-col>
+        </v-row>
+    </v-container>
+</template>
 
-<!-- Modal Reset Keranjang -->
+<!-- Modal Checkout -->
 <template>
     <v-row justify="center">
         <v-dialog v-model="dialog" persistent width="900px">
@@ -62,7 +68,7 @@
                             <v-avatar size="50px" rounded><img v-bind:src="'<?= base_url(); ?>' + item.media_path" /></v-avatar>
                         </v-col>
                         <v-col cols="10">
-                            <strong>{{item.product_name}}</strong> - Qty: {{item.qty}} - <?= lang('app.price');?>: Rp.{{item.product_price}}
+                            <strong>{{item.product_name}}</strong> - Qty: {{item.qty}} - <?= lang('app.price'); ?>: Rp.{{item.product_price}}
                         </v-col>
                     </v-row>
                     <h4 class="float-end">Total Rp.{{total}}</h4>
@@ -79,7 +85,7 @@
 
                 <v-divider></v-divider>
                 <v-card-actions>
-                    <h3 class="font-weight-regular pe-5"><?= lang('App.totalPrice'); ?><br /><strong>Rp.{{grandtotal}}</strong></h3>
+                    <h3 class="font-weight-regular pe-5"><?= lang('App.totalPrice'); ?><br /><strong>{{RibuanLocale(grandtotal)}}</strong></h3>
                     <v-spacer></v-spacer>
                     <v-btn color="success" dark large @click="saveOrder" :loading="loading3">
                         <?= lang('App.processPayment') ?>
@@ -89,8 +95,8 @@
         </v-dialog>
     </v-row>
 </template>
-<!-- End Modal Reset -->
-<br/>
+<!-- End Modal -->
+<br /><br />
 <?php $this->endSection("content") ?>
 
 <?php $this->section("js") ?>
@@ -114,20 +120,21 @@
         carts: [],
         note: null,
         tbheader: [{
-                text: 'Nama',
-                value: 'nama_produk'
+                text: '<?= lang('App.productName'); ?>',
+                value: 'product_name'
             },
             {
                 text: 'Qty',
                 value: 'qty'
             },
             {
-                text: 'Total',
+                text: 'Subtotal',
                 value: 'total'
             },
             {
                 text: '',
-                value: 'actions'
+                value: 'actions',
+                sortable: false
             },
         ],
         idorder: "",
@@ -157,7 +164,7 @@
         },
         getShipment: function() {
             this.loading = true;
-            axios.get(`<?= base_url()?>api/shipment`, options)
+            axios.get(`<?= base_url() ?>api/shipment`, options)
                 .then(res => {
                     // handle success
                     var data = res.data;
@@ -171,7 +178,7 @@
         },
         getPayment: function() {
             this.loading = true;
-            axios.get(`<?= base_url()?>api/payment`, options)
+            axios.get(`<?= base_url() ?>api/payment`, options)
                 .then(res => {
                     // handle success
                     var data = res.data;
@@ -186,7 +193,7 @@
         // Get User Cart
         getUserCart: function() {
             this.loading = true;
-            axios.get(`<?= base_url()?>api/cart/usercart`, options)
+            axios.get(`<?= base_url() ?>api/cart/usercart`, options)
                 .then(res => {
                     // handle success
                     this.loading = false;
@@ -228,7 +235,7 @@
         // Save Cart
         saveCart: function(item) {
             this.loading = true;
-            axios.post(`<?= base_url()?>api/cart/save`, {
+            axios.post(`<?= base_url() ?>api/cart/save`, {
                     product_id: item.product_id,
                     price: item.product_price,
                     stock: item.stock,
@@ -264,13 +271,28 @@
                     }
                 })
         },
+
+        increment(item) {
+            item.qty++;
+            if (item.qty < 1) return;
+            this.setQuantity(item);
+        },
+        decrement(item) {
+            item.qty--;
+            if (item.qty < 1) {
+                item.qty = 1;
+            } else {
+                this.setQuantity(item);
+            };
+        },
+
         // Set Qty Item
         setQuantity: function(item) {
             this.loading = true;
             this.cart_id = item.cart_id;
             this.qty = item.qty;
             this.product_id = item.product_id;
-            axios.put(`<?= base_url()?>api/cart/update/${this.cart_id}`, {
+            axios.put(`<?= base_url() ?>api/cart/update/${this.cart_id}`, {
                     product_id: this.product_id,
                     qty: this.qty,
                 }, options)
@@ -297,7 +319,7 @@
         // Delete Item Keranjang
         removeItem: function(item) {
             this.loading = true;
-            axios.delete(`<?= base_url()?>api/cart/delete/${item.cart_id}`, options)
+            axios.delete(`<?= base_url() ?>api/cart/delete/${item.cart_id}`, options)
                 .then(res => {
                     // handle success
                     this.loading = false;
@@ -327,7 +349,7 @@
             this.loading3 = true;
             const data = this.itemcart;
             //console.log(data);
-            axios.post(`<?= base_url()?>api/order/save`, {
+            axios.post(`<?= base_url() ?>api/order/save`, {
                     data: data,
                     total: this.grandtotal,
                     user_id: '<?= session()->get('id'); ?>',

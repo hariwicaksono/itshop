@@ -6,7 +6,7 @@
     <v-card outlined elevation="1">
         <v-card-title>
             <!-- Button Add New -->
-            <v-btn large color="primary" dark @click="modalAddOpen"><?= lang('App.add') ?></v-btn>
+            <v-btn large color="primary" dark @click="modalAddOpen" elevation="1"><v-icon>mdi-plus</v-icon> <?= lang('App.add') ?></v-btn>
             <v-spacer></v-spacer>
             <v-text-field v-model="search" append-icon="mdi-magnify" label="<?= lang('App.search') ?>" single-line hide-details>
             </v-text-field>
@@ -23,10 +23,10 @@
                         <v-switch v-model="item.cod" value="cod" false-value="0" true-value="1" color="success" @click="setCod(item)"></v-switch>
                     </td>
                     <td>
-                        <v-btn icon class="mr-2" @click="editItem(item)">
-                            <v-icon>mdi-pencil</v-icon>
+                        <v-btn icon class="mr-2" @click="editItem(item)" title="Edit" alt="Edit">
+                            <v-icon color="primary">mdi-pencil</v-icon>
                         </v-btn>
-                        <v-btn icon @click="deleteItem(item)">
+                        <v-btn icon @click="deleteItem(item)" title="Delete" alt="Delete">
                             <v-icon color="red">mdi-delete</v-icon>
                         </v-btn>
                     </td>
@@ -49,7 +49,8 @@
                         <v-icon>mdi-close</v-icon>
                     </v-btn>
                 </v-card-title>
-                <v-card-text class="py-3">
+                <v-divider></v-divider>
+                <v-card-text class="py-5">
                     <v-form ref="form" v-model="valid">
                         <v-text-field label="<?= lang('App.payment') ?> *" v-model="payment" :rules="[rules.required]" outlined>
                         </v-text-field>
@@ -59,9 +60,10 @@
                         </v-text-field>
                     </v-form>
                 </v-card-text>
+                <v-divider></v-divider>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" @click="savePayment" :loading="loading">
+                    <v-btn large color="primary" @click="savePayment" :loading="loading">
                         <v-icon>mdi-content-save</v-icon> <?= lang('App.save') ?>
                     </v-btn>
                 </v-card-actions>
@@ -82,16 +84,18 @@
                         <v-icon>mdi-close</v-icon>
                     </v-btn>
                 </v-card-title>
-                <v-card-text class="py-3">
+                <v-divider></v-divider>
+                <v-card-text class="py-5">
                     <v-form ref="form" v-model="valid">
                         <v-text-field label="<?= lang('App.payment') ?> *" v-model="paymentEdit" :rules="[rules.required]" outlined></v-text-field>
                         <v-text-field label="<?= lang('App.account') ?> *" v-model="accountEdit" :rules="[rules.required]" outlined></v-text-field>
                         <v-text-field label="<?= lang('App.number') ?> *" v-model="numberEdit" :rules="[rules.required]" outlined></v-text-field>
                     </v-form>
                 </v-card-text>
+                <v-divider></v-divider>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" @click="updatePayment" :loading="loading">
+                    <v-btn large color="primary" @click="updatePayment" :loading="loading">
                         <v-icon>mdi-content-save</v-icon> <?= lang('App.save') ?>
                     </v-btn>
                 </v-card-actions>

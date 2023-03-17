@@ -1,5 +1,19 @@
-<?php $uri = new \CodeIgniter\HTTP\URI(current_url()); ?>
+<?php 
+/*
+PT. GLOBAL ITSHOP PURWOKERTO
+Toko Online: ITShop Purwokerto (Tokopedia, Shopee, Bukalapak, Blibli)
+Dibuat oleh: Hari Wicaksono, S.Kom
+03-2023
+*/
 
+$uri = new \CodeIgniter\HTTP\URI(current_url()); 
+
+// Memanggil library Setting
+use App\Libraries\Settings;
+
+$setting = new Settings();
+$snackbarsPosition = $setting->info['snackbars_position'];
+?>
 <!DOCTYPE html>
 <html>
 
@@ -8,14 +22,14 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
     <?php if ($uri->getSegment(1) == "") { ?>
-        <title>PT GLOBAL ITSHOP PURWOKERTO - DIGITAL STORE - <?= env('appName'); ?></title>
+        <title><?= COMPANY_NAME; ?> Digital Store - <?= env('appName'); ?></title>
         <meta name="description" content="Toko Online PT GLOBAL ITSHOP PURWOKERTO - <?= env('appName'); ?>">
     <?php } else if ($uri->getSegment(1) == "source-code") { ?>
-        <title>Source Code <?= $title ?? ""; ?> - PT GLOBAL ITSHOP PURWOKERTO</title>
-        <meta name="description" content="Source Code <?= $title ?? ""; ?> produk dari PT GLOBAL ITSHOP PURWOKERTO - <?= env('appName'); ?>">
+        <title>Source Code <?= $title ?? ""; ?> - <?= env('appName'); ?></title>
+        <meta name="description" content="Source Code <?= $title ?? ""; ?> produk dari <?= COMPANY_NAME; ?> - <?= env('appName'); ?>">
     <?php } else { ?>
-        <title>PT GLOBAL ITSHOP PURWOKERTO - DIGITAL STORE - <?= env('appName'); ?></title>
-        <meta name="description" content="Toko Online PT GLOBAL ITSHOP PURWOKERTO - <?= env('appName'); ?>">
+        <title><?= $title ?? ""; ?> | <?= COMPANY_NAME; ?> Digital Store - <?= env('appName'); ?></title>
+        <meta name="description" content="<?= $title ?? ""; ?> | <?= COMPANY_NAME; ?> Digital Store - <?= env('appName'); ?>">
     <?php } ?>
 
     <meta name="theme-color" content="#FFFFFF" />
@@ -167,20 +181,31 @@
                     <v-card flat tile width="100%" class="flex py-4">
                         <v-card-text>
                             <v-container>
-                                <h2 class="font-weight-medium subheading">Temukan Toko Online Official kami:</h2>
-                                <v-list flat class="mb-3">
-                                    <v-list-item-group>
-                                        <v-list-item v-for="(item, i) in items" :key="i" link :href="item.link" target="_blank">
-                                            <v-list-item-icon>
-                                                <v-img :src="item.icon" width="40"></v-img>
-                                            </v-list-item-icon>
-                                            <v-list-item-content>
-                                                <v-list-item-title v-text="item.text"></v-list-item-title>
-                                            </v-list-item-content>
-                                        </v-list-item>
-                                    </v-list-item-group>
-                                </v-list>
-
+                                <v-row>
+                                    <v-col>
+                                        <h2 class="font-weight-medium subheading">Temukan Toko Online Official kami:</h2>
+                                        <v-list flat class="mb-3">
+                                            <v-list-item-group>
+                                                <v-list-item v-for="(item, i) in items" :key="i" link :href="item.link" target="_blank">
+                                                    <v-list-item-icon>
+                                                        <v-img :src="item.icon" width="40"></v-img>
+                                                    </v-list-item-icon>
+                                                    <v-list-item-content>
+                                                        <v-list-item-title v-text="item.text"></v-list-item-title>
+                                                    </v-list-item-content>
+                                                </v-list-item>
+                                            </v-list-item-group>
+                                        </v-list>
+                                    </v-col>
+                                    <v-col>
+                                        <h2 class="font-weight-medium subheading mb-3">About us:</h2>
+                                        <h3 class="mb-3"><?= COMPANY_NAME; ?></h3>
+                                        <v-divider></v-divider>
+                                        <v-btn v-for="link in links" :key="link" color="white" text rounded class="my-2">
+                                            {{ link }}
+                                        </v-btn>
+                                    </v-col>
+                                </v-row>
                                 &copy; {{ new Date().getFullYear() }} — <?= COMPANY_NAME; ?>, Jawa Tengah, Indonesia
                             </v-container>
                         </v-card-text>
@@ -188,7 +213,7 @@
                 </v-footer>
             </v-main>
 
-            <v-snackbar v-model="snackbar" :timeout="timeout" style="bottom:20px;">
+            <v-snackbar v-model="snackbar" :timeout="timeout" <?= $snackbarsPosition; ?> <?php if ($snackbarsPosition == 'top') { ?> style="top: 30px;" <?php } else { ?> style="bottom: 40px;" <?php } ?>>
                 <span v-if="snackbar">{{snackbarMessage}}</span>
                 <template v-slot:action="{ attrs }">
                     <v-btn text v-bind="attrs" @click="snackbar = false">
@@ -296,6 +321,12 @@
                     icon: '<?= base_url('images/blibli.png'); ?>',
                     link: 'https://www.blibli.com/merchant/IT-Shop-Purwokerto/ITS-70007'
                 },
+            ],
+            links: [
+                'Home',
+                'About Us',
+                'Legal',
+                'Contact Us',
             ],
         }
         var methodsVue = {

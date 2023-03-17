@@ -24,6 +24,8 @@ return [
     'siteTitle' => 'Judul Situs',
     'confirm' => 'Konfirmasi',
     'to' => 'Ke',
+    'todayTrx' => 'Transaksi Hari ini',
+    'transaction' => 'Transaksi',
 
     //Signin
     'signIn' => 'Masuk',
@@ -60,6 +62,7 @@ return [
     'listProduct' => 'Daftar Produk',
     'addProduct' => 'Tambah Produk',
     'editProduct' => 'Ubah Produk',
+    'productCode' => 'Kode Produk',
     'productName' => 'Nama Produk',
     'productPrice' => 'Harga Produk',
     'productDesc' => 'Deskripsi Produk',
@@ -81,6 +84,7 @@ return [
     'imgSuccess' => 'Berhasil upload Gambar',
     'imgFailed' => 'Gagal upload gambar',
     'imgDeleted' => 'Gambar berhasil dihapus',
+    'disabledImgUploaded' => 'Tutup Dialog Dinonaktifkan karena Gambar sudah di upload, hapus terlebih dahulu',
 
     //User
     'editUser' => 'Ubah User',

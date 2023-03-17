@@ -28,7 +28,9 @@ class Member extends BaseController
 
     public function cart()
     {
-        return view('member/cart');
+        return view('member/cart', [
+            'title' => lang('App.cart'),
+        ]);
     }
 
     public function checkout()

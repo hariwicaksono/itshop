@@ -43,7 +43,7 @@ class Cart extends BaseControllerApi
             $qty = $json->qty;
 
             $data = $this->product->where(['product_id' => $product_id])->first();
-            $price = $data['product_price']; 
+            $price = $data['product_price'];
             $total = $price * $qty;
             $data = [
                 'product_id' => $product_id,
@@ -58,7 +58,7 @@ class Cart extends BaseControllerApi
             $qty = $this->request->getPost('qty');
 
             $data = $this->product->where(['product_id' => $product_id])->first();
-            $price = $data['product_price']; 
+            $price = $data['product_price'];
             $total = $price * $qty;
             $data = [
                 'product_id' => $product_id,
@@ -78,7 +78,36 @@ class Cart extends BaseControllerApi
             ];
             return $this->respond($response, 200);
         } else {
-            $this->model->save($data);
+            //cari barang/barangnya apakah sudah ada di keranjang
+            $searchCart = $this->model->where(['product_id' => $product_id])->first();
+            if ($searchCart) {
+                $idCart = $searchCart['cart_id'];
+                $price = $searchCart['price'];
+                $cartQty = $searchCart['qty'] + $qty;
+                $total = (int)$price * $cartQty;
+                $update = [
+                    'qty' => $cartQty,
+                    'total' => $total,
+                ];
+
+                $product = $this->product->where(['product_id' => $product_id])->first();
+                $stock = $product['stock'];
+
+                if ($qty >= $stock) {
+                    $response = [
+                        'status' => false,
+                        'message' => 'Out of Stock, Please try again.',
+                        'data' => [],
+                    ];
+                    return $this->respond($response, 200);
+                } else {
+                    //lalu update qty nya
+                    $this->model->update($idCart, $update);
+                }
+            } else {
+                $this->model->save($data);
+            }
+
             $response = [
                 'status' => true,
                 'message' => lang('App.productSuccess'),
@@ -97,7 +126,7 @@ class Cart extends BaseControllerApi
 
         $product = $this->product->where(['product_id' => $product_id])->first();
         if ($product['stock'] > $qty) {
-            $price = $product['product_price']; 
+            $price = $product['product_price'];
             $total = $price * $qty;
             $data = [
                 'qty' => $qty,
@@ -119,7 +148,7 @@ class Cart extends BaseControllerApi
             return $this->respond($response, 200);
         }
     }
-    
+
     public function delete($id = null)
     {
         $hapus = $this->model->find($id);

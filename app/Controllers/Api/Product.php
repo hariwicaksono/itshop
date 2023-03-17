@@ -40,6 +40,10 @@ class Product extends BaseControllerApi
 		$suuid = new ShortUUID();
 
         $rules = [
+            'product_code' => [
+                'rules'  => 'required',
+                'errors' => []
+            ],
             'product_name' => [
                 'rules'  => 'required',
                 'errors' => []
@@ -58,6 +62,7 @@ class Product extends BaseControllerApi
             $json = $this->request->getJSON();
             $data = [
                 'product_uuid' => $suuid->encode($uuid),
+                'product_code' => $json->product_code,
                 'product_name' => $json->product_name,
                 'product_price' => $json->product_price,
                 'product_description' => nl2br($json->product_description),
@@ -74,6 +79,7 @@ class Product extends BaseControllerApi
         } else {
             $data = [
                 'product_uuid' => $suuid->encode($uuid),
+                'product_code' => $this->request->getPost('product_code'),
                 'product_name' => $this->request->getPost('product_name'),
                 'product_price' => $this->request->getPost('product_price'),
                 'product_description' => nl2br($this->request->getPost('product_description') ?? ""),
@@ -110,6 +116,10 @@ class Product extends BaseControllerApi
     public function update($id = NULL)
     {
         $rules = [
+            'product_code' => [
+                'rules'  => 'required',
+                'errors' => []
+            ],
             'product_name' => [
                 'rules'  => 'required',
                 'errors' => []
@@ -127,9 +137,10 @@ class Product extends BaseControllerApi
         if ($this->request->getJSON()) {
             $json = $this->request->getJSON();
             $data = [
+                'product_code' => $json->product_code,
                 'product_name' => $json->product_name,
                 'product_price' => $json->product_price,
-                'product_description' => nl2br($json->product_description),
+                'product_description' => $json->product_description,
                 'product_image' => $json->product_image,
                 'product_image1' => $json->product_image1,
                 'product_image2' => $json->product_image2,
@@ -140,9 +151,10 @@ class Product extends BaseControllerApi
         } else {
             $input = $this->request->getRawInput();
             $data = [
+                'product_code' => $input['product_code'],
                 'product_name' => $input['product_name'],
                 'product_price' => $input['product_price'],
-                'product_description' => nl2br($input['product_description']),
+                'product_description' => $input['product_description'],
                 'product_image' => $input['product_image'],
                 'product_image1' => $input['product_image1'],
                 'product_image2' => $input['product_image2'],
@@ -155,7 +167,7 @@ class Product extends BaseControllerApi
         if (!$this->validate($rules)) {
             $response = [
                 'status' => false,
-                'message' => lang('App.reqFailed'),
+                'message' => lang('App.isRequired'),
                 'data' => $this->validator->getErrors(),
             ];
             return $this->respond($response, 200);

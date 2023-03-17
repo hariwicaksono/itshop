@@ -1,3 +1,18 @@
+<?php
+/*
+PT. GLOBAL ITSHOP PURWOKERTO
+Toko Online: ITShop Purwokerto (Tokopedia, Shopee, Bukalapak, Blibli)
+Dibuat oleh: Hari Wicaksono, S.Kom
+03-2023
+*/
+
+// Memanggil library Setting
+use App\Libraries\Settings;
+
+$setting = new Settings();
+$snackbarsPosition = $setting->info['snackbars_position'];
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -38,7 +53,7 @@
     <div id="app">
         <v-app>
 
-            <v-app-bar app color="indigo" dark>
+            <v-app-bar app color="primary" dark>
                 <v-app-bar-nav-icon @click.stop="sidebarMenu = !sidebarMenu"></v-app-bar-nav-icon>
                 <v-toolbar-title>Dashboard</v-toolbar-title>
                 <v-spacer></v-spacer>
@@ -92,7 +107,7 @@
             </v-app-bar>
 
             <v-navigation-drawer light class="elevation-3" v-model="sidebarMenu" app floating :permanent="sidebarMenu" :mini-variant.sync="mini" v-if="!isMobile">
-                <v-list color="indigo" dark dense elevation="1">
+                <v-list color="primary" dark dense elevation="1">
                     <v-list-item>
                         <v-list-item-action>
                             <v-icon @click.stop="toggleMini = !toggleMini">mdi-chevron-left</v-icon>
@@ -180,7 +195,7 @@
 
                         <v-list-item link href="<?= base_url('admin/user'); ?>" <?php if($uri->getSegment(2)=="user"){echo 'class="v-item--active v-list-item--active"';}?>>
                             <v-list-item-icon>
-                                <v-icon>mdi-account-group</v-icon>
+                                <v-icon>mdi-account-multiple</v-icon>
                             </v-list-item-icon>
                             <v-list-item-content>
                                 <v-list-item-title>Users</v-list-item-title>
@@ -268,7 +283,7 @@
                 </v-container>
             </v-main>
 
-            <v-snackbar v-model="snackbar" :timeout="timeout" style="bottom:20px;">
+            <v-snackbar v-model="snackbar" :timeout="timeout" <?= $snackbarsPosition; ?> <?php if ($snackbarsPosition == 'top') { ?> style="top: 30px;" <?php } else { ?> style="bottom: 40px;" <?php } ?>>
                 <span v-if="snackbar">{{snackbarMessage}}</span>
                 <template v-slot:action="{ attrs }">
                     <v-btn text v-bind="attrs" @click="snackbar = false">
@@ -284,6 +299,8 @@
     <script src="<?= base_url('assets/js/vuetify-image-input.min.js')?>" type="text/javascript"></script>
     <script src="<?= base_url('assets/js/axios.min.js')?>" type="text/javascript"></script>
     <script src="<?= base_url('assets/js/vuejs-paginate.min.js')?>" type="text/javascript"></script>
+    <script src="<?= base_url('assets/js/Chart.min.js') ?>" type="text/javascript"></script>
+    <script src="<?= base_url('assets/js/vue-chartjs.min.js') ?>" type="text/javascript"></script>
     <script src="<?= base_url('assets/js/main.js')?>" type="text/javascript"></script>
 
     <script>

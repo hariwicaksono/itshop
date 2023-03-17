@@ -24,6 +24,8 @@ return [
     'siteTitle' => 'Site Title',
     'confirm' => 'Confirm',
     'to' => 'To',
+    'todayTrx' => "Today's Transaction",
+    'transaction' => 'Transaction',
 
     //Signin
     'signIn' => 'Sign in',
@@ -60,6 +62,7 @@ return [
     'listProduct' => 'Product List',
     'addProduct' => 'Add Product',
     'editProduct' => 'Ubah Produk',
+    'productCode' => 'Product Code',
     'productName' => 'Product Name',
     'productPrice' => 'Product Price',
     'productDesc' => 'Product Description',
@@ -80,6 +83,7 @@ return [
     'delSuccess' => 'Successfuly delete data',
     'uploadSuccess' => 'Image upload successfully',
     'uploadFailed' => 'Failed to upload image',
+    'disabledImgUploaded' => 'Close Dialog Disabled because Image has already been uploaded, delete it first',
 
     //User
     'editUser' => 'Edit User',

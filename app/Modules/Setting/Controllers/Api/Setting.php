@@ -15,20 +15,15 @@ class Setting extends BaseControllerApi
 		//memanggil Model
 	}
 
-    public function general()
+    public function index()
     {
-        return $this->respond(["status" => true, "message" => "Success", "data" => $this->model->where('group_setting', 'general')->findAll()], 200);
-    }
-
-    public function app()
-    {
-        return $this->respond(["status" => true, "message" => "Success", "data" => $this->model->where('group_setting', 'app')->findAll()], 200);
+        return $this->respond(["status" => true, "message" => "Success", "data" => $this->model->findAll()], 200);
     }
 
     public function update($id = NULL)
     {
         $rules = [
-            'value_setting' => [
+            'setting_value' => [
                 'rules'  => 'required',
                 'errors' => []
             ],
@@ -37,7 +32,7 @@ class Setting extends BaseControllerApi
         if ($this->request->getJSON()) {
             $json = $this->request->getJSON();
             $data = [
-                'value_setting' => $json->value_setting,
+                'setting_value' => $json->setting_value,
             ];
         } else {
             $data = $this->request->getRawInput();
@@ -63,7 +58,7 @@ class Setting extends BaseControllerApi
 
     public function upload()
     {
-        $id = $this->request->getVar('id');
+        $id = $this->request->getVar('setting_id');
         $image = $this->request->getFile('image');
         $fileName = $image->getRandomName();
         if ($image !== "") {
@@ -71,7 +66,7 @@ class Setting extends BaseControllerApi
             $moved = $image->move($path, $fileName);
             if ($moved) {
                 $simpan = $this->model->update($id, [
-                    'value_setting' => $path . $fileName
+                    'setting_value' => $path . $fileName
                 ]);
                 if ($simpan) {
                     return $this->respond(["status" => true, "message" => lang('App.imgSuccess'), "data" => [$path . $fileName]], 200);
@@ -94,12 +89,12 @@ class Setting extends BaseControllerApi
         if ($this->request->getJSON()) {
             $json = $this->request->getJSON();
             $data = [
-                'value_setting' => $json->value_setting,
+                'setting_value' => $json->setting_value,
             ];
         } else {
             $input = $this->request->getRawInput();
             $data = [
-                'value_setting' => $input['value_setting']
+                'setting_value' => $input['setting_value']
             ];
         }
 

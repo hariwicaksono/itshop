@@ -100,4 +100,16 @@ class OrderModel extends Model
     {
         return $this->db->query("SELECT periode as tahun, COUNT(order_id) as jumlah FROM `{$this->table}` GROUP BY periode")->getResultArray();
     }
+
+    public function chartHarian($date)
+    {
+        $this->like('created_at', $date, 'after');
+        return count($this->get()->getResultArray());
+    }
+
+    public function chartTransaksi($date)
+    {
+        $this->like('created_at', $date, 'after');
+        return count($this->get()->getResultArray());
+    }
 }

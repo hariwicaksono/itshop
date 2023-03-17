@@ -11,15 +11,15 @@
                 <v-text-field label="Alamat *" v-model="alamat" :rules="[rules.required]" outlined></v-text-field>
                 <v-row>
                     <v-col>
-                        <v-select label="Provinsi *" v-model="select_provinsi" :items="list_provinsi" item-text="provinsi" item-value="provinsi_id" :eager="true" :loading="loading2" outlined></v-select>
+                        <v-select label="Provinsi *" v-model="select_provinsi" :items="list_provinsi" item-text="provinsi_nama" item-value="provinsi_id" :eager="true" :loading="loading2" outlined></v-select>
                     </v-col>
                     <v-col>
-                        <v-select label="Kabupaten *" v-model="select_kabupaten" :items="list_kabupaten" item-text="nama_kabupaten" item-value="kabupaten_id" :eager="true" :loading="loading2" outlined></v-select>
+                        <v-select label="Kabupaten *" v-model="select_kabupaten" :items="list_kabupaten" item-text="kabupaten_kota_nama" item-value="kabupaten_kota_id" :eager="true" :loading="loading2" outlined></v-select>
                     </v-col>
                 </v-row>
                 <v-text-field label="Kodepos *" v-model="kodepos" :rules="[rules.required]" outlined></v-text-field>
             </v-form>
-            <v-btn color="primary" @click="updateProfile" :loading="loading3">
+            <v-btn large color="primary" @click="updateProfile" :loading="loading3">
                 <v-icon>mdi-content-save</v-icon> <?= lang('App.save') ?>
             </v-btn>
         </v-card-text>

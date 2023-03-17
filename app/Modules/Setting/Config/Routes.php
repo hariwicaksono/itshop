@@ -10,8 +10,7 @@ $routes->group('admin', ['filter' => 'auth', 'namespace' => 'App\Modules\Setting
 });
 
 $routes->group('api', ['filter' => 'jwtauth', 'namespace' => 'App\Modules\Setting\Controllers\Api'], function($routes){
-    $routes->get('setting/general', 'Setting::general');
-	$routes->get('setting/app', 'Setting::app');
+    $routes->get('setting', 'Setting::index');
 	$routes->put('setting/update/(:segment)', 'Setting::update/$1');
 	$routes->post('setting/upload', 'Setting::upload');
 

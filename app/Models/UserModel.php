@@ -79,9 +79,9 @@ class UserModel extends Model
 
     public function findUser($id)
     {
-        $this->select("{$this->table}.*, p.provinsi, k.nama_kabupaten");
+        $this->select("{$this->table}.*, p.provinsi_nama, k.kabupaten_kota_nama");
         $this->join("provinsi p", "p.provinsi_id = {$this->table}.provinsi_id", "left");
-        $this->join("kabupaten k", "k.kabupaten_id = {$this->table}.kabupaten_id", "left");
+        $this->join("kabupaten_kota k", "k.kabupaten_kota_id = {$this->table}.kabupaten_kota_id", "left");
         $this->where("{$this->table}.user_id", $id);
         $query = $this->first();
         return $query;

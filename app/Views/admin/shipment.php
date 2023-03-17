@@ -21,8 +21,8 @@
                         <v-switch v-model="item.active" value="active" false-value="0" true-value="1" color="success" @click="setActive(item)"></v-switch>
                     </td>
                     <td>
-                        <v-btn icon class="mr-2" @click="editItem(item)">
-                            <v-icon>mdi-pencil</v-icon>
+                        <v-btn icon class="mr-2" @click="editItem(item)" title="" alt="">
+                            <v-icon color="primary">mdi-pencil</v-icon>
                         </v-btn>
                         <!--<v-btn icon @click="deleteItem(item)">
                             <v-icon color="red">mdi-delete</v-icon>

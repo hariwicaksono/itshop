@@ -1,3 +1,17 @@
+<?php
+/*
+PT. GLOBAL ITSHOP PURWOKERTO
+Toko Online: ITShop Purwokerto (Tokopedia, Shopee, Bukalapak, Blibli)
+Dibuat oleh: Hari Wicaksono, S.Kom
+03-2023
+*/
+
+// Memanggil library Setting
+use App\Libraries\Settings;
+
+$setting = new Settings();
+$snackbarsPosition = $setting->info['snackbars_position'];
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,6 +20,9 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
     <title>Member | <?= env('appName'); ?></title>
+    <meta name="theme-color" content="#FFFFFF" />
+    <link rel="apple-touch-icon" href="<?= base_url('images/logo.png') ?>">
+    <link rel="shortcut icon" href="<?= base_url('images/logo.png') ?>">
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
     <link href="<?= base_url('assets/css/materialdesignicons.min.css') ?>" rel="stylesheet">
     <link href="<?= base_url('assets/css/vuetify.min.css') ?>" rel="stylesheet">
@@ -16,7 +33,7 @@
     <!-- ========================= preloader start ========================= -->
     <div class="preloader">
         <div class="loader">
-            <div class="loader-logo"><img src="<?= base_url('images/Logo.jpg') ?>" alt="Preloader" width="64"></div>
+            <div class="loader-logo"><img src="<?= base_url('images/logo.png') ?>" alt="Preloader" width="64"></div>
             <div class="spinner">
                 <div class="spinner-container">
                     <div class="spinner-rotator">
@@ -34,7 +51,7 @@
     <!-- preloader end -->
     <div id="app">
         <v-app>
-            <v-app-bar app color="white">
+            <v-app-bar app color="indigo" dark>
                 <v-app-bar-nav-icon @click.stop="sidebarMenu = !sidebarMenu"></v-app-bar-nav-icon>
                 <v-toolbar-title>Member</v-toolbar-title>
                 <v-spacer></v-spacer>
@@ -47,7 +64,7 @@
                     <v-menu offset-y>
                         <template v-slot:activator="{ on, attrs }">
                             <v-btn text class="mr-3" v-bind="attrs" v-on="on">
-                                <?= session()->get('username') ?> <v-icon>mdi-chevron-down</v-icon>
+                            <v-icon>mdi-account-circle</v-icon>&nbsp;<?= session()->get('email') ?> <v-icon>mdi-chevron-down</v-icon>
                             </v-btn>
                         </template>
 
@@ -92,8 +109,8 @@
                 </v-btn>
             </v-app-bar>
 
-            <v-navigation-drawer class="elevation-3" v-model="sidebarMenu" app floating :permanent="sidebarMenu" :mini-variant.sync="mini" v-if="!isMobile">
-                <v-list dense elevation="1">
+            <v-navigation-drawer light class="elevation-3" v-model="sidebarMenu" app floating :permanent="sidebarMenu" :mini-variant.sync="mini" v-if="!isMobile">
+                <v-list color="indigo" dark dense elevation="1">
                     <v-list-item>
                         <v-list-item-action>
                             <v-icon @click.stop="toggleMini = !toggleMini">mdi-chevron-left</v-icon>
@@ -105,45 +122,46 @@
                         </v-list-item-content>
                     </v-list-item>
                 </v-list>
-                <v-list-item class="px-2" link href="<?= base_url('member/profile'); ?>">
-                    <v-list-item-avatar>
-                        <v-icon>mdi-account</v-icon>
-                    </v-list-item-avatar>
-                    <v-list-item-content class="text-truncate">
-                        <?= session()->get('email') ?>
-                    </v-list-item-content>
-                </v-list-item>
-                <v-divider></v-divider>
-                <v-list>
-                    <?php $uri = new \CodeIgniter\HTTP\URI(current_url());?>
-                    <v-list-item-group color="primary">
-                        <?php if (session()->get('role') == 2) : ?>
-                            <v-list-item link href="<?= base_url('member'); ?>" <?php if($uri->getSegment(2)==""){echo 'class="v-item--active v-list-item--active"';}?> >
-                                <v-list-item-icon>
-                                    <v-icon>mdi-view-dashboard</v-icon>
-                                </v-list-item-icon>
-                                <v-list-item-content>
-                                    <v-list-item-title><?= lang('App.dashboard') ?></v-list-item-title>
-                                </v-list-item-content>
-                            </v-list-item>
-                            <v-list-item link href="<?= base_url('member/order-list'); ?>" <?php if($uri->getSegment(2)=="order-list"){echo 'class="v-item--active v-list-item--active"';}?> >
-                                <v-list-item-icon>
-                                    <v-icon>mdi-receipt-text</v-icon>
-                                </v-list-item-icon>
-                                <v-list-item-content>
-                                    <v-list-item-title><?= lang('App.orderList') ?></v-list-item-title>
-                                </v-list-item-content>
-                            </v-list-item>
-                            <v-list-item link href="<?= base_url('cart'); ?>">
-                                <v-list-item-icon>
-                                    <v-icon>mdi-cart</v-icon>
-                                </v-list-item-icon>
-                                <v-list-item-content>
-                                    <v-list-item-title><?= lang('App.cart') ?></v-list-item-title>
-                                </v-list-item-content>
-                            </v-list-item>
-                        <?php endif; ?>
-                    </v-list-item-group>
+
+
+                <v-list nav>
+                    <?php $uri = new \CodeIgniter\HTTP\URI(current_url()); ?>
+
+                    <?php if (session()->get('role') == 2) : ?>
+                        <v-list-item link href="<?= base_url('member'); ?>" <?php if ($uri->getSegment(2) == "") { ?><?= 'class="v-item--active v-list-item--active"'; ?> <?php } ?>>
+                            <v-list-item-icon>
+                                <v-icon>mdi-view-dashboard</v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-content>
+                                <v-list-item-title><?= lang('App.dashboard') ?></v-list-item-title>
+                            </v-list-item-content>
+                        </v-list-item>
+                        <v-list-item link href="<?= base_url('member/profile'); ?>" <?php if ($uri->getSegment(2) == "profile") { ?> <?= 'class="v-item--active v-list-item--active"'; ?> <?php } ?>>
+                            <v-list-item-icon>
+                                <v-icon>mdi-account</v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-content class="text-truncate">
+                                <?= session()->get('email') ?>
+                            </v-list-item-content>
+                        </v-list-item>
+                        <v-list-item link href="<?= base_url('member/order-list'); ?>" <?php if ($uri->getSegment(2) == "order-list") { ?> <?= 'class="v-item--active v-list-item--active"'; ?> <?php } ?>>
+                            <v-list-item-icon>
+                                <v-icon>mdi-receipt-text</v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-content>
+                                <v-list-item-title><?= lang('App.orderList') ?></v-list-item-title>
+                            </v-list-item-content>
+                        </v-list-item>
+                        <v-list-item link href="<?= base_url('cart'); ?>">
+                            <v-list-item-icon>
+                                <v-icon>mdi-cart</v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-content>
+                                <v-list-item-title><?= lang('App.cart') ?></v-list-item-title>
+                            </v-list-item-content>
+                        </v-list-item>
+                    <?php endif; ?>
+
                 </v-list>
 
                 <template v-slot:append>
@@ -200,7 +218,9 @@
 
             <v-main>
                 <v-container class="px-5 py-1" fluid>
-                    <?= $this->renderSection('content') ?>
+                    <div class="py-4">
+                        <?= $this->renderSection('content') ?>
+                    </div>
                 </v-container>
             </v-main>
 

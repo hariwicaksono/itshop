@@ -2,17 +2,15 @@
 <?php $this->section("content"); ?>
 <v-row>
     <v-col lg="12" cols="sm" class="pb-2">
-        <v-card elevation="2">
-            <v-row class="no-gutters">
-                <div class="col-auto">
-                    <div class="green darken-2 fill-height">&nbsp;</div>
-                </div>
-                <div class="col pa-3 py-4">
-                    <h3 class="text-truncate text-uppercase"><?= lang('App.order'); ?></h3>
-                    <h1 class="text-h3"><?= $jmlOrder; ?></h1>
-                </div>
-            </v-row>
+        <v-card link href="<?= base_url('member/order-list'); ?>" min-height="130px">
+            <div class="pa-5">
+                <h2 class="text-h5 font-weight-medium mb-2"><?= lang('App.order'); ?>
+                    <v-icon x-large class="blue--text text--lighten-1 float-right">mdi-cart</v-icon>
+                </h2>
+                <h1 class="text-h3"><?= $jmlOrder; ?></h1>
+            </div>
         </v-card>
+
     </v-col>
 </v-row>
 <?php $this->endSection("content") ?>
@@ -26,18 +24,18 @@
             "Content-Type": "application/json"
         }
     };
-    
+
     dataVue = {
         ...dataVue,
     }
 
     createdVue = function() {
-       
+
     }
 
     methodsVue = {
         ...methodsVue,
-        
+
     }
 </script>
 <?php $this->endSection("js") ?>

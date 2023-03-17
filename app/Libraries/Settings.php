@@ -19,8 +19,8 @@ class Settings
 		$site = $DB->table('settings');
 
 		foreach ($site->get()->getResult() as $set) {
-			$key = $set->variable_setting;
-			$value = $set->value_setting;
+			$key = $set->setting_variable;
+			$value = $set->setting_value;
 			$this->info[$key] = $value;
 		}
 	}

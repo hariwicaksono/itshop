@@ -16,7 +16,7 @@ class Kabupaten extends BaseControllerApi
         if ($data) {
             $response = [
                 'status' => true,
-                'message' => lang('App.successGetData'),
+                'message' => lang('App.getSuccess'),
                 'data' => $data,
             ];
             return $this->respond($response, 200);

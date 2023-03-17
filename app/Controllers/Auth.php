@@ -11,7 +11,9 @@ class Auth extends BaseController
 		if ($this->session->logged_in == true && $this->session->role == 1) {return redirect()->to('/admin');} 
 		if ($this->session->logged_in == true && $this->session->role == 2) {return redirect()->to('/');}
 		
-		return view('login');
+		return view('login', [
+			'title' => 'Login'
+		]);
 	}
 
 	public function register()
@@ -19,7 +21,9 @@ class Auth extends BaseController
 		if ($this->session->logged_in == true && $this->session->role == 1) {return redirect()->to('/admin');} 
 		if ($this->session->logged_in == true && $this->session->role == 2) {return redirect()->to('/');}
 
-		return view('register');
+		return view('register', [
+			'title' => 'Register'
+		]);
 	}
 
 	public function verifyEmail()

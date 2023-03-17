@@ -34,10 +34,26 @@ class Admin extends BaseController
         $order = $this->orderModel->countAllResults();
         $user = $this->userModel->countAllResults();
 
+        $jam = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '00'];
+        $data['jam'] = [];
+        foreach ($jam as $j) {
+            $date = date('Y-m-d') . ' ' . $j;
+            $harian[] = $this->orderModel->chartHarian($date);
+        }
+
+        $bln = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
+        $data['transaksi'] = [];
+        foreach ($bln as $b) {
+            $date = date('Y') . '-' . $b;
+            $transaksi[] = $this->orderModel->chartTransaksi($date);
+        }
+
         return view('admin/index', [
             'jmlProduct' => $product,
             'jmlUser' => $user,
             'jmlOrder' => $order,
+            'harian' => $harian,
+            'transaksi' => $transaksi
          ]);
     }
 

@@ -21,30 +21,32 @@
                             <v-icon v-else>mdi-checkbox-blank-outline</v-icon>
                         </td>
                         <td style="max-width:300px">
-                            <v-list-item class="ma-n3 pa-n3" two-line>
-                                <v-list-item-avatar size="80" rounded>
-                                    <v-img :src="'<?= base_url() ?>' + item.media_path" v-if="item.media_path != null"></v-img>
-                                    <v-img src="<?= base_url('images/no_image.jpg') ?>" v-else></v-img>
-                                </v-list-item-avatar>
-                                <v-list-item-content>
-                                    <p class="text-subtitle-2 text-underlined primary--text">{{item.product_name}}</p>
-                                    <p class="mb-0">SKU: {{item.product_sku ?? "-"}}</p>
-                                </v-list-item-content>
-                            </v-list-item>
+                            <a link @click="showItem(item)" title="Detail Product" alt="Detail Product">
+                                <v-list-item class="ma-n3 pa-n3" two-line>
+                                    <v-list-item-avatar size="80" rounded>
+                                        <v-img lazy-src="<?= base_url('images/no_image.jpg') ?>" :src="'<?= base_url() ?>' + item.media_path" v-if="item.media_path != null"></v-img>
+                                        <v-img src="<?= base_url('images/no_image.jpg') ?>" v-else></v-img>
+                                    </v-list-item-avatar>
+                                    <v-list-item-content>
+                                        <p class="text-subtitle-2 text-underlined primary--text">{{item.product_name}}</p>
+                                        <p class="mb-0">Code: {{item.product_code ?? "-"}}</p>
+                                    </v-list-item-content>
+                                </v-list-item>
+                            </a>
                         </td>
                         <td>
-                            <v-edit-dialog :return-value.sync="item.product_price" @save="setPrice(item)" @cancel="" @open="" @close="">
+                            <v-edit-dialog large :return-value.sync="item.product_price" @save="setPrice(item)" @cancel="" @open="" @close="">
                                 {{item.product_price}}
                                 <template v-slot:input>
-                                    <v-text-field v-model="item.product_price" type="number" single-line></v-text-field>
+                                    <v-text-field v-model="item.product_price" type="number" min="0" single-line></v-text-field>
                                 </template>
                             </v-edit-dialog>
                         </td>
                         <td>
-                            <v-edit-dialog :return-value.sync="item.stock" @save="setStock(item)" @cancel="" @open="" @close="">
+                            <v-edit-dialog large :return-value.sync="item.stock" @save="setStock(item)" @cancel="" @open="" @close="">
                                 {{item.stock}}
                                 <template v-slot:input>
-                                    <v-text-field v-model="item.stock" type="number" single-line></v-text-field>
+                                    <v-text-field v-model="item.stock" type="number" min="0" single-line></v-text-field>
                                 </template>
                             </v-edit-dialog>
                         </td>
@@ -52,9 +54,6 @@
                             <v-switch v-model="item.active" value="active" false-value="0" true-value="1" color="success" @click="setActive(item)"></v-switch>
                         </td>
                         <td>
-                            <v-btn icon class="mr-2" @click="showItem(item)" title="Show" alt="Show">
-                                <v-icon color="info">mdi-eye</v-icon>
-                            </v-btn>
                             <v-btn icon class="mr-2" @click="editItem(item)" title="Edit" alt="Edit">
                                 <v-icon color="primary">mdi-pencil</v-icon>
                             </v-btn>
@@ -97,10 +96,10 @@
                             <v-col cols="12" sm="9">
                                 <v-row>
                                     <v-col>
-                                        <v-file-input v-model="image" single-line label="Cover" id="file" class="mb-2" accept=".jpg, .jpeg, .png" prepend-icon="mdi-camera" @change="onFileChange" :loading="loading1" class="mb-0" v-show="imagePreview == null"></v-file-input>
+                                        <v-file-input v-model="image" single-line label="Cover" id="file" class="mb-2" accept=".jpg, .jpeg, .png" prepend-icon="mdi-camera" @change="onFileChange" :loading="loading1" class="mb-0" :error-messages="product_imageError" v-if="imagePreview == null"></v-file-input>
 
-                                        <div v-show="imagePreview">
-                                            <v-img :src="imagePreview" max-width="150" class="mt-n3 mb-3">
+                                        <div v-else>
+                                            <v-img :src="imagePreview" aspect-ratio="1" class="mb-3">
                                                 <v-overlay v-model="overlay" absolute :opacity="0.1">
                                                     <v-btn small class="ma-2" color="error" dark @click="deleteMedia" :loading="loading1">
                                                         <?= lang('App.delete') ?>
@@ -113,10 +112,10 @@
                                         </div>
                                     </v-col>
                                     <v-col>
-                                        <v-file-input v-model="image1" single-line label="Image 1" id="file" class="mb-2" accept=".jpg, .jpeg, .png" prepend-icon="mdi-camera" @change="onFileChange1" :loading="loading2" class="mb-0" v-show="imagePreview1 == null"></v-file-input>
+                                        <v-file-input v-model="image1" single-line label="Image 1" id="file" class="mb-2" accept=".jpg, .jpeg, .png" prepend-icon="mdi-camera" @change="onFileChange1" :loading="loading2" class="mb-0" v-if="imagePreview1 == null"></v-file-input>
 
-                                        <div v-show="imagePreview1">
-                                            <v-img :src="imagePreview1" max-width="150" class="mt-n3 mb-3">
+                                        <div v-else>
+                                            <v-img :src="imagePreview1" aspect-ratio="1" class="mb-3">
                                                 <v-overlay v-model="overlay1" absolute :opacity="0.1">
                                                     <v-btn small class="ma-2" color="error" dark @click="deleteMedia1" :loading="loading2">
                                                         <?= lang('App.delete') ?>
@@ -129,10 +128,10 @@
                                         </div>
                                     </v-col>
                                     <v-col>
-                                        <v-file-input v-model="image2" single-line label="Image 2" id="file" class="mb-2" accept=".jpg, .jpeg, .png" prepend-icon="mdi-camera" @change="onFileChange2" :loading="loading3" class="mb-0" v-show="imagePreview2 == null"></v-file-input>
+                                        <v-file-input v-model="image2" single-line label="Image 2" id="file" class="mb-2" accept=".jpg, .jpeg, .png" prepend-icon="mdi-camera" @change="onFileChange2" :loading="loading3" class="mb-0" v-if="imagePreview2 == null"></v-file-input>
 
-                                        <div v-show="imagePreview2">
-                                            <v-img :src="imagePreview2" max-width="150" class="mt-n3 mb-3">
+                                        <div v-else>
+                                            <v-img :src="imagePreview2" aspect-ratio="1" class="mb-3">
                                                 <v-overlay v-model="overlay2" absolute :opacity="0.1">
                                                     <v-btn small class="ma-2" color="error" dark @click="deleteMedia2" :loading="loading3">
                                                         <?= lang('App.delete') ?>
@@ -145,10 +144,10 @@
                                         </div>
                                     </v-col>
                                     <v-col>
-                                        <v-file-input v-model="image3" single-line label="Image 3" id="file" class="mb-2" accept=".jpg, .jpeg, .png" prepend-icon="mdi-camera" @change="onFileChange3" :loading="loading4" class="mb-0" v-show="imagePreview3 == null"></v-file-input>
+                                        <v-file-input v-model="image3" single-line label="Image 3" id="file" class="mb-2" accept=".jpg, .jpeg, .png" prepend-icon="mdi-camera" @change="onFileChange3" :loading="loading4" class="mb-0" v-if="imagePreview3 == null"></v-file-input>
 
-                                        <div v-show="imagePreview3">
-                                            <v-img :src="imagePreview3" max-width="150" class="mt-n3 mb-3">
+                                        <div v-else>
+                                            <v-img :src="imagePreview3" aspect-ratio="1" class="mb-3">
                                                 <v-overlay v-model="overlay3" absolute :opacity="0.1">
                                                     <v-btn small class="ma-2" color="error" dark @click="deleteMedia3" :loading="loading4">
                                                         <?= lang('App.delete') ?>
@@ -161,11 +160,11 @@
                                         </div>
                                     </v-col>
                                     <v-col>
-                                        <v-file-input v-model="image4" single-line label="Image 4" id="file" class="mb-2" accept=".jpg, .jpeg, .png" prepend-icon="mdi-camera" @change="onFileChange4" :loading="loading5" class="mb-0" v-show="imagePreview4 == null"></v-file-input>
+                                        <v-file-input v-model="image4" single-line label="Image 4" id="file" class="mb-2" accept=".jpg, .jpeg, .png" prepend-icon="mdi-camera" @change="onFileChange4" :loading="loading5" class="mb-0" v-if="imagePreview4 == null"></v-file-input>
 
-                                        <div v-show="imagePreview4">
-                                            <v-img :src="imagePreview4" max-width="150" class="mt-n3 mb-3">
-                                                <v-overlay v-model="overlay3" absolute :opacity="0.1">
+                                        <div v-else>
+                                            <v-img :src="imagePreview4" aspect-ratio="1" class="mb-3">
+                                                <v-overlay v-model="overlay4" absolute :opacity="0.1">
                                                     <v-btn small class="ma-2" color="error" dark @click="deleteMedia4" :loading="loading5">
                                                         <?= lang('App.delete') ?>
                                                         <v-icon dark right>
@@ -182,17 +181,26 @@
                         </v-row>
                         <v-row class="mt-n3">
                             <v-col class="mb-n5" cols="12" sm="3">
-                                <p class="mb-1 text-subtitle-1 font-weight-bold"><?= lang('App.productName') ?></p>
+                                <p class="mb-1 text-subtitle-1 font-weight-bold"><?= lang('App.productName') ?>*</p>
                                 <p class="text-caption">Cantumkan min. 3 karakter agar mudah ditemukan terdiri dari jenis barang, merek, warna, bahan, tipe.</p>
                             </v-col>
                             <v-col cols="12" sm="9">
-                                <v-text-field label="<?= lang('App.productName') ?> *" v-model="productName" :error-messages="product_nameError" outlined>
+                                <v-text-field label="<?= lang('App.productName') ?>" v-model="productName" :error-messages="product_nameError" outlined>
                                 </v-text-field>
                             </v-col>
                         </v-row>
                         <v-row>
                             <v-col class="mb-n5" cols="12" sm="3">
-                                <p class="mb-1 text-subtitle-1 font-weight-bold"><?= lang('App.productPrice') ?></p>
+                                <p class="mb-1 text-subtitle-1 font-weight-bold"><?= lang('App.productCode') ?>*</p>
+                                <p class="text-caption"></p>
+                            </v-col>
+                            <v-col cols="12" sm="9">
+                                <v-text-field label="<?= lang('App.productCode') ?>" v-model="productCode" :error-messages="product_codeError" outlined></v-text-field>
+                            </v-col>
+                        </v-row>
+                        <v-row>
+                            <v-col class="mb-n5" cols="12" sm="3">
+                                <p class="mb-1 text-subtitle-1 font-weight-bold"><?= lang('App.productPrice') ?>*</p>
                                 <p class="text-caption"></p>
                             </v-col>
                             <v-col cols="12" sm="9">
@@ -246,31 +254,31 @@
                             <v-row>
                                 <v-col>
                                     <v-card max-width="120">
-                                        <v-img v-model="mediaID" v-bind:src="'<?= base_url(); ?>' + mediaPath" />
+                                        <v-img v-model="mediaID" v-bind:src="'<?= base_url(); ?>' + mediaPath" aspect-ratio="1">
                                         </v-img>
                                     </v-card>
                                 </v-col>
                                 <v-col>
                                     <v-card max-width="120">
-                                        <v-img v-model="media1" v-bind:src="'<?= base_url(); ?>' + mediaPath1" />
+                                        <v-img v-model="media1" v-bind:src="'<?= base_url(); ?>' + mediaPath1" aspect-ratio="1">
                                         </v-img>
                                     </v-card>
                                 </v-col>
                                 <v-col>
                                     <v-card max-width="120">
-                                        <v-img v-model="media2" v-bind:src="'<?= base_url(); ?>' + mediaPath2" />
+                                        <v-img v-model="media2" v-bind:src="'<?= base_url(); ?>' + mediaPath2" aspect-ratio="1">
                                         </v-img>
                                     </v-card>
                                 </v-col>
                                 <v-col>
                                     <v-card max-width="120">
-                                        <v-img v-model="media3" v-bind:src="'<?= base_url(); ?>' + mediaPath3" />
+                                        <v-img v-model="media3" v-bind:src="'<?= base_url(); ?>' + mediaPath3" aspect-ratio="1">
                                         </v-img>
                                     </v-card>
                                 </v-col>
                                 <v-col>
                                     <v-card max-width="120">
-                                        <v-img v-model="media3" v-bind:src="'<?= base_url(); ?>' + mediaPath4" />
+                                        <v-img v-model="media3" v-bind:src="'<?= base_url(); ?>' + mediaPath4" aspect-ratio="1">
                                         </v-img>
                                     </v-card>
                                 </v-col>
@@ -279,11 +287,20 @@
                     </v-row>
                     <v-row>
                         <v-col class="mb-n5" cols="12" sm="3">
-                            <p class="mb-1 text-subtitle-1 font-weight-bold"><?= lang('App.productName') ?></p>
+                            <p class="mb-1 text-subtitle-1 font-weight-bold"><?= lang('App.productName') ?>*</p>
                             <p class="text-caption">Cantumkan min. 3 karakter agar mudah ditemukan terdiri dari jenis barang, merek, warna, bahan, tipe.</p>
                         </v-col>
                         <v-col cols="12" sm="9">
-                            <v-text-field label="<?= lang('App.productName') ?> *" v-model="productNameEdit" outlined></v-text-field>
+                            <v-text-field label="<?= lang('App.productName') ?>" v-model="productNameEdit" outlined></v-text-field>
+                        </v-col>
+                    </v-row>
+                    <v-row>
+                        <v-col class="mb-n5" cols="12" sm="3">
+                            <p class="mb-1 text-subtitle-1 font-weight-bold"><?= lang('App.productCode') ?>*</p>
+                            <p class="text-caption"></p>
+                        </v-col>
+                        <v-col cols="12" sm="9">
+                            <v-text-field label="<?= lang('App.productCode') ?>" v-model="productCodeEdit" type="text" outlined></v-text-field>
                         </v-col>
                     </v-row>
                     <v-row>
@@ -339,13 +356,13 @@
                                         <template v-if="mediaPath != null">
                                             <v-hover>
                                                 <template v-slot:default="{ hover }">
-                                                    <v-card max-width="120">
-                                                        <v-img v-model="mediaID" v-bind:src="'<?= base_url(); ?>' + mediaPath" />
+                                                    <v-card>
+                                                        <v-img v-model="mediaID" v-bind:src="'<?= base_url(); ?>' + mediaPath" aspect-ratio="1">
                                                         </v-img>
 
                                                         <v-fade-transition>
                                                             <v-overlay v-if="hover" absolute color="#036358">
-                                                                <v-btn small color="red" dark @click="deleteMedia(mediaID)" :loading="loading1">
+                                                                <v-btn small color="red" dark @click="deleteMedia" :loading="loading1">
                                                                     <?= lang('App.delete') ?>
                                                                     <v-icon>
                                                                         mdi-delete
@@ -358,10 +375,10 @@
                                             </v-hover>
                                         </template>
                                         <template v-else>
-                                            <v-file-input v-model="image" single-line label="Cover" id="file" class="mb-2" accept=".jpg, .jpeg, .png" prepend-icon="mdi-camera" @change="onFileChange" :loading="loading1" class="mb-0" v-show="imagePreview == null"></v-file-input>
+                                            <v-file-input v-model="image" single-line label="Cover" id="file" class="mb-2" accept=".jpg, .jpeg, .png" prepend-icon="mdi-camera" @change="onFileChange" :loading="loading1" class="mb-0" :error-messages="product_imageError" v-if="imagePreview == null"></v-file-input>
 
-                                            <div v-show="imagePreview">
-                                                <v-img :src="imagePreview" max-width="150" class="mt-n3 mb-3">
+                                            <div v-else>
+                                                <v-img :src="imagePreview" aspect-ratio="1" class="mb-3">
                                                     <v-overlay v-model="overlay" absolute :opacity="0.1">
                                                         <v-btn small class="ma-2" color="error" dark @click="deleteMedia" :loading="loading1">
                                                             <?= lang('App.delete') ?>
@@ -378,13 +395,13 @@
                                         <template v-if="mediaPath1 != null">
                                             <v-hover>
                                                 <template v-slot:default="{ hover }">
-                                                    <v-card max-width="120">
-                                                        <v-img v-model="mediaID" v-bind:src="'<?= base_url(); ?>' + mediaPath" />
+                                                    <v-card>
+                                                        <v-img v-model="media1" v-bind:src="'<?= base_url(); ?>' + mediaPath1" aspect-ratio="1">
                                                         </v-img>
 
                                                         <v-fade-transition>
                                                             <v-overlay v-if="hover" absolute color="#036358">
-                                                                <v-btn small color="red" dark @click="deleteMedia(mediaID)" :loading="loading1">
+                                                                <v-btn small color="red" dark @click="deleteMedia1" :loading="loading1">
                                                                     <?= lang('App.delete') ?>
                                                                     <v-icon>
                                                                         mdi-delete
@@ -397,10 +414,10 @@
                                             </v-hover>
                                         </template>
                                         <template v-else>
-                                            <v-file-input v-model="image1" single-line label="Image 1" id="file" class="mb-2" accept=".jpg, .jpeg, .png" prepend-icon="mdi-camera" @change="onFileChange1" :loading="loading2" class="mb-0" v-show="imagePreview1 == null"></v-file-input>
+                                            <v-file-input v-model="image1" single-line label="Image 1" id="file" class="mb-2" accept=".jpg, .jpeg, .png" prepend-icon="mdi-camera" @change="onFileChange1" :loading="loading2" class="mb-0" v-if="imagePreview1 == null"></v-file-input>
 
-                                            <div v-show="imagePreview1">
-                                                <v-img :src="imagePreview1" max-width="150" class="mt-n3 mb-3">
+                                            <div v-else>
+                                                <v-img :src="imagePreview1" aspect-ratio="1" class="mb-3">
                                                     <v-overlay v-model="overlay1" absolute :opacity="0.1">
                                                         <v-btn small class="ma-2" color="error" dark @click="deleteMedia1" :loading="loading2">
                                                             <?= lang('App.delete') ?>
@@ -417,13 +434,13 @@
                                         <template v-if="mediaPath2 != null">
                                             <v-hover>
                                                 <template v-slot:default="{ hover }">
-                                                    <v-card max-width="120">
-                                                        <v-img v-model="mediaID" v-bind:src="'<?= base_url(); ?>' + mediaPath" />
+                                                    <v-card>
+                                                        <v-img v-model="media2" v-bind:src="'<?= base_url(); ?>' + mediaPath2" aspect-ratio="1">
                                                         </v-img>
 
                                                         <v-fade-transition>
                                                             <v-overlay v-if="hover" absolute color="#036358">
-                                                                <v-btn small color="red" dark @click="deleteMedia(mediaID)" :loading="loading1">
+                                                                <v-btn small color="red" dark @click="deleteMedia2" :loading="loading1">
                                                                     <?= lang('App.delete') ?>
                                                                     <v-icon>
                                                                         mdi-delete
@@ -436,10 +453,10 @@
                                             </v-hover>
                                         </template>
                                         <template v-else>
-                                            <v-file-input v-model="image2" single-line label="Image 2" id="file" class="mb-2" accept=".jpg, .jpeg, .png" prepend-icon="mdi-camera" @change="onFileChange2" :loading="loading3" class="mb-0" v-show="imagePreview2 == null"></v-file-input>
+                                            <v-file-input v-model="image2" single-line label="Image 2" id="file" class="mb-2" accept=".jpg, .jpeg, .png" prepend-icon="mdi-camera" @change="onFileChange2" :loading="loading3" class="mb-0" v-if="imagePreview2 == null"></v-file-input>
 
-                                            <div v-show="imagePreview2">
-                                                <v-img :src="imagePreview2" max-width="150" class="mt-n3 mb-3">
+                                            <div v-else>
+                                                <v-img :src="imagePreview2" aspect-ratio="1" class="mb-3">
                                                     <v-overlay v-model="overlay2" absolute :opacity="0.1">
                                                         <v-btn small class="ma-2" color="error" dark @click="deleteMedia2" :loading="loading3">
                                                             <?= lang('App.delete') ?>
@@ -456,13 +473,13 @@
                                         <template v-if="mediaPath3 != null">
                                             <v-hover>
                                                 <template v-slot:default="{ hover }">
-                                                    <v-card max-width="120">
-                                                        <v-img v-model="mediaID" v-bind:src="'<?= base_url(); ?>' + mediaPath" />
+                                                    <v-card>
+                                                        <v-img v-model="media3" v-bind:src="'<?= base_url(); ?>' + mediaPath3" aspect-ratio="1">
                                                         </v-img>
 
                                                         <v-fade-transition>
                                                             <v-overlay v-if="hover" absolute color="#036358">
-                                                                <v-btn small color="red" dark @click="deleteMedia(mediaID)" :loading="loading1">
+                                                                <v-btn small color="red" dark @click="deleteMedia3" :loading="loading1">
                                                                     <?= lang('App.delete') ?>
                                                                     <v-icon>
                                                                         mdi-delete
@@ -475,10 +492,10 @@
                                             </v-hover>
                                         </template>
                                         <template v-else>
-                                            <v-file-input v-model="image3" single-line label="Image 3" id="file" class="mb-2" accept=".jpg, .jpeg, .png" prepend-icon="mdi-camera" @change="onFileChange3" :loading="loading4" class="mb-0" v-show="imagePreview3 == null"></v-file-input>
+                                            <v-file-input v-model="image3" single-line label="Image 3" id="file" class="mb-2" accept=".jpg, .jpeg, .png" prepend-icon="mdi-camera" @change="onFileChange3" :loading="loading4" class="mb-0" v-if="imagePreview3 == null"></v-file-input>
 
-                                            <div v-show="imagePreview3">
-                                                <v-img :src="imagePreview3" max-width="150" class="mt-n3 mb-3">
+                                            <div v-else>
+                                                <v-img :src="imagePreview3" aspect-ratio="1" class="mb-3">
                                                     <v-overlay v-model="overlay3" absolute :opacity="0.1">
                                                         <v-btn small class="ma-2" color="error" dark @click="deleteMedia3" :loading="loading4">
                                                             <?= lang('App.delete') ?>
@@ -495,13 +512,13 @@
                                         <template v-if="mediaPath4 != null">
                                             <v-hover>
                                                 <template v-slot:default="{ hover }">
-                                                    <v-card max-width="120">
-                                                        <v-img v-model="mediaID" v-bind:src="'<?= base_url(); ?>' + mediaPath" />
+                                                    <v-card>
+                                                        <v-img v-model="media4" v-bind:src="'<?= base_url(); ?>' + mediaPath4" aspect-ratio="1">
                                                         </v-img>
 
                                                         <v-fade-transition>
                                                             <v-overlay v-if="hover" absolute color="#036358">
-                                                                <v-btn small color="red" dark @click="deleteMedia(mediaID)" :loading="loading1">
+                                                                <v-btn small color="red" dark @click="deleteMedia4" :loading="loading1">
                                                                     <?= lang('App.delete') ?>
                                                                     <v-icon>
                                                                         mdi-delete
@@ -514,11 +531,11 @@
                                             </v-hover>
                                         </template>
                                         <template v-else>
-                                            <v-file-input v-model="image4" single-line label="Image 4" id="file" class="mb-2" accept=".jpg, .jpeg, .png" prepend-icon="mdi-camera" @change="onFileChange4" :loading="loading5" class="mb-0" v-show="imagePreview4 == null"></v-file-input>
+                                            <v-file-input v-model="image4" single-line label="Image 4" id="file" class="mb-2" accept=".jpg, .jpeg, .png" prepend-icon="mdi-camera" @change="onFileChange4" :loading="loading5" class="mb-0" v-if="imagePreview4 == null"></v-file-input>
 
-                                            <div v-show="imagePreview4">
-                                                <v-img :src="imagePreview4" max-width="150" class="mt-n3 mb-3">
-                                                    <v-overlay v-model="overlay3" absolute :opacity="0.1">
+                                            <div v-else>
+                                                <v-img :src="imagePreview4" aspect-ratio="1" class="mb-3">
+                                                    <v-overlay v-model="overlay4" absolute :opacity="0.1">
                                                         <v-btn small class="ma-2" color="error" dark @click="deleteMedia4" :loading="loading5">
                                                             <?= lang('App.delete') ?>
                                                             <v-icon dark right>
@@ -537,11 +554,20 @@
 
                         <v-row>
                             <v-col class="mb-n5" cols="12" sm="3">
-                                <p class="mb-1 text-subtitle-1 font-weight-bold"><?= lang('App.productName') ?></p>
+                                <p class="mb-1 text-subtitle-1 font-weight-bold"><?= lang('App.productName') ?>*</p>
                                 <p class="text-caption">Cantumkan min. 3 karakter agar mudah ditemukan terdiri dari jenis barang, merek, warna, bahan, tipe.</p>
                             </v-col>
                             <v-col cols="12" sm="9">
-                                <v-text-field label="<?= lang('App.productName') ?> *" v-model="productNameEdit" :rules="[rules.required]" outlined></v-text-field>
+                                <v-text-field label="<?= lang('App.productName') ?>" v-model="productNameEdit" :error-messages="product_nameError" outlined></v-text-field>
+                            </v-col>
+                        </v-row>
+                        <v-row>
+                            <v-col class="mb-n5" cols="12" sm="3">
+                                <p class="mb-1 text-subtitle-1 font-weight-bold"><?= lang('App.productCode') ?>*</p>
+                                <p class="text-caption"></p>
+                            </v-col>
+                            <v-col cols="12" sm="9">
+                                <v-text-field label="<?= lang('App.productCode') ?>" v-model="productCodeEdit" :error-messages="product_codeError" outlined></v-text-field>
                             </v-col>
                         </v-row>
                         <v-row>
@@ -550,7 +576,7 @@
                                 <p class="text-caption"></p>
                             </v-col>
                             <v-col cols="12" sm="9">
-                                <v-text-field label="<?= lang('App.productPrice') ?> (Rp)" v-model="productPriceEdit" type="number" :rules="[rules.required]" outlined></v-text-field>
+                                <v-text-field label="<?= lang('App.productPrice') ?> (Rp)" v-model="productPriceEdit" type="number" :error-messages="product_priceError" outlined></v-text-field>
                             </v-col>
                         </v-row>
                         <v-row>
@@ -559,7 +585,7 @@
                                 <p class="text-caption">Pastikan deskripsi barang memuat spesifikasi, ukuran, bahan, masa berlaku, dan lainnya. Semakin detail, semakin berguna bagi pembeli, cantumkan min. 260 karakter agar pembeli semakin mudah mengerti dan menemukan barang anda</p>
                             </v-col>
                             <v-col cols="12" sm="9">
-                                <v-textarea v-model="productDescriptionEdit" counter maxlength="3000" rows="10" outlined full-width single-line></v-textarea>
+                                <v-textarea v-model="productDescriptionEdit" counter maxlength="3000" rows="10" :error-messages="product_descriptionError" outlined full-width single-line></v-textarea>
                             </v-col>
                         </v-row>
 
@@ -642,10 +668,10 @@
             },
             {
                 text: '<?= lang('App.price') ?>',
-                value: 'product_price'
+                value: 'product_code'
             },
             {
-                text: '<?= lang('App.stock') ?>',
+                text: '<?= strtoupper(lang('App.stock')) ?>',
                 value: 'stock'
             },
             {
@@ -664,6 +690,8 @@
         modalEdit: false,
         modalShow: false,
         modalDelete: false,
+        productCode: "",
+        product_codeError: "",
         productName: "",
         product_nameError: "",
         productPrice: "",
@@ -685,6 +713,7 @@
         active: "",
         activeError: "",
         productIdEdit: "",
+        productCodeEdit: "",
         productNameEdit: "",
         productPriceEdit: "",
         productDescriptionEdit: "",
@@ -747,17 +776,24 @@
 
         modalAddOpen: function() {
             this.modalAdd = true;
-            this.productImage = null;
             this.notifType = "";
         },
         modalAddClose: function() {
+            this.productCode = "";
             this.productName = "";
             this.productPrice = "";
             this.productDescription = "";
-            this.productImage = null;
-            this.modalAdd = false;
+            if (this.alert == true) {
+                this.modalAdd = true;
+                this.snackbar = true;
+                this.snackbarMessage = "<?= lang('App.disabledImgUploaded'); ?>";
+            } else {
+                this.modalAdd = false;
+            }
+            
             this.$refs.form.resetValidation();
         },
+
         // Get Product
         getProducts: function() {
             this.loading = true;
@@ -786,6 +822,7 @@
                     }
                 })
         },
+
         // Upload Browse File
         onFileChange() {
             const reader = new FileReader()
@@ -857,6 +894,7 @@
                         this.snackbar = true;
                         this.snackbarMessage = data.message;
                         this.image = null;
+                        this.mediaPath = null;
                         this.imagePreview = null;
                         this.overlay = false;
                         this.alert = false;
@@ -876,6 +914,7 @@
                     }
                 })
         },
+
         // Upload Browse File 1
         onFileChange1() {
             const reader = new FileReader()
@@ -947,6 +986,7 @@
                         this.snackbar = true;
                         this.snackbarMessage = data.message;
                         this.image1 = null;
+                        this.mediaPath1 = null;
                         this.imagePreview1 = null;
                         this.overlay1 = false;
                         this.alert = false;
@@ -966,6 +1006,7 @@
                     }
                 })
         },
+
         // Upload Browse File 2
         onFileChange2() {
             const reader = new FileReader()
@@ -1037,6 +1078,7 @@
                         this.snackbar = true;
                         this.snackbarMessage = data.message;
                         this.image2 = null;
+                        this.mediaPath2 = null;
                         this.imagePreview2 = null;
                         this.overlay2 = false;
                         this.alert = false;
@@ -1056,6 +1098,7 @@
                     }
                 })
         },
+
         // Upload Browse File 3
         onFileChange3() {
             const reader = new FileReader()
@@ -1127,6 +1170,7 @@
                         this.snackbar = true;
                         this.snackbarMessage = data.message;
                         this.image3 = null;
+                        this.mediaPath3 = null;
                         this.imagePreview3 = null;
                         this.overlay3 = false;
                         this.alert = false;
@@ -1146,6 +1190,7 @@
                     }
                 })
         },
+
         // Upload Browse File 4
         onFileChange4() {
             const reader = new FileReader()
@@ -1217,6 +1262,7 @@
                         this.snackbar = true;
                         this.snackbarMessage = data.message;
                         this.image4 = null;
+                        this.mediaPath4 = null;
                         this.imagePreview4 = null;
                         this.overlay4 = false;
                         this.alert = false;
@@ -1241,6 +1287,7 @@
         saveProduct: function() {
             this.loading = true;
             axios.post(`<?= base_url() ?>api/product/save`, {
+                    product_code: this.productCode,
                     product_name: this.productName,
                     product_price: this.productPrice,
                     product_description: this.productDescription,
@@ -1258,6 +1305,7 @@
                         this.snackbar = true;
                         this.snackbarMessage = data.message;
                         this.getProducts();
+                        this.productCode = "";
                         this.productName = "";
                         this.productPrice = "";
                         this.productDescription = "";
@@ -1271,11 +1319,14 @@
                         this.media2 = "";
                         this.media3 = "";
                         this.media4 = "";
+                        this.alert = false;
                         this.modalAdd = false;
                         this.$refs.form.resetValidation();
                     } else {
-                        this.notifType = "error";
-                        this.notifMessage = data.message;
+                        //this.notifType = "error";
+                        //this.notifMessage = data.message;
+                        this.snackbar = true;
+                        this.snackbarMessage = data.message;
                         this.modalAdd = true;
                         errorKeys = Object.keys(data.data);
                         errorKeys.map((el) => {
@@ -1307,6 +1358,7 @@
             this.modalShow = true;
             this.show = false;
             this.notifType = "";
+            this.productCodeEdit = product.product_code;
             this.productIdEdit = product.product_id;
             this.productNameEdit = product.product_name;
             this.productPriceEdit = product.product_price;
@@ -1329,6 +1381,7 @@
             this.show = false;
             this.notifType = "";
             this.productIdEdit = product.product_id;
+            this.productCodeEdit = product.product_code;
             this.productNameEdit = product.product_name;
             this.productPriceEdit = product.product_price;
             this.productDescriptionEdit = product.product_description;
@@ -1352,6 +1405,7 @@
         updateProduct: function() {
             this.loading = true;
             axios.put(`<?= base_url() ?>api/product/update/${this.productIdEdit}`, {
+                    product_code: this.productCodeEdit,
                     product_name: this.productNameEdit,
                     product_price: this.productPriceEdit,
                     product_description: this.productDescriptionEdit,
@@ -1368,13 +1422,41 @@
                     if (data.status == true) {
                         this.snackbar = true;
                         this.snackbarMessage = data.message;
+                        this.image = null;
+                        this.image1 = null;
+                        this.image2 = null;
+                        this.image3 = null;
+                        this.image4 = null;
+                        this.mediaID = "";
+                        this.media1 = "";
+                        this.media2 = "";
+                        this.media3 = "";
+                        this.media4 = "";
+                        this.imagePreview = null;
+                        this.imagePreview1 = null;
+                        this.imagePreview2 = null;
+                        this.imagePreview3 = null;
+                        this.imagePreview4 = null;
                         this.getProducts();
                         this.modalEdit = false;
+                        this.alert = false;
                         this.$refs.form.resetValidation();
                     } else {
-                        this.notifType = "error";
-                        this.notifMessage = data.message;
+                        //this.notifType = "error";
+                        //this.notifMessage = data.message;
+                        this.snackbar = true;
+                        this.snackbarMessage = data.message;
                         this.modalEdit = true;
+                        errorKeys = Object.keys(data.data);
+                        errorKeys.map((el) => {
+                            this[`${el}Error`] = data.data[el];
+                        });
+                        if (errorKeys.length > 0) {
+                            setTimeout(() => this.notifType = "", 4000);
+                            setTimeout(() => errorKeys.map((el) => {
+                                this[`${el}Error`] = "";
+                            }), 4000);
+                        }
                         this.$refs.form.validate();
                     }
                 })
@@ -1413,6 +1495,8 @@
                     } else {
                         this.notifType = "error";
                         this.notifMessage = data.message;
+                        this.snackbar = true;
+                        this.snackbarMessage = data.message;
                         this.modalDelete = true;
                     }
                 })

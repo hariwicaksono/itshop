@@ -5,13 +5,43 @@
     <v-container class="py-7">
         <v-row>
             <v-col cols="12" sm="4">
-                <v-img :src="'<?= base_url() ?>' + products.media_path" class="mb-3" title="" alt="" v-if="products.media_path != null"></v-img>
-                <v-img src="<?= base_url('images/no_image.jpg') ?>" class="mb-3" v-else></v-img>
+                <a :href="'<?= base_url() ?>' + image" target="_blank"><v-img v-model="image" :src="'<?= base_url() ?>' + image" aspect-ratio="1" class="mb-4" title="" alt=""></v-img></a>
+
+                <v-row>
+                    <v-col>
+                        <a @click="click(products.media_path)">
+                            <v-img :src="'<?= base_url() ?>' + products.media_path" aspect-ratio="1" class="mb-3" title="Thumb Cover" alt="Thumb Cover" v-if="products.media_path != null"></v-img>
+                        </a>
+                    </v-col>
+                    <v-col>
+                        <a @click="click(products.media_path1)">
+                            <v-img :src="'<?= base_url() ?>' + products.media_path1" aspect-ratio="1" class="mb-3" title="Thumb Image 1" alt="Thumb Image 1" v-if="products.media_path1 != null"></v-img>
+                        </a>
+                    </v-col>
+                    <v-col>
+                        <a @click="click(products.media_path2)">
+                            <v-img :src="'<?= base_url() ?>' + products.media_path2" aspect-ratio="1" class="mb-3" title="Thumb Image 2" alt="Thumb Image 2" v-if="products.media_path2 != null"></v-img>
+                        </a>
+                    </v-col>
+                    <v-col>
+                        <a @click="click(products.media_path3)">
+                            <v-img :src="'<?= base_url() ?>' + products.media_path3" aspect-ratio="1" class="mb-3" title="Thumb Image 3" alt="Thumb Image 3" v-if="products.media_path3 != null"></v-img>
+                        </a>
+                    </v-col>
+                    <v-col>
+                        <a @click="click(products.media_path4)">
+                            <v-img :src="'<?= base_url() ?>' + products.media_path4" aspect-ratio="1" class="mb-3" title="Thumb Image 4" alt="Thumb Image 4" v-if="products.media_path4 != null"></v-img>
+                        </a>
+                    </v-col>
+                </v-row>
+
+
+                <!-- <v-img src="<?= base_url('images/no_image.jpg') ?>" class="mb-3" v-else></v-img> -->
             </v-col>
             <v-col cols="12" sm="5">
                 <h1 class="text-h5 font-weight-bold mb-4">{{name}}</h1>
                 <h2 class="text-h4 font-weight-bold mb-4">{{RibuanLocale(price)}}</h2>
-               <!--  <v-chip class="mb-3" title="" alt=""></v-chip> -->
+                <v-chip class="mb-3" title="" alt="">{{code}}</v-chip>
 
                 <h4 class="mb-4 mt-3">Detail Product:</h4>
                 <p v-html="products.product_description"></p>
@@ -74,17 +104,20 @@
         qtyError: "",
         products: [],
         shipment: [],
+        code: "",
         name: "",
         price: 0,
         stock: 0,
         subTotal: 0,
         pageCount: 0,
         currentPage: 1,
+        image: "",
     }
 
     createdVue = function() {
         this.getProduct();
         this.getShipment();
+        
     }
 
     watchVue = {
@@ -115,9 +148,11 @@
                         //this.snackbar = true;
                         //this.snackbarMessage = data.message;
                         this.products = data.data;
+                        this.code = this.products.product_code;
                         this.name = this.products.product_name;
                         this.price = this.products.product_price;
                         this.stock = parseInt(this.products.stock);
+                        this.image = this.products.media_path;
                         if (this.qty == 1) {
                             this.subTotal = this.price;
                         }
@@ -146,6 +181,10 @@
             if (this.qty < 1) {
                 this.qty = 1;
             };
+        },
+
+        click(image) {
+            this.image = image;
         },
 
         // Save Cart

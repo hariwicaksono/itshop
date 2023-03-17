@@ -7,8 +7,8 @@ use CodeIgniter\Model;
 class KabupatenModel extends Model
 {
     protected $DBGroup              = 'default';
-    protected $table                = 'kabupaten';
-    protected $primaryKey           = 'kabupaten_id';
+    protected $table                = 'kabupaten_kota';
+    protected $primaryKey           = 'kabupaten_kota_id';
     protected $useAutoIncrement     = true;
     protected $insertID             = 0;
     protected $returnType           = 'array';

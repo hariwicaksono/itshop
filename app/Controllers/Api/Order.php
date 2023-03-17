@@ -57,11 +57,11 @@ class Order extends BaseControllerApi
 
         $pymodel = new PaymentModel();
         $cek = $pymodel->where(['payment_id' => $payment])->first();
-        if ($cek['cod']==0) {
-            $grandtotal = $total+rand(1, 100);
+        if ($cek['cod'] == 0) {
+            $grandtotal = $total + rand(1, 100);
         } else {
             $grandtotal = $total;
-        }     
+        }
 
         if (!$this->validate($rules)) {
             $response = [
@@ -125,7 +125,7 @@ class Order extends BaseControllerApi
 
                 $stock = array(
                     'product_id' => $product_id,
-                    'stock' => $stock-$qty,
+                    'stock' => $stock - $qty,
                 );
                 array_push($arrStock, $stock);
             }
