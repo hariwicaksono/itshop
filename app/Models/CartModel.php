@@ -64,7 +64,7 @@ class CartModel extends Model
         $this->join("media m3", "m3.media_id = p.product_image3", "left");
         $this->join("media m4", "m4.media_id = p.product_image4", "left");
         $this->where("{$this->table}.user_id", $userid);
-        $this->where("{$this->table}.order", null);
+        $this->where("{$this->table}.order_id", null);
         $this->orderBy("{$this->table}.cart_id", "ASC");
         $query = $this->findAll();
         return $query;
@@ -72,19 +72,27 @@ class CartModel extends Model
 
     public function countUserCart($userid = null)
     {
-        $query = $this->where(['user_id' => $userid, 'order' => null])->countAllResults();
+        $query = $this->where(['user_id' => $userid, 'order_id' => null])->countAllResults();
         return $query;
+    }
+
+    public function sumUserCart($userid = null)
+    {
+        $this->select("(sum({$this->table}.total)) as total");
+        $this->where("{$this->table}.user_id", $userid);
+        $this->where("{$this->table}.order_id", null);
+        return $this->get()->getRow()->total;
     }
 
     public function findOrderItem($id = null)
     {
         $this->select("{$this->table}.*, p.product_name, o.no_order, o.total, py.payment_id, py.payment, sh.shipment, u.username, u.email");
-        $this->join("orders o", "o.order_id = {$this->table}.order");
+        $this->join("orders o", "o.order_id = {$this->table}.order_id");
         $this->join("product p", "p.product_id = {$this->table}.product_id");
         $this->join("users u", "u.user_id = {$this->table}.user_id");
         $this->join("payment py", "py.payment_id = o.payment");
         $this->join("shipment sh", "sh.shipment_id = o.shipment");
-        $this->where("{$this->table}.order", $id);
+        $this->where("{$this->table}.order_id", $id);
         $query = $this->findAll();
         return $query;
     }

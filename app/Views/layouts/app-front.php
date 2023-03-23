@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
 PT. GLOBAL ITSHOP PURWOKERTO
 Toko Online: ITShop Purwokerto (Tokopedia, Shopee, Bukalapak, Blibli)
@@ -6,13 +6,18 @@ Dibuat oleh: Hari Wicaksono, S.Kom
 03-2023
 */
 
-$uri = new \CodeIgniter\HTTP\URI(current_url()); 
+$uri = new \CodeIgniter\HTTP\URI(current_url());
 
 // Memanggil library Setting
 use App\Libraries\Settings;
 
 $setting = new Settings();
 $snackbarsPosition = $setting->info['snackbars_position'];
+$companyName = $setting->info['company_name'];
+$companyAddress = $setting->info['company_address'];
+$companyEmail1 = $setting->info['company_email1'];
+$companyEmail2 = $setting->info['company_email2'];
+$companyTelp = $setting->info['company_telp'];
 ?>
 <!DOCTYPE html>
 <html>
@@ -110,7 +115,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
                                 </v-list-item-icon>
 
                                 <v-list-item-content>
-                                    <v-list-item-title><?= lang('App.dashboard') ?> App</v-list-item-title>
+                                    <v-list-item-title><?= session()->get('role') == 2 ? 'Member' : ''; ?> <?= lang('App.dashboard') ?> App</v-list-item-title>
                                 </v-list-item-content>
                             </v-list-item>
                             <v-list-item link href="<?= base_url('logout'); ?>" @click="localStorage.removeItem('access_token')">
@@ -174,7 +179,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
                 </v-list-item>
             </v-navigation-drawer>
 
-            <v-main class="mt-3">
+            <v-main>
                 <?= $this->renderSection('content') ?>
 
                 <v-footer dark padless>
@@ -198,11 +203,21 @@ $snackbarsPosition = $setting->info['snackbars_position'];
                                         </v-list>
                                     </v-col>
                                     <v-col>
-                                        <h2 class="font-weight-medium subheading mb-3">About us:</h2>
-                                        <h3 class="mb-3"><?= COMPANY_NAME; ?></h3>
-                                        <v-divider></v-divider>
-                                        <v-btn v-for="link in links" :key="link" color="white" text rounded class="my-2">
-                                            {{ link }}
+                                        <h2 class="font-weight-medium subheading mb-3"><?= lang('App.aboutUs'); ?>:</h2>
+                                        <h3 class="mb-3"><?= $companyName; ?></h3>
+                                        <h4 class="font-weight-regular mb-3"><?= $companyAddress; ?></h4>
+                                        Email: <?= $companyEmail1; ?> / <?= $companyEmail2; ?><br />
+                                        Telp: <?= $companyTelp; ?><br />
+
+                                        <h3 class="font-weight-medium subheading mb-3 mt-3"><?= lang('App.payment'); ?>:</h3>
+                                        1. Payment Gateway<br />
+                                        <v-img src="<?= base_url('images/midtrans.png'); ?>" width="80" ratio="1"></v-img><br />
+                                        2. Transfer Manual<br />
+                                        <v-img src="<?= base_url('images/bri.jpg'); ?>" width="80" ratio="1"></v-img>
+
+                                        <v-divider class="mt-5 mb-3"></v-divider>
+                                        <v-btn v-for="link in links" :key="link" color="white" text rounded class="my-2" link :href="link.link">
+                                            {{ link.text }}
                                         </v-btn>
                                     </v-col>
                                 </v-row>
@@ -323,10 +338,14 @@ $snackbarsPosition = $setting->info['snackbars_position'];
                 },
             ],
             links: [
-                'Home',
-                'About Us',
-                'Legal',
-                'Contact Us',
+                {
+                    text: 'Syarat dan Ketentuan',
+                    link: '<?= base_url('terms'); ?>'
+                },
+                {
+                    text: 'Kebijakan Privasi',
+                    link: '<?= base_url('privacy'); ?>'
+                },
             ],
         }
         var methodsVue = {

@@ -26,6 +26,8 @@ return [
     'to' => 'Ke',
     'todayTrx' => 'Transaksi Hari ini',
     'transaction' => 'Transaksi',
+    'aboutUs' => 'Tentang Kami',
+    'sold' => 'Terjual',
 
     //Signin
     'signIn' => 'Masuk',
@@ -99,7 +101,7 @@ return [
     'buy' => 'Beli',
     'cart' => 'Keranjang Anda',
     'carts' => 'Keranjang',
-    'checkout' => 'Checkout Pembayaran',
+    'checkout' => 'Checkout',
     'note' => 'Tulis Catatan',
     'yourNote' => 'Catatan Anda',
     'totalPrice' => 'Total Harga',

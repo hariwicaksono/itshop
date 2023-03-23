@@ -217,6 +217,22 @@ class Payment extends BaseControllerApi
                 'rules'  => 'required',
                 'errors' => []
             ],
+            'bank' => [
+                'rules'  => 'required',
+                'errors' => []
+            ],
+            'nama' => [
+                'rules'  => 'required',
+                'errors' => []
+            ],
+            'norekening' => [
+                'rules'  => 'required',
+                'errors' => []
+            ],
+            'nominal' => [
+                'rules'  => 'required',
+                'errors' => []
+            ],
         ];
 
         if ($this->request->getJSON()) {

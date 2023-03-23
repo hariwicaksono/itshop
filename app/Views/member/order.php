@@ -4,7 +4,7 @@
     <h1 class="mb-3 font-weight-medium"><?= lang('App.orderList') ?></h1>
     <v-card>
         <v-tabs color="primary">
-            <v-tab>All</v-tab>
+            <v-tab>All <?= lang('App.order') ?></v-tab>
             <v-tab @click="getOrderPending">Pending</v-tab>
             <v-tab @click="getOrderDelivered">Delivered</v-tab>
             <v-tab @click="getOrderCanceled">Canceled</v-tab>
@@ -110,22 +110,17 @@
 <template>
     <v-row justify="center">
         <v-dialog v-model="modalOrder" persistent width="600px">
-            <v-card class="pa-2">
+            <v-card>
                 <v-card-title class="text-h5"><?= lang('App.order') ?></v-card-title>
-                <v-card-text>
+                <v-divider></v-divider>
+                <v-card-text class="py-5">
                     <v-simple-table>
                         <template v-slot:default>
                             <thead>
                                 <tr>
-                                    <th class="text-left">
-                                        Product
-                                    </th>
-                                    <th class="text-left">
-                                        Price
-                                    </th>
-                                    <th class="text-left">
-                                        Qty
-                                    </th>
+                                    <th width="300">Product</th>
+                                    <th>Price</th>
+                                    <th>Qty</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -142,16 +137,17 @@
                                 </tr>
                                 <tr v-for="item in itemOrder" :key="item.cart_id" v-if="show == false">
                                     <td>{{item.product_name}}</td>
-                                    <td>{{item.price}}</td>
+                                    <td>{{RibuanLocale(item.price)}}</td>
                                     <td>{{item.qty}}</td>
                                 </tr>
                             </tbody>
                         </template>
                     </v-simple-table>
                 </v-card-text>
+                <v-divider></v-divider>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn text @click="modalOrderClose"><?= lang('App.close') ?></v-btn>
+                    <v-btn large text @click="modalOrderClose"><?= lang('App.close') ?></v-btn>
                     <v-spacer></v-spacer>
                 </v-card-actions>
             </v-card>
@@ -172,19 +168,20 @@
                         <v-icon>mdi-close</v-icon>
                     </v-btn>
                 </v-card-title>
-                <v-card-text class="py-3">
+                <v-divider></v-divider>
+                <v-card-text class="py-5">
                     <v-form ref="form" v-model="valid">
                         <v-alert v-if="notifType != ''" dismissible dense outlined :type="notifType">{{notifMessage}}</v-alert>
-                        <v-text-field label="<?= lang('App.bank') ?> *" v-model="bank" :rules="[rules.required]" outlined dense></v-text-field>
-                        <v-text-field label="<?= lang('App.nama') ?> *" v-model="nama" :rules="[rules.required]" outlined dense></v-text-field>
-                        <v-text-field label="<?= lang('App.norekening') ?> *" v-model="norekening" :rules="[rules.required]" outlined dense></v-text-field>
-                        <v-text-field label="<?= lang('App.nominal') ?> *" v-model="nominal" :rules="[rules.required]" outlined dense></v-text-field>
+                        <v-text-field label="<?= lang('App.bank') ?> *" v-model="bank" :error-messages="bankError" outlined></v-text-field>
+                        <v-text-field label="<?= lang('App.nama') ?> *" v-model="nama" :error-messages="namaError" outlined></v-text-field>
+                        <v-text-field label="<?= lang('App.norekening') ?> *" v-model="norekening" :error-messages="norekeningError" outlined></v-text-field>
+                        <v-text-field label="<?= lang('App.nominal') ?> *" v-model="nominal" :error-messages="nominalError" outlined></v-text-field>
                     </v-form>
                 </v-card-text>
                 <v-divider></v-divider>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" @click="saveConfirm" :loading="loading2">
+                    <v-btn large color="primary" @click="saveConfirm" :loading="loading2">
                         <v-icon>mdi-content-save</v-icon> <?= lang('App.save') ?>
                     </v-btn>
                 </v-card-actions>
@@ -218,9 +215,13 @@
         idOrder: "",
         idPayment: "",
         bank: "",
+        bankError: "",
         nama: "",
+        namaError: "",
         norekening: "",
+        norekeningError: "",
         nominal: "",
+        nominalError: ""
     }
 
     createdVue = function() {
@@ -237,16 +238,11 @@
                     // handle success
                     this.loader = false;
                     var data = res.data;
-                    if (data.expired == true) {
-                        this.snackbar = true;
-                        this.snackbarMessage = data.message;
-                        setTimeout(() => window.location.href = data.data.url, 1000);
-                    }
                     if (data.status == true) {
                         this.snackbar = true;
                         this.snackbarMessage = data.message;
                         this.dataOrder = data.data;
-                        console.log(this.dataOrder);
+                        //console.log(this.dataOrder);
                     } else {
                         this.snackbar = true;
                         this.snackbarMessage = data.message;
@@ -255,6 +251,12 @@
                 .catch(err => {
                     // handle error
                     console.log(err);
+                    var error = err.response
+                    if (error.data.expired == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = error.data.message;
+                        setTimeout(() => window.location.href = error.data.data.url, 1000);
+                    }
                 })
         },
         getOrderPending: function() {
@@ -264,11 +266,6 @@
                     // handle success
                     this.loader = false;
                     var data = res.data;
-                    if (data.expired == true) {
-                        this.snackbar = true;
-                        this.snackbarMessage = data.message;
-                        setTimeout(() => window.location.href = data.data.url, 1000);
-                    }
                     if (data.status == true) {
                         this.snackbar = true;
                         this.snackbarMessage = data.message;
@@ -281,6 +278,12 @@
                 .catch(err => {
                     // handle error
                     console.log(err);
+                    var error = err.response
+                    if (error.data.expired == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = error.data.message;
+                        setTimeout(() => window.location.href = error.data.data.url, 1000);
+                    }
                 })
         },
         getOrderDelivered: function() {
@@ -290,11 +293,6 @@
                     // handle success
                     this.loader = false;
                     var data = res.data;
-                    if (data.expired == true) {
-                        this.snackbar = true;
-                        this.snackbarMessage = data.message;
-                        setTimeout(() => window.location.href = data.data.url, 1000);
-                    }
                     if (data.status == true) {
                         this.snackbar = true;
                         this.snackbarMessage = data.message;
@@ -307,6 +305,12 @@
                 .catch(err => {
                     // handle error
                     console.log(err);
+                    var error = err.response
+                    if (error.data.expired == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = error.data.message;
+                        setTimeout(() => window.location.href = error.data.data.url, 1000);
+                    }
                 })
         },
         getOrderCanceled: function() {
@@ -316,11 +320,6 @@
                     // handle success
                     this.loader = false;
                     var data = res.data;
-                    if (data.expired == true) {
-                        this.snackbar = true;
-                        this.snackbarMessage = data.message;
-                        setTimeout(() => window.location.href = data.data.url, 1000);
-                    }
                     if (data.status == true) {
                         this.snackbar = true;
                         this.snackbarMessage = data.message;
@@ -333,6 +332,12 @@
                 .catch(err => {
                     // handle error
                     console.log(err);
+                    var error = err.response
+                    if (error.data.expired == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = error.data.message;
+                        setTimeout(() => window.location.href = error.data.data.url, 1000);
+                    }
                 })
         },
         //Show Order
@@ -354,11 +359,6 @@
                     // handle success
                     this.loading3 = false;
                     var data = res.data;
-                    if (data.expired == true) {
-                        this.snackbar = true;
-                        this.snackbarMessage = data.message;
-                        setTimeout(() => window.location.href = data.data.url, 1000);
-                    }
                     if (data.status == true) {
                         this.itemOrder = data.data;
                         this.show = false;
@@ -370,6 +370,12 @@
                 .catch(err => {
                     // handle error
                     console.log(err);
+                    var error = err.response
+                    if (error.data.expired == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = error.data.message;
+                        setTimeout(() => window.location.href = error.data.data.url, 1000);
+                    }
                 })
         },
         modalAddOpen: function(item) {
@@ -398,34 +404,45 @@
                     // handle success
                     this.loading2 = false
                     var data = res.data;
-                    if (data.expired == true) {
-                        this.snackbar = true;
-                        this.snackbarMessage = data.message;
-                        setTimeout(() => window.location.href = data.data.url, 1000);
-                    }
                     if (data.status == true) {
                         this.snackbar = true;
                         this.snackbarMessage = data.message;
                         this.modalAdd = false;
                         this.getOrders();
-                        this.order_id = "",
-                            this.payment_id = "",
-                            this.bank = "",
-                            this.nama = "",
-                            this.norekening = "",
-                            this.nominal = "",
-                            this.$refs.form.resetValidation();
+                        this.order_id = "";
+                        this.payment_id = "";
+                        this.bank = "";
+                        this.nama = "";
+                        this.norekening = "";
+                        this.nominal = "";
+                        this.$refs.form.resetValidation();
                     } else {
                         this.modalAdd = true;
                         this.snackbar = true;
                         this.snackbarMessage = data.message;
+                        errorKeys = Object.keys(data.data);
+                        errorKeys.map((el) => {
+                            this[`${el}Error`] = data.data[el];
+                        });
+                        if (errorKeys.length > 0) {
+                            setTimeout(() => this.notifType = "", 4000);
+                            setTimeout(() => errorKeys.map((el) => {
+                                this[`${el}Error`] = "";
+                            }), 4000);
+                        }
                         this.$refs.form.validate();
                     }
                 })
                 .catch(err => {
                     // handle error
                     console.log(err.response);
-                    this.loading = false
+                    this.loading = false;
+                    var error = err.response
+                    if (error.data.expired == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = error.data.message;
+                        setTimeout(() => window.location.href = error.data.data.url, 1000);
+                    }
                 })
         },
     }

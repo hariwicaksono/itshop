@@ -26,6 +26,8 @@ return [
     'to' => 'To',
     'todayTrx' => "Today's Transaction",
     'transaction' => 'Transaction',
+    'aboutUs' => 'About Us',
+    'sold' => 'Sold',
 
     //Signin
     'signIn' => 'Sign in',
@@ -98,7 +100,7 @@ return [
     'buy' => 'Buy',
     'cart' => 'Your Cart',
     'carts' => 'Cart',
-    'checkout' => 'Payment Checkout',
+    'checkout' => 'Checkout',
     'note' => 'Write a Note',
     'yourNote' => 'Your Note',
     'totalPrice' => 'Total Price',

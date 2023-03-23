@@ -31,9 +31,9 @@
                     </td>
                 </tr>
             </template>
-            <template slot="footer.prepend">
+           <!--  <template slot="footer.prepend">
                 <v-text-field label="<?= lang('App.note') ?> Order *" v-model="note" class="mt-3  mr-3" hint="Cantumkan disini alamat email Gmail Anda" persistent-hint></v-text-field>
-            </template>
+            </template> -->
         </v-data-table>
         <br />
         <v-row>
@@ -41,7 +41,7 @@
                 <h1 class="font-weight-regular float-end"><?= lang('App.totalPrice'); ?> <strong>{{ RibuanLocale(sumTotal('total')) }}</strong></h1>
             </v-col>
             <v-col cols="12" md="3">
-                <v-btn color="success" block large :loading="loading2" @click="modalCheckoutOpen" :disabled="carts == '' ? true:false">
+                <v-btn color="success" block large :loading="loading2" @click="goCheckout" :disabled="carts == '' ? true:false">
                     <v-icon>mdi-cart</v-icon> <?= lang('App.buy') ?>
                 </v-btn>
             </v-col>
@@ -53,31 +53,32 @@
 <template>
     <v-row justify="center">
         <v-dialog v-model="dialog" persistent width="900px">
-            <v-card class="pa-2">
-                <v-card-title class="text-h5">
+            <v-card>
+                <v-card-title>
                     <?= lang('App.checkout') ?>
                     <v-spacer></v-spacer>
                     <v-btn icon @click="modalCheckoutClose">
                         <v-icon>mdi-close</v-icon>
                     </v-btn>
                 </v-card-title>
-                <v-card-text>
+                <v-divider></v-divider>
+                <v-card-text class="py-5">
                     <h3 class="font-weight-medium"><?= lang('App.yourOrder'); ?></h3>
                     <v-row class="my-1" v-for="item in carts" :key="item.cart_id">
                         <v-col cols="2">
-                            <v-avatar size="50px" rounded><img v-bind:src="'<?= base_url(); ?>' + item.media_path" /></v-avatar>
+                            <v-avatar size="80px" rounded><img v-bind:src="'<?= base_url(); ?>' + item.media_path" /></v-avatar>
                         </v-col>
                         <v-col cols="10">
-                            <strong>{{item.product_name}}</strong> - Qty: {{item.qty}} - <?= lang('app.price'); ?>: Rp.{{item.product_price}}
+                            <h3>{{item.product_name}} - Qty: {{item.qty}} - <?= lang('app.price'); ?>: {{RibuanLocale(item.product_price)}}</h3>
                         </v-col>
                     </v-row>
-                    <h4 class="float-end">Total Rp.{{total}}</h4>
+                    <h4 class="float-end">Total {{RibuanLocale(total)}}</h4>
 
-                    <h3 class="font-weight-medium mb-4"><?= lang('App.chooseShipment'); ?></h3>
-                    <v-select v-model="select_shipment" :items="list_shipment" item-text="shipment" item-value="shipment_id" label="<?= lang('App.shipment'); ?>" :eager="true" :rules="[rules.required]" outlined dense></v-select>
+                    <h3 class="font-weight-medium mb-3"><?= lang('App.chooseShipment'); ?></h3>
+                    <v-select v-model="select_shipment" :items="list_shipment" item-text="shipment" item-value="shipment_id" label="<?= lang('App.shipment'); ?>" :eager="true" :rules="[rules.required]" outlined></v-select>
 
-                    <h3 class="font-weight-medium mb-4"><?= lang('App.choosePayment'); ?></h3>
-                    <v-select v-model="select_payment" :items="list_payment" item-text="payment" item-value="payment_id" label="<?= lang('App.payment'); ?>" :eager="true" :rules="[rules.required]" outlined dense></v-select>
+                    <h3 class="font-weight-medium mb-3"><?= lang('App.choosePayment'); ?></h3>
+                    <v-select v-model="select_payment" :items="list_payment" item-text="payment" item-value="payment_id" label="<?= lang('App.payment'); ?>" :eager="true" :rules="[rules.required]" outlined></v-select>
 
                     <h3 class="font-weight-medium"><?= lang('App.yourNote'); ?></h3>
                     {{note??'-'}}
@@ -154,6 +155,9 @@
     }
     methodsVue = {
         ...methodsVue,
+        goCheckout: function() {
+            setTimeout(() => window.location.href = '<?= base_url('checkout'); ?>', 200);
+        },
         modalCheckoutOpen: function() {
             this.dialog = true;
             this.getPayment();

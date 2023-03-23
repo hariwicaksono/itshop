@@ -337,7 +337,35 @@ $snackbarsPosition = $setting->info['snackbars_position'];
                         // handle error
                         console.log(err.response);
                     })
-            }
+            },
+            // Format Ribuan Rupiah versi 1
+            RibuanLocale(key) {
+                const rupiah = 'Rp ' + Number(key).toLocaleString('id-ID');
+                return rupiah
+            },
+            RibuanLocaleNoRp(key) {
+                const rupiah = Number(key).toLocaleString('id-ID');
+                return rupiah
+            },
+
+            // Format Ribuan Rupiah versi 2
+            Ribuan(key) {
+                // versi 1
+                /* var number_string = key.toString(),
+                    sisa = number_string.length % 3,
+                    rupiah = number_string.substr(0, sisa),
+                    ribuan = number_string.substr(sisa).match(/\d{3}/g);
+
+                if (ribuan) {
+                    separator = sisa ? '.' : '';
+                    rupiah += separator + ribuan.join('.');
+                } */
+
+                const format = key.toString().split('').reverse().join('');
+                const convert = format.match(/\d{1,3}/g);
+                const rupiah = 'Rp ' + convert.join('.').split('').reverse().join('');
+                return rupiah;
+            },
         }
         Vue.component('paginate', VuejsPaginate)
     </script>

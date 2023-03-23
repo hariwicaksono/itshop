@@ -2,8 +2,8 @@
 
 namespace App\Controllers;
 
-use App\Models\OrderModel;
-use App\Models\ProductModel;
+use App\Modules\Order\Models\OrderModel;
+use App\Modules\Product\Models\ProductModel;
 use App\Models\UserModel;
 use TCPDF;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -12,9 +12,9 @@ use Spipu\Html2Pdf\Html2Pdf;
 
 class Admin extends BaseController
 {
-    protected $productModel;
-    protected $orderModel;
-    protected $userModel;
+    protected $product;
+    protected $order;
+    protected $user;
 
     public function __construct()
     {
@@ -22,49 +22,40 @@ class Admin extends BaseController
         if (session()->get('logged_in') == true && session()->get('role') == 2) {header('location:/');exit();}
 
         //memanggil Model
-        $this->productModel = new ProductModel();
-        $this->orderModel = new OrderModel();
-        $this->userModel = new UserModel();
+        $this->product = new ProductModel();
+        $this->order = new OrderModel();
+        $this->user = new UserModel();
     }
 
     public function index()
     {
         //memanggil function di model
-        $product= $this->productModel->countProduct(1);
-        $order = $this->orderModel->countAllResults();
-        $user = $this->userModel->countAllResults();
+        $product= $this->product->countProduct(1);
+        $order = $this->order->countAllResults();
+        $user = $this->user->countAllResults();
 
         $jam = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '00'];
         $data['jam'] = [];
         foreach ($jam as $j) {
             $date = date('Y-m-d') . ' ' . $j;
-            $harian[] = $this->orderModel->chartHarian($date);
+            $harian[] = $this->order->chartHarian($date);
         }
 
         $bln = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
         $data['transaksi'] = [];
         foreach ($bln as $b) {
             $date = date('Y') . '-' . $b;
-            $transaksi[] = $this->orderModel->chartTransaksi($date);
+            $transaksi[] = $this->order->chartTransaksi($date);
         }
 
         return view('admin/index', [
+            'title' => 'Dashboard',
             'jmlProduct' => $product,
             'jmlUser' => $user,
             'jmlOrder' => $order,
             'harian' => $harian,
             'transaksi' => $transaksi
          ]);
-    }
-
-    public function product()
-    {
-        return view('admin/product');
-    }
-
-    public function order()
-    {
-        return view('admin/order');
     }
 
     public function payment()
@@ -91,7 +82,7 @@ class Admin extends BaseController
     {
         //mengambil result array productModel
         $data = [
-            'product' => $this->productModel->findAll()
+            'product' => $this->product->findAll()
         ];
         $html = view('admin/export_tcpdf', $data);
         // create new PDF document
@@ -116,7 +107,7 @@ class Admin extends BaseController
     {
         //mengambil result array productModel
         $data = [
-            'product' => $this->productModel->findAll()
+            'product' => $this->product->findAll()
         ];
 
         $html = view('admin/export_mpdf', $data);
@@ -136,7 +127,7 @@ class Admin extends BaseController
     {
         //mengambil result array productModel
         $data = [
-            'product' => $this->productModel->findAll()
+            'product' => $this->product->findAll()
         ];
 
         $html = view('admin/export_html2pdf', $data);
@@ -161,7 +152,7 @@ class Admin extends BaseController
 
     public function exportExcel()
     {
-        $product = $this->productModel->findAll();
+        $product = $this->product->findAll();
 
         $spreadsheet = new Spreadsheet();
         // tulis header/nama kolom 

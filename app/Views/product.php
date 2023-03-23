@@ -2,7 +2,7 @@
 <?php $this->section("content"); ?>
 
 <template>
-    <v-container class="py-7">
+    <v-container class="py-5">
         <v-row>
             <v-col cols="12" sm="4">
                 <a :href="'<?= base_url() ?>' + image" target="_blank"><v-img v-model="image" :src="'<?= base_url() ?>' + image" aspect-ratio="1" class="mb-4" title="" alt=""></v-img></a>
@@ -39,9 +39,10 @@
                 <!-- <v-img src="<?= base_url('images/no_image.jpg') ?>" class="mb-3" v-else></v-img> -->
             </v-col>
             <v-col cols="12" sm="5">
-                <h1 class="text-h5 font-weight-bold mb-4">{{name}}</h1>
-                <h2 class="text-h4 font-weight-bold mb-4">{{RibuanLocale(price)}}</h2>
-                <v-chip class="mb-3" title="" alt="">{{code}}</v-chip>
+                <h1 class="text-h5 font-weight-bold mb-3">{{name}}</h1>
+                <p class="mb-4">{{code}} &nbsp;&bull;&nbsp; <?= lang('App.sold'); ?>: <?= $productSold; ?></p>
+                <h2 class="text-h4 font-weight-bold mb-5">{{RibuanLocale(price)}}</h2>
+
 
                 <h4 class="mb-4 mt-3">Detail Product:</h4>
                 <p v-html="products.product_description"></p>
@@ -80,6 +81,7 @@
         </v-card-text>
     </v-card>
 </v-dialog>
+<br />
 <?php $this->endSection("content") ?>
 
 <?php $this->section("js") ?>
@@ -117,7 +119,7 @@
     createdVue = function() {
         this.getProduct();
         this.getShipment();
-        
+
     }
 
     watchVue = {

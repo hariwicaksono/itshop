@@ -52,24 +52,19 @@ foreach(glob(APPPATH . 'Modules/*', GLOB_ONLYDIR) as $item_dir)
 $routes->get('/', 'Home::index');
 $routes->get('/source-code/(:segment)', 'Home::show/$1');
 $routes->get('/lang/{locale}', 'Home::setLanguage');
-$routes->get('/login', 'Auth::login');
-$routes->get('/register', 'Auth::register');
-$routes->get('/logout', 'Auth::logout');
-$routes->get('/verify_email', "Auth::verifyEmail");
-$routes->group('password', function ($routes) {
-	$routes->get('reset', 'Auth::passwordReset');
-	$routes->get('change', 'Auth::passwordChange');
-});
+
+
 //Routes untuk Halaman Keranjang
 $routes->group('', ['filter' => 'auth'], function ($routes) {
 	$routes->get('cart', 'Member::cart');
-	$routes->get('checkout-success', 'Member::checkout');
+	$routes->get('checkout', 'Member::checkoutProcess');
+	$routes->get('checkout-success', 'Member::checkoutPGSuccess');
+	$routes->get('checkout/success', 'Member::checkoutTFSuccess');
 });
 //Routes untuk Halaman admin
 $routes->group('admin', ['filter' => 'auth'], function ($routes) {
 	$routes->get('/', 'Admin::index');
-	$routes->get('order', 'Admin::order');
-	$routes->get('product', 'Admin::product');
+	
 	$routes->get('payment', 'Admin::payment');
 	$routes->get('shipment', 'Admin::shipment');
 	$routes->get('export', 'Admin::export');
@@ -86,23 +81,10 @@ $routes->group('member', ['filter' => 'auth'], function ($routes) {
 	$routes->get('order-list', 'Member::order');
 	$routes->get('profile', 'Member::profile');
 });
-$routes->group('auth', ['namespace' => $routes->getDefaultNamespace() . 'Api'], function ($routes) {
-	$routes->post('login', 'Auth::login');
-	$routes->post('register', 'Auth::register');
-	$routes->post('resetPassword', 'Auth::resetPassword');
-	$routes->post('changePassword', 'Auth::changePassword');
-});
+
 //Contoh Routes untuk RESTful Api
 $routes->group('api', ['filter' => 'jwtauth', 'namespace' => $routes->getDefaultNamespace() . 'Api'], function ($routes) {
-	$routes->get('product', 'Product::index');
-	$routes->get('product/all', 'Product::allProduct');
-	$routes->get('product/(:segment)', 'Product::show/$1');
-	$routes->post('product/save', 'Product::create');
-	$routes->put('product/update/(:segment)', 'Product::update/$1');
-	$routes->delete('product/delete/(:segment)', 'Product::delete/$1');
-	$routes->put('product/setactive/(:segment)', 'Product::setActive/$1');
-	$routes->put('product/setstock/(:segment)', 'Product::setStock/$1');
-	$routes->put('product/setprice/(:segment)', 'Product::setPrice/$1');
+	
 
 	$routes->post('media/save', 'Media::create');
 	$routes->delete('media/delete/(:segment)', 'Media::delete/$1');
@@ -122,16 +104,7 @@ $routes->group('api', ['filter' => 'jwtauth', 'namespace' => $routes->getDefault
 	$routes->delete('cart/delete/(:segment)', 'Cart::delete/$1');
 	$routes->get('cart/order/(:segment)', 'Cart::findItem/$1');
 
-	$routes->get('order', 'Order::index');
-	$routes->post('order/save', 'Order::create');
-	$routes->put('order/update/(:segment)', 'Order::update/$1');
-	$routes->get('order/(:segment)', 'Order::show/$1');
-	$routes->put('order/setstatus/(:segment)', 'Order::setStatus/$1');
-	$routes->get('order/user/(:segment)', 'Order::getUserOrder/$1');
-	$routes->get('order/pending/(:segment)', 'Order::getUserOrderPending/$1');
-	$routes->get('order/delivered/(:segment)', 'Order::getUserOrderDelivered/$1');
-	$routes->get('order/canceled/(:segment)', 'Order::getUserOrderCanceled/$1');
-	$routes->get('chart1', 'Order::chart1');
+	
 
 	$routes->get('payment', 'Payment::index');
 	$routes->get('payment/all', 'Payment::all');

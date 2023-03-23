@@ -2,20 +2,26 @@
 
 namespace App\Controllers;
 
-use App\Models\ProductModel;
+use App\Modules\Product\Models\ProductModel;
+use App\Libraries\Settings;
 
 class Home extends BaseController
 {
 	protected $product;
+	protected $setting;
 
 	function __construct()
 	{
 		$this->product = new ProductModel();
+		$this->setting = new Settings();
 	}
 
 	public function index()
 	{
-		return view('home');
+		return view('home', [
+			'title' => '',
+			
+		]);
 	}
 
 	public function show($id = null)
@@ -24,11 +30,13 @@ class Home extends BaseController
 		$idProduct = $find['product_id'];
 		$product = $this->product->showProduct($idProduct);
 		$productName = $product['product_name'];
-		//var_dump($productName);die;
+		$sold = $this->product->countProductSold($idProduct, 1);
+		//var_dump($sold);die;
 		return view('product', [
-            'title' => $productName,
-			'product_id' => $idProduct
-         ]);
+			'title' => $productName,
+			'product_id' => $idProduct,
+			'productSold' => $sold
+		]);
 	}
 
 	public function setLanguage()

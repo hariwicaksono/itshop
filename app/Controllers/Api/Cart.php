@@ -4,7 +4,7 @@ namespace App\Controllers\Api;
 
 use App\Controllers\BaseControllerApi;
 use App\Models\CartModel;
-use App\Models\ProductModel;
+use App\Modules\Product\Models\ProductModel;
 
 class Cart extends BaseControllerApi
 {
@@ -78,8 +78,8 @@ class Cart extends BaseControllerApi
             ];
             return $this->respond($response, 200);
         } else {
-            //cari barang/barangnya apakah sudah ada di keranjang
-            $searchCart = $this->model->where(['product_id' => $product_id])->first();
+            //cari cart apakah barang sudah ada di keranjang tetapi order_id = null
+            $searchCart = $this->model->where(['product_id' => $product_id, 'order_id' => null])->first();
             if ($searchCart) {
                 $idCart = $searchCart['cart_id'];
                 $price = $searchCart['price'];

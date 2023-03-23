@@ -2,7 +2,7 @@
 <?php $this->section("content"); ?>
 <template>
     <?php if (session()->getFlashdata('success')) { ?>
-        <v-alert text outlined type="success" dense dismissible>
+        <v-alert type="success" dismissible v-model="alert">
             <?= session()->getFlashdata('success') ?>
         </v-alert>
     <?php } ?>
@@ -198,6 +198,7 @@
 
     dataVue = {
         ...dataVue,
+        alert: false,
         products: [],
         sparklineLabel: ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"],
         sparklineData: JSON.parse("<?= json_encode($transaksi) ?>"),
@@ -206,6 +207,11 @@
         tanggal: "",
     }
     createdVue = function() {
+        this.alert = true;
+        setTimeout(() => {
+            this.alert = false
+        }, 5000)
+
         setInterval(this.getDayDate, 1000);
 
         // Chart.js 1
