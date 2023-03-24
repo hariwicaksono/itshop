@@ -17,6 +17,10 @@ $routes->group('', ['namespace' => 'App\Modules\Page\Controllers'], function($ro
 	$routes->get('about', 'Page::page');
 });
 
+$routes->group('openapi', ['namespace' => 'App\Modules\Page\Controllers\Api'], function($routes){
+	$routes->get('page/(:segment)', 'Page::show/$1');
+});
+
 $routes->group('api', ['filter' => 'jwtauth', 'namespace' => 'App\Modules\Page\Controllers\Api'], function($routes){
 	$routes->get('pages', 'Page::index');
 	$routes->get('page/(:segment)', 'Page::show/$1');

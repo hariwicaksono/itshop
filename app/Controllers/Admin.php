@@ -68,10 +68,7 @@ class Admin extends BaseController
         return view('admin/shipment');
     }
 
-    public function setting()
-    {
-        return view('admin/setting');
-    }
+
 
     public function export()
     {

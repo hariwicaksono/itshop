@@ -28,7 +28,7 @@ $companyTelp = $setting->info['company_telp'];
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
     <?php if ($uri->getSegment(1) == "") { ?>
         <title><?= COMPANY_NAME; ?> Digital Store - <?= env('appName'); ?></title>
-        <meta name="description" content="Toko Online PT GLOBAL ITSHOP PURWOKERTO - <?= env('appName'); ?>">
+        <meta name="description" content="Toko Online <?= COMPANY_NAME; ?> - <?= env('appName'); ?>">
     <?php } else if ($uri->getSegment(1) == "source-code") { ?>
         <title>Source Code <?= $title ?? ""; ?> - <?= env('appName'); ?></title>
         <meta name="description" content="Source Code <?= $title ?? ""; ?> produk dari <?= COMPANY_NAME; ?> - <?= env('appName'); ?>">
@@ -181,52 +181,52 @@ $companyTelp = $setting->info['company_telp'];
 
             <v-main>
                 <?= $this->renderSection('content') ?>
-
-                <v-footer dark padless>
-                    <v-card flat tile width="100%" class="flex py-4">
-                        <v-card-text>
-                            <v-container>
-                                <v-row>
-                                    <v-col>
-                                        <h2 class="font-weight-medium subheading">Temukan Toko Online Official kami:</h2>
-                                        <v-list flat class="mb-3">
-                                            <v-list-item-group>
-                                                <v-list-item v-for="(item, i) in items" :key="i" link :href="item.link" target="_blank">
-                                                    <v-list-item-icon>
-                                                        <v-img :src="item.icon" width="40"></v-img>
-                                                    </v-list-item-icon>
-                                                    <v-list-item-content>
-                                                        <v-list-item-title v-text="item.text"></v-list-item-title>
-                                                    </v-list-item-content>
-                                                </v-list-item>
-                                            </v-list-item-group>
-                                        </v-list>
-                                    </v-col>
-                                    <v-col>
-                                        <h2 class="font-weight-medium subheading mb-3"><?= lang('App.aboutUs'); ?>:</h2>
-                                        <h3 class="mb-3"><?= $companyName; ?></h3>
-                                        <h4 class="font-weight-regular mb-3"><?= $companyAddress; ?></h4>
-                                        Email: <?= $companyEmail1; ?> / <?= $companyEmail2; ?><br />
-                                        Telp: <?= $companyTelp; ?><br />
-
-                                        <h3 class="font-weight-medium subheading mb-3 mt-3"><?= lang('App.payment'); ?>:</h3>
-                                        1. Payment Gateway<br />
-                                        <v-img src="<?= base_url('images/midtrans.png'); ?>" width="80" ratio="1"></v-img><br />
-                                        2. Transfer Manual<br />
-                                        <v-img src="<?= base_url('images/bri.jpg'); ?>" width="80" ratio="1"></v-img>
-
-                                        <v-divider class="mt-5 mb-3"></v-divider>
-                                        <v-btn v-for="link in links" :key="link" color="white" text rounded class="my-2" link :href="link.link">
-                                            {{ link.text }}
-                                        </v-btn>
-                                    </v-col>
-                                </v-row>
-                                &copy; {{ new Date().getFullYear() }} — <?= COMPANY_NAME; ?>, Jawa Tengah, Indonesia
-                            </v-container>
-                        </v-card-text>
-                    </v-card>
-                </v-footer>
             </v-main>
+
+            <v-footer dark padless>
+                <v-card flat tile width="100%" class="flex py-4">
+                    <v-card-text>
+                        <v-container>
+                            <v-row>
+                                <v-col>
+                                    <h2 class="font-weight-medium subheading">Temukan Toko Online Official kami:</h2>
+                                    <v-list flat class="mb-3">
+                                        <v-list-item-group>
+                                            <v-list-item v-for="(item, i) in items" :key="i" link :href="item.link" target="_blank">
+                                                <v-list-item-icon>
+                                                    <v-img :src="item.icon" width="40"></v-img>
+                                                </v-list-item-icon>
+                                                <v-list-item-content>
+                                                    <v-list-item-title v-text="item.text"></v-list-item-title>
+                                                </v-list-item-content>
+                                            </v-list-item>
+                                        </v-list-item-group>
+                                    </v-list>
+                                </v-col>
+                                <v-col>
+                                    <h2 class="font-weight-medium subheading mb-3"><?= lang('App.aboutUs'); ?>:</h2>
+                                    <h3 class="mb-3"><?= $companyName; ?> (<?= COMPANY_NAME; ?>)</h3>
+                                    <h4 class="font-weight-regular mb-3"><?= $companyAddress; ?></h4>
+                                    Email: <?= $companyEmail1; ?> / <?= $companyEmail2; ?><br />
+                                    Telp: <?= $companyTelp; ?><br />
+
+                                    <h3 class="font-weight-medium subheading mb-3 mt-3"><?= lang('App.payment'); ?>:</h3>
+                                    1. Payment Gateway<br />
+                                    <v-img src="<?= base_url('images/midtrans.png'); ?>" width="80" ratio="1"></v-img><br />
+                                    2. Transfer Manual<br />
+                                    <v-img src="<?= base_url('images/bri.jpg'); ?>" width="80" ratio="1"></v-img>
+
+                                    <v-divider class="mt-5 mb-3"></v-divider>
+                                    <v-btn v-for="link in links" :key="link" color="white" text rounded class="my-2" link :href="link.link">
+                                        {{ link.text }}
+                                    </v-btn>
+                                </v-col>
+                            </v-row>
+                            &copy; {{ new Date().getFullYear() }} — <?= COMPANY_NAME; ?>, Jawa Tengah, Indonesia
+                        </v-container>
+                    </v-card-text>
+                </v-card>
+            </v-footer>
 
             <v-snackbar v-model="snackbar" :timeout="timeout" <?= $snackbarsPosition; ?> <?php if ($snackbarsPosition == 'top') { ?> style="top: 30px;" <?php } else { ?> style="bottom: 40px;" <?php } ?>>
                 <span v-if="snackbar">{{snackbarMessage}}</span>
@@ -337,8 +337,7 @@ $companyTelp = $setting->info['company_telp'];
                     link: 'https://www.blibli.com/merchant/IT-Shop-Purwokerto/ITS-70007'
                 },
             ],
-            links: [
-                {
+            links: [{
                     text: 'Syarat dan Ketentuan',
                     link: '<?= base_url('terms'); ?>'
                 },

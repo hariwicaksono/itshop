@@ -84,11 +84,6 @@ $routes->group('member', ['filter' => 'auth'], function ($routes) {
 
 //Contoh Routes untuk RESTful Api
 $routes->group('api', ['filter' => 'jwtauth', 'namespace' => $routes->getDefaultNamespace() . 'Api'], function ($routes) {
-	
-
-	$routes->post('media/save', 'Media::create');
-	$routes->delete('media/delete/(:segment)', 'Media::delete/$1');
-
 	$routes->get('user', 'User::index');
 	$routes->get('user/(:segment)', 'User::show/$1');
 	$routes->put('user/update/(:segment)', 'User::update/$1');
@@ -125,8 +120,6 @@ $routes->group('api', ['filter' => 'jwtauth', 'namespace' => $routes->getDefault
 	//$routes->delete('shipment/delete/(:segment)', 'Shipment::delete/$1');
 	$routes->put('shipment/setactive/(:segment)', 'Shipment::setActive/$1');
 
-	$routes->get('setting', 'Setting::index');
-	$routes->put('setting/update/(:segment)', 'Setting::update/$1');
 
 	$routes->get('kabupaten', 'Kabupaten::index');
 	$routes->get('kabupaten/get', 'Kabupaten::getProvinsi');

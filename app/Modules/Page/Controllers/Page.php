@@ -20,7 +20,7 @@ class Page extends BaseController
 
 	public function index()
 	{
-		return view('App\Modules\Page\Views/admin_page', [
+		return view('App\Modules\Page\Views/page', [
 			'title' => 'Pages',
 		]);
 	}
@@ -50,7 +50,7 @@ class Page extends BaseController
 			$title = $page['page_title_en'];
 		}
 		
-		return view('App\Modules\Page\Views/page', [
+		return view('page', [
 			'title' => $title,
 			'slug' => $slug
 		]);

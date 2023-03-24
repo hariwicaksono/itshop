@@ -42,7 +42,7 @@ class OrderModel extends Model
 
     public function getOrders()
     {
-        $this->select("{$this->table}.*, py.payment_id, py.payment, sh.shipment, u.username, u.email");
+        $this->select("{$this->table}.*, py.payment as payment_name, sh.shipment, u.username, u.email, u.phone");
         $this->join("users u", "u.user_id = {$this->table}.user_id");
         $this->join("payment py", "py.payment_id = {$this->table}.payment");
         $this->join("shipment sh", "sh.shipment_id = {$this->table}.shipment");
@@ -52,7 +52,7 @@ class OrderModel extends Model
 
     public function showOrder($id)
     {
-        $this->select("{$this->table}.*, py.payment_id, py.payment, py.account, py.number, sh.shipment, u.username, u.email");
+        $this->select("{$this->table}.*, py.payment as payment_name, py.account, py.number, sh.shipment, u.username, u.email, u.phone");
         $this->join("users u", "u.user_id = {$this->table}.user_id");
         $this->join("payment py", "py.payment_id = {$this->table}.payment");
         $this->join("shipment sh", "sh.shipment_id = {$this->table}.shipment");
@@ -63,7 +63,7 @@ class OrderModel extends Model
 
     public function findOrders($userid)
     {
-        $this->select("{$this->table}.*, py.payment_id, py.payment, sh.shipment, u.username, u.email");
+        $this->select("{$this->table}.*, py.payment as payment_name, sh.shipment, u.username, u.email, u.phone");
         $this->join("users u", "u.user_id = {$this->table}.user_id");
         $this->join("payment py", "py.payment_id = {$this->table}.payment");
         $this->join("shipment sh", "sh.shipment_id = {$this->table}.shipment");
@@ -74,7 +74,7 @@ class OrderModel extends Model
 
     public function findUserOrder($userid, $status)
     {
-        $this->select("{$this->table}.*, py.payment_id, py.payment, sh.shipment, u.username, u.email");
+        $this->select("{$this->table}.*, py.payment as payment_name, sh.shipment, u.username, u.email, u.phone");
         $this->join("users u", "u.user_id = {$this->table}.user_id");
         $this->join("payment py", "py.payment_id = {$this->table}.payment");
         $this->join("shipment sh", "sh.shipment_id = {$this->table}.shipment");
@@ -86,7 +86,7 @@ class OrderModel extends Model
 
     public function checkoutOrder($orderid, $userid)
     {
-        $this->select("{$this->table}.*, py.payment_id, py.payment, py.account, py.number, sh.shipment, u.username, u.email");
+        $this->select("{$this->table}.*, py.payment as payment_name, py.account, py.number, sh.shipment, u.username, u.email, u.phone");
         $this->join("users u", "u.user_id = {$this->table}.user_id");
         $this->join("payment py", "py.payment_id = {$this->table}.payment");
         $this->join("shipment sh", "sh.shipment_id = {$this->table}.shipment");

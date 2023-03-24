@@ -8,7 +8,7 @@
             <v-text-field v-model="search" append-icon="mdi-magnify" label="<?= lang('App.search'); ?>" single-line hide-details>
             </v-text-field>
         </v-card-title>
-        <v-data-table :headers="dataTable" :items="dataSettingWithIndex" :items-per-page="-1" :loading="loading" :search="search" loading-text="<?= lang('App.loadingWait'); ?>">
+        <v-data-table :headers="dataTable" :items="dataSettingWithIndex" :items-per-page="-1" :loading="loading" :search="search">
             <template v-slot:item="{ item }">
                 <tr>
                     <td>{{item.index}}</td>

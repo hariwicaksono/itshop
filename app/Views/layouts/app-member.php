@@ -33,7 +33,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
     <!-- ========================= preloader start ========================= -->
     <div class="preloader">
         <div class="loader">
-            <div class="loader-logo"><img src="<?= base_url('images/logo.png') ?>" alt="Preloader" width="64"></div>
+            <div class="loader-logo"><img src="<?= base_url('images/logo.png') ?>" alt="Preloader" width="65" style="margin-top: 5px;"></div>
             <div class="spinner">
                 <div class="spinner-container">
                     <div class="spinner-rotator">
@@ -51,9 +51,9 @@ $snackbarsPosition = $setting->info['snackbars_position'];
     <!-- preloader end -->
     <div id="app">
         <v-app>
-            <v-app-bar app color="indigo" dark>
+            <v-app-bar app color="primary" dark>
                 <v-app-bar-nav-icon @click.stop="sidebarMenu = !sidebarMenu"></v-app-bar-nav-icon>
-                <v-toolbar-title>Member</v-toolbar-title>
+                <v-toolbar-title></v-toolbar-title>
                 <v-spacer></v-spacer>
                 <v-btn icon class="mr-3" href="<?= base_url('cart') ?>" elevation="0">
                     <v-badge :content="cartCounter" :value="cartCounter" color="red" overlap>
@@ -110,14 +110,14 @@ $snackbarsPosition = $setting->info['snackbars_position'];
             </v-app-bar>
 
             <v-navigation-drawer light class="elevation-3" v-model="sidebarMenu" app floating :permanent="sidebarMenu" :mini-variant.sync="mini" v-if="!isMobile">
-                <v-list color="indigo" dark dense elevation="1">
+                <v-list color="primary" dark dense elevation="1">
                     <v-list-item>
                         <v-list-item-action>
                             <v-icon @click.stop="toggleMini = !toggleMini">mdi-chevron-left</v-icon>
                         </v-list-item-action>
                         <v-list-item-content>
                             <v-list-item-title>
-
+                                <?= APP_NAME; ?>
                             </v-list-item-title>
                         </v-list-item-content>
                     </v-list-item>
@@ -133,7 +133,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
                                 <v-icon>mdi-view-dashboard</v-icon>
                             </v-list-item-icon>
                             <v-list-item-content>
-                                <v-list-item-title><?= lang('App.dashboard') ?></v-list-item-title>
+                                <v-list-item-title>Member <?= lang('App.dashboard') ?></v-list-item-title>
                             </v-list-item-content>
                         </v-list-item>
                         <v-list-item link href="<?= base_url('member/profile'); ?>" <?php if ($uri->getSegment(2) == "profile") { ?> <?= 'class="v-item--active v-list-item--active"'; ?> <?php } ?>>
@@ -247,7 +247,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
         var computedVue = {
             mini: {
                 get() {
-                    return this.$vuetify.breakpoint.smAndDown || !this.toggleMini;
+                    return this.$vuetify.breakpoint.xsOnly || this.toggleMini;
                 },
                 set(value) {
                     this.toggleMini = value;
@@ -286,8 +286,21 @@ $snackbarsPosition = $setting->info['snackbars_position'];
                     this.$vuetify.theme.dark.toString()
                 );
             }
+
+            const mini = localStorage.getItem("toggle_mini");
+            if (mini) {
+                if (mini === "true") {
+                    this.toggleMini = true;
+                } else {
+                    this.toggleMini = false;
+                }
+            }
         }
-        var watchVue = {}
+        var watchVue = {
+            toggleMini: function() {
+                localStorage.setItem("toggle_mini", this.toggleMini);
+            },
+        }
         var dataVue = {
             sidebarMenu: true,
             rightMenu: false,
@@ -340,7 +353,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
             },
             // Format Ribuan Rupiah versi 1
             RibuanLocale(key) {
-                const rupiah = 'Rp ' + Number(key).toLocaleString('id-ID');
+                const rupiah = 'Rp' + Number(key).toLocaleString('id-ID');
                 return rupiah
             },
             RibuanLocaleNoRp(key) {

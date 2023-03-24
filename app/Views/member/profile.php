@@ -7,7 +7,8 @@
             <v-form ref="form" v-model="valid">
                 <v-text-field label="Email *" v-model="email" :rules="[rules.required]" disabled outlined></v-text-field>
                 <v-text-field label="Username *" v-model="username" :rules="[rules.required]" outlined></v-text-field>
-                <v-text-field label="Nama Lengkap *" v-model="namaLengkap" :rules="[rules.required]" outlined></v-text-field>
+                <v-text-field label="Nama Depan *" v-model="firstName" :rules="[rules.required]" outlined></v-text-field>
+                <v-text-field label="Nama Belakang *" v-model="lastName" :rules="[rules.required]" outlined></v-text-field>
                 <v-text-field label="Alamat *" v-model="alamat" :rules="[rules.required]" outlined></v-text-field>
                 <v-row>
                     <v-col>
@@ -42,7 +43,8 @@
         profile: [],
         email: "",
         username: "",
-        namaLengkap: "",
+        firstName: "",
+        lastName: "",
         alamat: "",
         kodepos: "",
         list_kabupaten: [],
@@ -89,7 +91,8 @@
                         this.userId = this.profile.user_id;
                         this.email = this.profile.email;
                         this.username = this.profile.username;
-                        this.namaLengkap = this.profile.nama_lengkap;
+                        this.firstName = this.profile.first_name;
+                        this.lastName = this.profile.last_name;
                         this.alamat = this.profile.alamat;
                         this.select_kabupaten = this.profile.kabupaten_id;
                         this.select_provinsi = this.profile.provinsi_id;
@@ -139,7 +142,8 @@
             this.loading3 = true;
             axios.put(`<?= base_url() ?>api/user/update/${this.userId}`, {
                     username: this.username,
-                    nama_lengkap: this.namaLengkap,
+                    first_name: this.firstName,
+                    last_name: this.lastName,
                     alamat: this.alamat,
                     provinsi_id: this.select_provinsi,
                     kabupaten_id: this.select_kabupaten,

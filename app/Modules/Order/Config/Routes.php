@@ -23,6 +23,7 @@ $routes->group('api', ['filter' => 'jwtauth', 'namespace' => 'App\Modules\Order\
 	$routes->put('order/setstatus/(:segment)', 'Order::setStatus/$1');
 	$routes->get('order/user/(:segment)', 'Order::getUserOrder/$1');
 	$routes->get('order/pending/(:segment)', 'Order::getUserOrderPending/$1');
+	$routes->get('order/processed/(:segment)', 'Order::getUserOrderProcessed/$1');
 	$routes->get('order/delivered/(:segment)', 'Order::getUserOrderDelivered/$1');
 	$routes->get('order/canceled/(:segment)', 'Order::getUserOrderCanceled/$1');
 	$routes->get('chart1', 'Order::chart1');

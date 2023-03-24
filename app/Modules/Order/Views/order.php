@@ -7,22 +7,25 @@
         <v-card outlined elevation="1">
             <v-card-title>
                 <v-spacer></v-spacer>
-                <v-text-field v-model="search" append-icon="mdi-magnify" label="<?= lang('App.search') ?>" single-line hide-details>
+                <v-text-field v-model="search" v-on:keydown.enter="getOrder" @click:clear="getOrder" append-icon="mdi-magnify" label="<?= lang('App.search') ?>" single-line hide-details>
                 </v-text-field>
             </v-card-title>
-
-            <v-data-table :headers="tbheader" :items="dataOrder" :items-per-page="10" :loading="loading" :search="search" class="elevation-1" loading-text="Sedang memuat... Harap tunggu">
+            <v-data-table :headers="dataTable" :items="data" :options.sync="options" :server-items-length="totalData" :items-per-page="10" :loading="loading">
                 <template v-slot:item="{ item }">
                     <tr>
                         <td>{{item.no_order}}</td>
-                        <td>{{item.username}}<br />{{item.email}}</td>
+                        <td>{{item.username}}<br />{{item.email}}<br />{{item.phone}}</td>
                         <td>{{item.created_at}}</td>
-                        <td>{{item.qty}}</td>
-                        <td>Rp.{{item.total}}</td>
-                        <td>{{item.payment}} <a @click="showConfirmation(item)"><?= lang('App.see'); ?></a></td>
-                        <td>{{item.shipment}}</td>
+                        <td>{{RibuanLocale(item.total)}}</td>
+                        <td>
+                            {{item.payment_name}}
+                            <a @click="showConfirmation(item)" v-show="item.payment == '2'"><?= lang('App.see'); ?></a>
+                        </td>
                         <td>
                             <v-select v-model="item.status" name="status" :items="list_status" item-text="label" item-value="value" label="Select Status" single-line @change="setStatus(item)"></v-select>
+                        </td>
+                        <td>
+                            <v-select v-model="item.status_payment" name="status_payment" :items="list_payment" item-text="label" item-value="value" label="Select Status Payment" single-line @change=""></v-select>
                         </td>
                         <td>
                             <v-btn icon color="primary" class="mr-2" @click="showOrder(item)">
@@ -40,23 +43,24 @@
 <!-- Modal Item Order -->
 <template>
     <v-row justify="center">
-        <v-dialog v-model="modalOrder" persistent width="600px">
-            <v-card class="pa-2">
-                <v-card-title class="text-h5"><?= lang('App.order') ?></v-card-title>
-                <v-card-text>
+        <v-dialog v-model="modalOrder" scrollable persistent width="700px">
+            <v-card>
+                <v-card-title class="text-h5">
+                    <?= lang('App.order') ?>
+                    <v-spacer></v-spacer>
+                    <v-btn icon @click="modalOrderClose">
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                </v-card-title>
+                <v-divider></v-divider>
+                <v-card-text class="py-4">
                     <v-simple-table>
                         <template v-slot:default>
                             <thead>
                                 <tr>
-                                    <th class="text-left">
-                                        Product
-                                    </th>
-                                    <th class="text-left">
-                                        Price
-                                    </th>
-                                    <th class="text-left">
-                                        Qty
-                                    </th>
+                                    <th width="400">Product</th>
+                                    <th>Price</th>
+                                    <th>Qty</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -73,18 +77,13 @@
                                 </tr>
                                 <tr v-for="item in itemOrder" :key="item.cart_id" v-if="show == false">
                                     <td>{{item.product_name}}</td>
-                                    <td>{{item.price}}</td>
+                                    <td>{{RibuanLocale(item.price)}}</td>
                                     <td>{{item.qty}}</td>
                                 </tr>
                             </tbody>
                         </template>
                     </v-simple-table>
                 </v-card-text>
-                <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn text @click="modalOrderClose"><?= lang('App.close') ?></v-btn>
-                    <v-spacer></v-spacer>
-                </v-card-actions>
             </v-card>
         </v-dialog>
     </v-row>
@@ -101,12 +100,13 @@
                         <v-icon>mdi-close</v-icon>
                     </v-btn>
                 </v-card-title>
-                <v-card-text>
-                    BANK: {{bank}}<br />
-                    {{nama}}<br />
-                    {{norekening}}<br />
-                    Tanggal: {{tanggal}}<br />
-                    Rp.{{nominal}}
+                <v-divider></v-divider>
+                <v-card-text class="py-5">
+                    BANK: {{bank ?? "-"}}<br />
+                    {{nama ?? "-"}}<br />
+                    {{norekening ?? "-"}}<br />
+                    Tanggal: {{tanggal ?? "-"}}<br />
+                    {{RibuanLocale(nominal)}}
                 </v-card-text>
             </v-card>
         </v-dialog>
@@ -128,58 +128,68 @@
     dataVue = {
         ...dataVue,
         search: '',
-        tbheader: [{
-                text: 'No. Order',
-                value: 'no_order'
-            },
-            {
-                text: 'User',
-                value: 'email'
-            },
-            {
-                text: 'Tanggal',
-                value: 'tgl_input'
-            },
-            {
-                text: 'Qty',
-                value: 'qty'
-            },
-            {
-                text: 'Total',
-                value: 'total'
-            },
-            {
-                text: '<?= lang('App.payment'); ?>',
-                value: 'payment'
-            },
-            {
-                text: '<?= lang('App.shipment'); ?>',
-                value: 'shipment'
-            },
-            {
-                text: '<?= lang('App.status'); ?>',
-                value: 'status'
-            },
-            {
-                text: '<?= lang('App.action') ?>',
-                value: 'actions',
-                sortable: false
-            },
-        ],
+        dataTable: [{
+            text: 'No. Order',
+            value: 'no_order'
+        }, {
+            text: 'User',
+            value: 'email'
+        }, {
+            text: 'Tanggal',
+            value: 'tgl_input'
+        }, {
+            text: 'Total',
+            value: 'total'
+        }, {
+            text: '<?= lang('App.payment'); ?>',
+            value: 'payment'
+        }, {
+            text: '<?= lang('App.status'); ?>',
+            value: 'status'
+        }, {
+            text: '<?= lang('App.status'); ?> Payment',
+            value: 'status_payment'
+        }, {
+            text: '<?= lang('App.action') ?>',
+            value: 'actions',
+            sortable: false
+        }, ],
         list_status: [{
-                label: 'Pending',
-                value: '0'
-            },
-            {
-                label: 'Deliver',
-                value: '1'
-            },
-            {
-                label: 'Cancel',
-                value: '2'
-            },
-        ],
+            label: 'Pending',
+            value: '0'
+        }, {
+            label: 'Processed',
+            value: '1'
+        }, {
+            label: 'Delivered',
+            value: '2'
+        }, {
+            label: 'Cancel',
+            value: '3'
+        }, ],
+        list_payment: [{
+            label: 'Pending',
+            value: 'pending'
+        }, {
+            label: 'Settlement',
+            value: 'settlement'
+        }, {
+            label: 'Cancel',
+            value: 'cancel'
+        }, {
+            label: 'Capture',
+            value: 'capture'
+        }, {
+            label: 'Deny',
+            value: 'deny'
+        }, {
+            label: 'Expire',
+            value: 'expire'
+        }, ],
         dataOrder: [],
+        totalData: 0,
+        data: [],
+        options: {},
         itemOrder: [],
         noOrder: "",
         idOrder: "",
@@ -202,8 +212,88 @@
         this.getOrder();
     }
 
+    watchVue = {
+        ...watchVue,
+        options: {
+            handler() {
+                this.getDataFromApi()
+            },
+            deep: true,
+        },
+
+        dataOrder: function() {
+            if (this.dataOrder != '') {
+                // Call server-side paginate and sort
+                this.getDataFromApi();
+            }
+        }
+    }
+
     methodsVue = {
         ...methodsVue,
+        // Server-side paginate and sort
+        getDataFromApi() {
+            this.loading = true
+            this.fetchData().then(data => {
+                this.data = data.items
+                this.totalData = data.total
+                this.loading = false
+            })
+        },
+        fetchData() {
+            return new Promise((resolve, reject) => {
+                const {
+                    sortBy,
+                    sortDesc,
+                    page,
+                    itemsPerPage
+                } = this.options
+
+                let search = this.search ?? "".trim().toLowerCase();
+
+                let items = this.dataOrder
+                const total = items.length
+
+                if (search) {
+                    items = items.filter(item => {
+                        return Object.values(item)
+                            .join(",")
+                            .toLowerCase()
+                            .includes(search);
+                    });
+                }
+
+                if (sortBy.length === 1 && sortDesc.length === 1) {
+                    items = items.sort((a, b) => {
+                        const sortA = a[sortBy[0]]
+                        const sortB = b[sortBy[0]]
+
+                        if (sortDesc[0]) {
+                            if (sortA < sortB) return 1
+                            if (sortA > sortB) return -1
+                            return 0
+                        } else {
+                            if (sortA < sortB) return -1
+                            if (sortA > sortB) return 1
+                            return 0
+                        }
+                    })
+                }
+
+                if (itemsPerPage > 0) {
+                    items = items.slice((page - 1) * itemsPerPage, page * itemsPerPage)
+                }
+
+                setTimeout(() => {
+                    resolve({
+                        items,
+                        total,
+                    })
+                }, 100)
+            })
+        },
+        // End Server-side paginate and sort
+
         // Get Order
         getOrder: function() {
             this.loading = true;

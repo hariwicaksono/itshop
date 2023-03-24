@@ -1,8 +1,8 @@
 <?php 
-namespace App\Controllers\Api;
+namespace App\Modules\Media\Controllers\Api;
 
 use App\Controllers\BaseControllerApi;
-use App\Models\MediaModel;
+use App\Modules\Media\Models\MediaModel;
 
 class Media extends BaseControllerApi
 {

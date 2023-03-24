@@ -6,15 +6,16 @@
         <v-tabs color="primary">
             <v-tab>All <?= lang('App.order') ?></v-tab>
             <v-tab @click="getOrderPending">Pending</v-tab>
+            <v-tab @click="getOrderProcessed">Processed</v-tab>
             <v-tab @click="getOrderDelivered">Delivered</v-tab>
             <v-tab @click="getOrderCanceled">Canceled</v-tab>
-            <v-tab-item v-for="n in 4" :key="n">
+            <v-tab-item v-for="n in 5" :key="n">
                 <v-card-text v-if="n==1">
                     <div v-if="loader == true">
                         <v-skeleton-loader type="heading,list-item-two-line"></v-skeleton-loader>
                     </div>
                     <v-card class="mb-4" v-for="item in dataOrder" :key="item.order_id" v-if="loader == false">
-                        <v-card-subtitle class="font-weight-medium">{{item.status==0?"Belum Dikirim":""}}{{item.status==1?"Dikirim":""}}{{item.status==2?"Dibatalkan":""}} / {{item.no_order}} / {{item.email}} / {{item.created_at}}</v-card-subtitle>
+                        <v-card-subtitle class="font-weight-medium">{{item.status==0?"Belum Diproses":""}}{{item.status==1?"Sedang Diproses":""}}{{item.status==2?"Dikirim":""}}{{item.status==3?"Dibatalkan":""}} / {{item.no_order}} / {{item.email}} / {{item.created_at}}</v-card-subtitle>
                         <v-card-text>
                             <v-row>
                                 <v-col>
@@ -23,7 +24,7 @@
                                 </v-col>
                                 <v-col>
                                     <?= lang('App.shipment'); ?>: {{item.shipment}}<br />
-                                    <?= lang('App.payment'); ?>: {{item.payment}}
+                                    <?= lang('App.payment'); ?>: {{item.payment_name}}
                                 </v-col>
                             </v-row>
                         </v-card-text>
@@ -40,7 +41,7 @@
                         <v-skeleton-loader type="heading,list-item-two-line"></v-skeleton-loader>
                     </div>
                     <v-card class="mb-4" v-for="item in dataPending" :key="item.order_id" v-if="loader == false">
-                        <v-card-subtitle class="font-weight-medium">{{item.status==0?"Belum Dikirim":""}}{{item.status==1?"Dikirim":""}}{{item.status==2?"Dibatalkan":""}} / {{item.no_order}} / {{item.email}} / {{item.created_at}}</v-card-subtitle>
+                        <v-card-subtitle class="font-weight-medium">{{item.status==0?"Belum Diproses":""}}{{item.status==1?"Sedang Diproses":""}}{{item.status==2?"Dikirim":""}}{{item.status==3?"Dibatalkan":""}} / {{item.no_order}} / {{item.email}} / {{item.created_at}}</v-card-subtitle>
                         <v-card-text>
                             <v-row>
                                 <v-col>
@@ -49,7 +50,7 @@
                                 </v-col>
                                 <v-col>
                                     <?= lang('App.shipment'); ?>: {{item.shipment}}<br />
-                                    <?= lang('App.payment'); ?>: {{item.payment}}
+                                    <?= lang('App.payment'); ?>: {{item.payment_name}}
                                 </v-col>
                             </v-row>
                         </v-card-text>
@@ -62,11 +63,11 @@
                     </v-card>
                 </v-card-text>
                 <v-card-text v-if="n==3">
-                    <div v-if="loader == true">
+                <div v-if="loader == true">
                         <v-skeleton-loader type="heading,list-item-two-line"></v-skeleton-loader>
                     </div>
-                    <v-card class="mb-4" v-for="item in dataDelivered" :key="item.order_id" v-if="loader == false">
-                        <v-card-subtitle class="font-weight-medium">{{item.status==0?"Belum Dikirim":""}}{{item.status==1?"Dikirim":""}}{{item.status==2?"Dibatalkan":""}} / {{item.no_order}} / {{item.email}} / {{item.created_at}}</v-card-subtitle>
+                    <v-card class="mb-4" v-for="item in dataProcessed" :key="item.order_id" v-if="loader == false">
+                        <v-card-subtitle class="font-weight-medium">{{item.status==0?"Belum Diproses":""}}{{item.status==1?"Sedang Diproses":""}}{{item.status==2?"Dikirim":""}}{{item.status==3?"Dibatalkan":""}} / {{item.no_order}} / {{item.email}} / {{item.created_at}}</v-card-subtitle>
                         <v-card-text>
                             <v-row>
                                 <v-col>
@@ -75,7 +76,7 @@
                                 </v-col>
                                 <v-col>
                                     <?= lang('App.shipment'); ?>: {{item.shipment}}<br />
-                                    <?= lang('App.payment'); ?>: {{item.payment}}
+                                    <?= lang('App.payment'); ?>: {{item.payment_name}}
                                 </v-col>
                             </v-row>
                         </v-card-text>
@@ -86,7 +87,7 @@
                         <v-skeleton-loader type="heading,list-item-two-line"></v-skeleton-loader>
                     </div>
                     <v-card class="mb-4" v-for="item in dataDelivered" :key="item.order_id" v-if="loader == false">
-                        <v-card-subtitle class="font-weight-medium">{{item.status==0?"Belum Dikirim":""}}{{item.status==1?"Dikirim":""}}{{item.status==2?"Dibatalkan":""}} / {{item.no_order}} / {{item.email}} / {{item.created_at}}</v-card-subtitle>
+                        <v-card-subtitle class="font-weight-medium">{{item.status==0?"Belum Diproses":""}}{{item.status==1?"Sedang Diproses":""}}{{item.status==2?"Dikirim":""}}{{item.status==3?"Dibatalkan":""}} / {{item.no_order}} / {{item.email}} / {{item.created_at}}</v-card-subtitle>
                         <v-card-text>
                             <v-row>
                                 <v-col>
@@ -95,7 +96,27 @@
                                 </v-col>
                                 <v-col>
                                     <?= lang('App.shipment'); ?>: {{item.shipment}}<br />
-                                    <?= lang('App.payment'); ?>: {{item.payment}}
+                                    <?= lang('App.payment'); ?>: {{item.payment_name}}
+                                </v-col>
+                            </v-row>
+                        </v-card-text>
+                    </v-card>
+                </v-card-text>
+                <v-card-text v-if="n==5">
+                    <div v-if="loader == true">
+                        <v-skeleton-loader type="heading,list-item-two-line"></v-skeleton-loader>
+                    </div>
+                    <v-card class="mb-4" v-for="item in dataDelivered" :key="item.order_id" v-if="loader == false">
+                        <v-card-subtitle class="font-weight-medium">{{item.status==0?"Belum Diproses":""}}{{item.status==1?"Sedang Diproses":""}}{{item.status==2?"Dikirim":""}}{{item.status==3?"Dibatalkan":""}} / {{item.no_order}} / {{item.email}} / {{item.created_at}}</v-card-subtitle>
+                        <v-card-text>
+                            <v-row>
+                                <v-col>
+                                    <?= lang('App.product'); ?>: {{item.qty}} <a @click="showOrder(item)"><?= lang('App.see'); ?></a><br />
+                                    <?= lang('App.totalPrice'); ?>: Rp.{{item.total}}
+                                </v-col>
+                                <v-col>
+                                    <?= lang('App.shipment'); ?>: {{item.shipment}}<br />
+                                    <?= lang('App.payment'); ?>: {{item.payment_name}}
                                 </v-col>
                             </v-row>
                         </v-card-text>
@@ -207,6 +228,7 @@
         ...dataVue,
         dataOrder: [],
         dataPending: [],
+        dataProcessed: [],
         dataDelivered: [],
         dataCanceled: [],
         itemOrder: [],
@@ -270,6 +292,33 @@
                         this.snackbar = true;
                         this.snackbarMessage = data.message;
                         this.dataPending = data.data;
+                    } else {
+                        this.snackbar = true;
+                        this.snackbarMessage = data.message;
+                    }
+                })
+                .catch(err => {
+                    // handle error
+                    console.log(err);
+                    var error = err.response
+                    if (error.data.expired == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = error.data.message;
+                        setTimeout(() => window.location.href = error.data.data.url, 1000);
+                    }
+                })
+        },
+        getOrderProcessed: function() {
+            this.loader = true;
+            axios.get('<?= base_url() ?>api/order/processed/<?= session()->get('id'); ?>', options)
+                .then(res => {
+                    // handle success
+                    this.loader = false;
+                    var data = res.data;
+                    if (data.status == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = data.message;
+                        this.dataProcessed = data.data;
                     } else {
                         this.snackbar = true;
                         this.snackbarMessage = data.message;

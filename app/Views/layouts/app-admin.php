@@ -330,7 +330,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
         var computedVue = {
             mini: {
                 get() {
-                    return this.$vuetify.breakpoint.xsOnly || this.toggleMini;
+                    return this.$vuetify.breakpoint.xsOnly || !this.toggleMini;
                 },
                 set(value) {
                     this.toggleMini = value;
@@ -522,7 +522,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
             },
             // Format Ribuan Rupiah versi 1
             RibuanLocale(key) {
-                const rupiah = 'Rp ' + Number(key).toLocaleString('id-ID');
+                const rupiah = 'Rp' + Number(key).toLocaleString('id-ID');
                 return rupiah
             },
             RibuanLocaleNoRp(key) {

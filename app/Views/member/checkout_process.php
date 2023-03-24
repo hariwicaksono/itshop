@@ -245,6 +245,9 @@
                 onSuccess: function(result) {
                     console.log(result.status_message);
                     console.log(JSON.stringify(result));
+                    if (result.transaction_status == 'settlement') {
+                        window.location.href = '<?= base_url('/checkout-success'); ?>';
+                    }
                 },
                 // Optional
                 onPending: function(result) {

@@ -70,7 +70,7 @@ class Order extends BaseControllerApi
             $grandtotal = $total;
         } else {
             $grandtotal = $total + rand(1, 100);
-        } 
+        }
 
         $user = $this->user->find($user_id);
         $userEmail = $user['email'];
@@ -103,6 +103,7 @@ class Order extends BaseControllerApi
                 'shipment' => $shipment,
                 'note' => $note,
                 'status' => 0,
+                'status_payment' => 'pending',
                 'periode' => date('m-Y'),
             ];
             $this->model->save($dataOrder);
@@ -145,19 +146,21 @@ class Order extends BaseControllerApi
             $dataStock = $arrStock;
             $this->product->updateBatch($dataStock, 'product_id');
 
-            //Send Email New Order
-            helper('email');
-            $email = $this->setting->info['company_email2'];
-            $dataEmail = [
-                'no_order' => $no_order,
-                'created_at' => $orderCreated,
-                'email' => $userEmail,
-                'phone' => $userPhone,
-                'qty' => $total_product,
-                'total' => $grandtotal,
-                'note' => $note,
-            ];
-            sendEmail("Pesanan Baru #$no_order Siap Dikirim", $email, view('App\Modules\Order\Views\email/order_new', $dataEmail));
+            if ($cek['payment_id'] == 2) {
+                //Send Email New Order
+                helper('email');
+                $email = $this->setting->info['company_email2'];
+                $dataEmail = [
+                    'no_order' => $no_order,
+                    'created_at' => $orderCreated,
+                    'email' => $userEmail,
+                    'phone' => $userPhone,
+                    'qty' => $total_product,
+                    'total' => $grandtotal,
+                    'note' => $note,
+                ];
+                sendEmail("Pesanan Baru #$no_order Siap Dikirim", $email, view('App\Modules\Order\Views\email/order_new_tf', $dataEmail));
+            }
 
             $response = [
                 'status' => true,
@@ -278,13 +281,18 @@ class Order extends BaseControllerApi
         return $this->respond(["status" => true, "message" => lang("App.getSuccess"), "data" => $this->model->findUserOrder($id, 0)], 200);
     }
 
-    public function getUserOrderDelivered($id = null)
+    public function getUserOrderProcessed($id = null)
     {
         return $this->respond(["status" => true, "message" => lang("App.getSuccess"), "data" => $this->model->findUserOrder($id, 1)], 200);
     }
 
-    public function getUserOrderCanceled($id = null)
+    public function getUserOrderDelivered($id = null)
     {
         return $this->respond(["status" => true, "message" => lang("App.getSuccess"), "data" => $this->model->findUserOrder($id, 2)], 200);
+    }
+
+    public function getUserOrderCanceled($id = null)
+    {
+        return $this->respond(["status" => true, "message" => lang("App.getSuccess"), "data" => $this->model->findUserOrder($id, 3)], 200);
     }
 }

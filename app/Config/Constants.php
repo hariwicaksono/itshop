@@ -105,6 +105,6 @@ defined('BASE_URL') || define('BASE_URL', $base_url);
 
 // Custom
 $version = 'v'.'1.0.0';
-defined('COMPANY_NAME') || define('COMPANY_NAME', 'PT GLOBAL ITSHOP PURWOKERTO');
+defined('COMPANY_NAME') || define('COMPANY_NAME', 'ITShop Purwokerto');
 defined('APP_NAME') || define('APP_NAME', 'ITSHOP.BIZ.ID');
 defined('APP_VERSION') || define('APP_VERSION', $version);
