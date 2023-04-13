@@ -5,7 +5,7 @@ namespace App\Modules\Product\Controllers;
 use App\Controllers\BaseController;
 use App\Modules\Order\Models\OrderModel;
 use App\Modules\Product\Models\ProductModel;
-use App\Models\UserModel;
+use App\Modules\User\Models\UserModel;
 use TCPDF;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -31,7 +31,7 @@ class Product extends BaseController
     public function index()
     {
         return view('App\Modules\Product\Views/product', [
-            'title' => 'Product'
+            'title' => lang('App.listProduct')
         ]);
     }
 }

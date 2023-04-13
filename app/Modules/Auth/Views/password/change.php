@@ -1,7 +1,7 @@
 <?php $this->extend("layouts/app-front"); ?>
 <?php $this->section("content"); ?>
 <template>
-    <v-container class="indigo pa-15" fill-height fluid>
+    <v-container class="indigo lighten-1 pa-15" fill-height fluid>
         <v-layout flex align-center justify-center>
             <v-flex xs12 sm6 md6>
                 <v-card elevation="2" outlined>
@@ -13,7 +13,7 @@
                             <v-text-field v-model="password" :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'" :rules="[rules.required, rules.min]" :type="show1 ? 'text' : 'password'" label="Password" hint="<?= lang('App.minChar') ?>" counter @click:append="show1 = !show1" outlined :disabled="submitted"></v-text-field>
                             <v-text-field block v-model="verify" :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'" :rules="[rules.required, passwordMatch]" :type="show1 ? 'text' : 'password'" label="Confirm Password" counter @click:append="show1 = !show1" outlined :disabled="submitted"></v-text-field>
                             <v-layout class="mb-3">
-                                <v-btn block color="primary" @click="submit" :loading="loading" :disabled="submitted">Submit</v-btn>
+                                <v-btn large block color="primary" @click="submit" :loading="loading" :disabled="submitted">Submit</v-btn>
                             </v-layout>
                         </v-form>
                     </v-card-text>

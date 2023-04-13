@@ -1,15 +1,22 @@
 <?php $this->extend("layouts/app-member"); ?>
 <?php $this->section("content"); ?>
 <template>
-    <h1 class="mb-3 font-weight-medium"><?= lang('App.myProfile') ?></h1>
+    <h1 class="mb-2 font-weight-medium"><?= lang('App.myProfile') ?></h1>
     <v-card>
         <v-card-text>
             <v-form ref="form" v-model="valid">
                 <v-text-field label="Email *" v-model="email" :rules="[rules.required]" disabled outlined></v-text-field>
                 <v-text-field label="Username *" v-model="username" :rules="[rules.required]" outlined></v-text-field>
-                <v-text-field label="Nama Depan *" v-model="firstName" :rules="[rules.required]" outlined></v-text-field>
-                <v-text-field label="Nama Belakang *" v-model="lastName" :rules="[rules.required]" outlined></v-text-field>
+                <v-row>
+                    <v-col>
+                        <v-text-field label="Nama Depan *" v-model="firstName" :rules="[rules.required]" outlined></v-text-field>
+                    </v-col>
+                    <v-col>
+                        <v-text-field label="Nama Belakang *" v-model="lastName" :rules="[rules.required]" outlined></v-text-field>
+                    </v-col>
+                </v-row>
                 <v-text-field label="Alamat *" v-model="alamat" :rules="[rules.required]" outlined></v-text-field>
+                <v-text-field label="Telepon *" v-model="phone" :rules="[rules.required]" outlined></v-text-field>
                 <v-row>
                     <v-col>
                         <v-select label="Provinsi *" v-model="select_provinsi" :items="list_provinsi" item-text="provinsi_nama" item-value="provinsi_id" :eager="true" :loading="loading2" outlined></v-select>
@@ -46,6 +53,7 @@
         firstName: "",
         lastName: "",
         alamat: "",
+        phone: "",
         kodepos: "",
         list_kabupaten: [],
         list_provinsi: [],
@@ -62,6 +70,7 @@
     }
 
     watchVue = {
+        ...watchVue,
         select_provinsi: function() {
             if (!isNaN(this.select_provinsi)) {
                 this.getKabupaten();
@@ -79,11 +88,6 @@
                     // handle success
                     this.loading = false;
                     var data = res.data;
-                    if (data.expired == true) {
-                        this.snackbar = true;
-                        this.snackbarMessage = data.message;
-                        setTimeout(() => window.location.href = data.data.url, 1000);
-                    }
                     if (data.status == true) {
                         this.snackbar = true;
                         this.snackbarMessage = data.message;
@@ -94,7 +98,8 @@
                         this.firstName = this.profile.first_name;
                         this.lastName = this.profile.last_name;
                         this.alamat = this.profile.alamat;
-                        this.select_kabupaten = this.profile.kabupaten_id;
+                        this.phone = this.profile.phone;
+                        this.select_kabupaten = this.profile.kabupaten_kota_id;
                         this.select_provinsi = this.profile.provinsi_id;
                         this.kodepos = this.profile.kodepos;
                         this.provinsi = this.profile.provinsi;
@@ -107,6 +112,12 @@
                 .catch(err => {
                     // handle error
                     console.log(err);
+                    var error = err.response
+                    if (error.data.expired == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = error.data.message;
+                        setTimeout(() => window.location.href = error.data.data.url, 1000);
+                    }
                 })
         },
         getProvinsi: function() {
@@ -145,19 +156,15 @@
                     first_name: this.firstName,
                     last_name: this.lastName,
                     alamat: this.alamat,
+                    phone: this.phone,
                     provinsi_id: this.select_provinsi,
-                    kabupaten_id: this.select_kabupaten,
+                    kabupaten_kota_id: this.select_kabupaten,
                     kodepos: this.kodepos,
                 }, options)
                 .then(res => {
                     // handle success
                     this.loading3 = false;
                     var data = res.data;
-                    if (data.expired == true) {
-                        this.snackbar = true;
-                        this.snackbarMessage = data.message;
-                        setTimeout(() => window.location.href = data.data.url, 1000);
-                    }
                     if (data.status == true) {
                         this.snackbar = true;
                         this.snackbarMessage = data.message;
@@ -172,7 +179,13 @@
                 .catch(err => {
                     // handle error
                     console.log(err.response);
-                    this.loading = false
+                    this.loading = false;
+                    var error = err.response;
+                    if (error.data.expired == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = error.data.message;
+                        setTimeout(() => window.location.href = error.data.data.url, 1000);
+                    }
                 })
         },
     }

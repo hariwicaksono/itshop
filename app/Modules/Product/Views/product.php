@@ -1,7 +1,7 @@
 <?php $this->extend("layouts/app-admin"); ?>
 <?php $this->section("content"); ?>
 <template>
-    <h1 class="mb-2 font-weight-medium"><?= lang('App.listProduct') ?></h1>
+    <h1 class="mb-2 font-weight-medium"><?= $title; ?></h1>
     <v-row>
         <v-col>
             <!-- Table List Product -->
@@ -10,11 +10,11 @@
                     <!-- Button Add New Product -->
                     <v-btn large color="primary" dark @click="modalAddOpen" elevation="1"><v-icon>mdi-plus</v-icon> <?= lang('App.add') ?></v-btn>
                     <v-spacer></v-spacer>
-                    <v-text-field v-model="search" append-icon="mdi-magnify" label="<?= lang('App.search') ?>" single-line hide-details>
+                    <v-text-field v-model="search" v-on:keydown.enter="getProducts" @click:clear="getProducts" append-icon="mdi-magnify" label="<?= lang('App.search') ?>" single-line hide-details clearable>
                     </v-text-field>
                 </v-card-title>
 
-                <v-data-table v-model="selected" item-key="product_id" show-select :headers="headers" :items="products" :items-per-page="10" :loading="loading" :search="search" class="elevation-1" loading-text="Sedang memuat... Harap tunggu" dense>
+                <v-data-table v-model="selected" item-key="product_id" show-select :headers="dataTable" :items="data" :options.sync="options" :server-items-length="totalData" :items-per-page="10" :loading="loading">
                     <template v-slot:item="{ item, isSelected, select}">
                         <tr :class="isSelected ? 'grey lighten-2':'' || item.stock <= item.stock_min ? 'red lighten-4':''" @click="toggle(isSelected,select,$event)">
                             <td>
@@ -37,9 +37,12 @@
                             </td>
                             <td>
                                 <v-edit-dialog large :return-value.sync="item.product_price" @save="setPrice(item)" @cancel="" @open="" @close="">
-                                    {{item.product_price}}
+                                    <div v-if="item.discount > 0"><span class="text-decoration-line-through">{{ Ribuan(item.product_price) }}</span>
+                                        <v-chip color="red" label x-small dark class="px-1" title="<?= lang('App.discount'); ?>">{{item.discount_percent}}%</v-chip><br />{{ Ribuan(item.product_price - item.discount) }}
+                                    </div>
+                                    <div v-else>{{ Ribuan(item.product_price) }}</div>
                                     <template v-slot:input>
-                                        <v-text-field v-model="item.product_price" type="number" min="0" single-line></v-text-field>
+                                        <v-text-field v-model="item.product_price" type="number" min="0" single-line :disabled="item.discount > 0"></v-text-field>
                                     </template>
                                 </v-edit-dialog>
                             </td>
@@ -76,13 +79,16 @@
 <!-- Modal Save Product -->
 <template>
     <v-row justify="center">
-        <v-dialog v-model="modalAdd" persistent scrollable width="1000px">
+        <v-dialog v-model="modalAdd" fullscreen persistent scrollable>
             <v-card>
-                <v-card-title>
+                <v-card-title class="mb-1">
+                    <v-btn icon @click="modalAddClose" class="mr-3">
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
                     <?= lang('App.addProduct') ?>
                     <v-spacer></v-spacer>
-                    <v-btn icon @click="modalAddClose">
-                        <v-icon>mdi-close</v-icon>
+                    <v-btn large color="primary" @click="saveProduct" :loading="loading" elevation="1">
+                        <v-icon>mdi-content-save</v-icon> <?= lang('App.save') ?>
                     </v-btn>
                 </v-card-title>
                 <v-divider></v-divider>
@@ -205,8 +211,11 @@
                                 <p class="text-caption"></p>
                             </v-col>
                             <v-col cols="12" sm="9">
-                                <v-text-field label="<?= lang('App.productPrice') ?> (Rp)" v-model="productPrice" type="number" :error-messages="product_priceError" outlined>
+                                <v-text-field label="" v-model="productPrice" type="number" :error-messages="product_priceError" prefix="Rp" outlined>
                                 </v-text-field>
+
+                                <v-checkbox v-model="checkDiscount" label="Aktifkan <?= lang('App.discount') ?>" class="mt-n2"></v-checkbox>
+                                <v-text-field v-model="discount" label="<?= lang('App.discount') ?> (Rp)" type="number" :error-messages="discountError" prefix="Rp" :suffix=" discountPercent.toFixed() + '%'" @focus="$event.target.select()" outlined v-show="checkDiscount == true"></v-text-field>
                             </v-col>
                         </v-row>
                         <v-row>
@@ -222,13 +231,6 @@
 
                     </v-form>
                 </v-card-text>
-                <v-divider></v-divider>
-                <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn large color="primary" @click="saveProduct" :loading="loading">
-                        <v-icon>mdi-content-save</v-icon> <?= lang('App.save') ?>
-                    </v-btn>
-                </v-card-actions>
             </v-card>
         </v-dialog>
     </v-row>
@@ -238,7 +240,7 @@
 <!-- Modal Show Product -->
 <template>
     <v-row justify="center">
-        <v-dialog v-model="modalShow" persistent scrollable width="1000px">
+        <v-dialog v-model="modalShow" fullscreen persistent scrollable>
             <v-card>
                 <v-card-title>
                     <v-spacer></v-spacer>
@@ -246,6 +248,7 @@
                         <v-icon>mdi-close</v-icon>
                     </v-btn>
                 </v-card-title>
+                <v-divider></v-divider>
                 <v-card-text class="py-5">
                     <v-row>
                         <v-col class="mb-n10" cols="12" sm="3">
@@ -311,7 +314,10 @@
                             <p class="text-caption"></p>
                         </v-col>
                         <v-col cols="12" sm="9">
-                            <v-text-field label="<?= lang('App.productPrice') ?> (Rp)" v-model="productPriceEdit" type="number" outlined></v-text-field>
+                            <v-text-field label="" v-model="productPriceEdit" type="number" prefix="Rp" outlined></v-text-field>
+
+                            <v-checkbox v-model="checkDiscount" label="Aktifkan <?= lang('App.discount') ?>" class="mt-n2"></v-checkbox>
+                            <v-text-field v-model="discount" label="<?= lang('App.discount') ?> (Rp)" type="number" :error-messages="discountError" prefix="Rp" :suffix=" discountPercent.toFixed() + '%'" @focus="$event.target.select()" outlined v-show="checkDiscount == true"></v-text-field>
                         </v-col>
                     </v-row>
                     <v-row>
@@ -334,13 +340,16 @@
 <!-- Modal Edit Product -->
 <template>
     <v-row justify="center">
-        <v-dialog v-model="modalEdit" persistent scrollable width="1000px">
+        <v-dialog v-model="modalEdit" fullscreen persistent scrollable>
             <v-card>
-                <v-card-title>
+                <v-card-title class="mb-1">
+                    <v-btn icon @click="modalEditClose" class="mr-3">
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
                     <?= lang('App.editProduct') ?>
                     <v-spacer></v-spacer>
-                    <v-btn icon @click="modalEditClose">
-                        <v-icon>mdi-close</v-icon>
+                    <v-btn large color="primary" @click="updateProduct" :loading="loading" elevation="1">
+                        <v-icon>mdi-content-save</v-icon> <?= lang('App.update') ?>
                     </v-btn>
                 </v-card-title>
                 <v-divider></v-divider>
@@ -578,7 +587,10 @@
                                 <p class="text-caption"></p>
                             </v-col>
                             <v-col cols="12" sm="9">
-                                <v-text-field label="<?= lang('App.productPrice') ?> (Rp)" v-model="productPriceEdit" type="number" :error-messages="product_priceError" outlined></v-text-field>
+                                <v-text-field label="" v-model="productPriceEdit" type="number" :error-messages="product_priceError" prefix="Rp" outlined></v-text-field>
+
+                                <v-checkbox v-model="checkDiscount" label="Aktifkan <?= lang('App.discount') ?>" class="mt-n2"></v-checkbox>
+                                <v-text-field v-model="discount" label="<?= lang('App.discount') ?> (Rp)" type="number" :error-messages="discountError" prefix="Rp" :suffix=" discountPercent.toFixed() + '%'" @focus="$event.target.select()" outlined v-show="checkDiscount == true"></v-text-field>
                             </v-col>
                         </v-row>
                         <v-row>
@@ -594,13 +606,6 @@
 
                     </v-form>
                 </v-card-text>
-                <v-divider></v-divider>
-                <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn large color="primary" @click="updateProduct" :loading="loading">
-                        <v-icon>mdi-content-save</v-icon> <?= lang('App.save') ?>
-                    </v-btn>
-                </v-card-actions>
             </v-card>
         </v-dialog>
     </v-row>
@@ -662,10 +667,13 @@
         }
     };
 
+    // Deklarasi errorKeys
+    var errorKeys = []
+
     dataVue = {
         ...dataVue,
-        search: '',
-        headers: [{
+        search: "",
+        dataTable: [{
                 text: '<?= lang('App.productInfo') ?>',
                 value: 'product_name'
             },
@@ -674,7 +682,7 @@
                 value: 'product_code'
             },
             {
-                text: '<?= strtoupper(lang('App.stock')) ?>',
+                text: '<?= lang('App.stock') ?>',
                 value: 'stock'
             },
             {
@@ -688,6 +696,9 @@
             },
         ],
         products: [],
+        totalData: 0,
+        data: [],
+        options: {},
         selected: [],
         modalAdd: false,
         modalEdit: false,
@@ -697,7 +708,7 @@
         product_codeError: "",
         productName: "",
         product_nameError: "",
-        productPrice: "",
+        productPrice: 0,
         product_priceError: "",
         productDescription: "",
         product_descriptionError: "",
@@ -711,6 +722,10 @@
         product_image3Error: "",
         productImage4: null,
         product_image4Error: "",
+        checkDiscount: false,
+        discount: 0,
+        discountError: "",
+        discountPercent: 0,
         stock: "",
         stockError: "",
         active: "",
@@ -718,7 +733,7 @@
         productIdEdit: "",
         productCodeEdit: "",
         productNameEdit: "",
-        productPriceEdit: "",
+        productPriceEdit: 0,
         productDescriptionEdit: "",
         productImageEdit: null,
         mediaPathEdit: null,
@@ -760,6 +775,36 @@
     // Watch: Sebuah objek dimana keys adalah expresi-expresi untuk memantau dan values adalah callback-nya (fungsi yang dipanggil setelah suatu fungsi lain selesai dieksekusi).
     watchVue = {
         ...watchVue,
+        options: {
+            handler() {
+                this.getDataFromApi()
+            },
+            deep: true,
+        },
+
+        products: function() {
+            if (this.products != '') {
+                // Call server-side paginate and sort
+                this.getDataFromApi();
+            }
+        },
+
+        discount: function() {
+            if (Number(this.discount) == 0) {
+                this.discountPercent = 0;
+            }
+
+            if (Number(this.discount) > 0) {
+                let hitung = Number(this.productPrice) - Number(this.discount)
+                let persen = Number(this.productPrice) - hitung
+                this.discountPercent = (persen / Number(this.productPrice)) * 100;
+
+                let hitungEdit = Number(this.productPriceEdit) - Number(this.discount)
+                let persenEdit = Number(this.productPriceEdit) - hitungEdit
+                this.discountPercent = (persenEdit / Number(this.productPriceEdit)) * 100;
+            }
+        },
+
         alert: function() {
             if (this.alert == true) {
                 window.onbeforeunload = function() {
@@ -773,28 +818,77 @@
 
     methodsVue = {
         ...methodsVue,
+        // Server-side paginate and sort
+        getDataFromApi() {
+            this.loading = true
+            this.fetchData().then(data => {
+                this.data = data.items
+                this.totalData = data.total
+                this.loading = false
+            })
+        },
+        fetchData() {
+            return new Promise((resolve, reject) => {
+                const {
+                    sortBy,
+                    sortDesc,
+                    page,
+                    itemsPerPage
+                } = this.options
+
+                let search = this.search ?? "".trim();
+
+                let items = this.products;
+                const total = items.length;
+
+                if (search == search.toLowerCase()) {
+                    items = items.filter(item => {
+                        return Object.values(item)
+                            .join(",")
+                            .toLowerCase()
+                            .includes(search);
+                    });
+                } else {
+                    items = items.filter(item => {
+                        return Object.values(item)
+                            .join(",")
+                            .includes(search);
+                    });
+                }
+
+                if (sortBy.length === 1 && sortDesc.length === 1) {
+                    items = items.sort((a, b) => {
+                        const sortA = a[sortBy[0]]
+                        const sortB = b[sortBy[0]]
+
+                        if (sortDesc[0]) {
+                            if (sortA < sortB) return 1
+                            if (sortA > sortB) return -1
+                            return 0
+                        } else {
+                            if (sortA < sortB) return -1
+                            if (sortA > sortB) return 1
+                            return 0
+                        }
+                    })
+                }
+
+                if (itemsPerPage > 0) {
+                    items = items.slice((page - 1) * itemsPerPage, page * itemsPerPage)
+                }
+
+                setTimeout(() => {
+                    resolve({
+                        items,
+                        total,
+                    })
+                }, 100)
+            })
+        },
+        // End Server-side paginate and sort
+
         toggle(isSelected, select, e) {
             select(!isSelected)
-        },
-
-        modalAddOpen: function() {
-            this.modalAdd = true;
-            this.notifType = "";
-        },
-        modalAddClose: function() {
-            this.productCode = "";
-            this.productName = "";
-            this.productPrice = "";
-            this.productDescription = "";
-            if (this.alert == true) {
-                this.modalAdd = true;
-                this.snackbar = true;
-                this.snackbarMessage = "<?= lang('App.disabledImgUploaded'); ?>";
-            } else {
-                this.modalAdd = false;
-            }
-
-            this.$refs.form.resetValidation();
         },
 
         // Get Product
@@ -824,6 +918,28 @@
                         setTimeout(() => window.location.href = error.data.data.url, 1000);
                     }
                 })
+        },
+
+        modalAddOpen: function() {
+            this.modalAdd = true;
+            this.notifType = "";
+            this.checkDiscount = false;
+            this.discount = 0;
+        },
+        modalAddClose: function() {
+            this.productCode = "";
+            this.productName = "";
+            this.productPrice = "";
+            this.productDescription = "";
+            if (this.alert == true) {
+                this.modalAdd = true;
+                this.snackbar = true;
+                this.snackbarMessage = "<?= lang('App.disabledImgUploaded'); ?>";
+            } else {
+                this.modalAdd = false;
+            }
+
+            this.$refs.form.resetValidation();
         },
 
         // Upload Browse File
@@ -1289,16 +1405,22 @@
         // Save Product
         saveProduct: function() {
             this.loading = true;
+            if (this.checkDiscount == false) {
+                var discount = 0;
+            } else {
+                var discount = this.discount;
+            }
             axios.post(`<?= base_url() ?>api/product/save`, {
                     product_code: this.productCode,
                     product_name: this.productName,
-                    product_price: this.productPrice,
+                    product_price: parseInt(this.productPrice),
                     product_description: this.productDescription,
                     product_image: this.mediaID,
                     product_image1: this.media1,
                     product_image2: this.media2,
                     product_image3: this.media3,
                     product_image4: this.media4,
+                    discount: discount,
                 }, options)
                 .then(res => {
                     // handle success
@@ -1322,6 +1444,8 @@
                         this.media2 = "";
                         this.media3 = "";
                         this.media4 = "";
+                        this.checkDiscount = false;
+                        this.discount = 0;
                         this.alert = false;
                         this.modalAdd = false;
                         this.$refs.form.resetValidation();
@@ -1376,6 +1500,10 @@
             this.mediaPath2 = product.media_path2;
             this.mediaPath3 = product.media_path3;
             this.mediaPath4 = product.media_path4;
+            this.discount = product.discount;
+            if (Number(this.discount) > 0) {
+                this.checkDiscount = true;
+            }
         },
 
         // Get Item Edit Product
@@ -1398,6 +1526,10 @@
             this.mediaPath2 = product.media_path2;
             this.mediaPath3 = product.media_path3;
             this.mediaPath4 = product.media_path4;
+            this.discount = product.discount;
+            if (Number(this.discount) > 0) {
+                this.checkDiscount = true;
+            }
         },
         modalEditClose: function() {
             this.modalEdit = false;
@@ -1407,16 +1539,22 @@
         //Update Product
         updateProduct: function() {
             this.loading = true;
+            if (this.checkDiscount == false) {
+                var discount = 0;
+            } else {
+                var discount = this.discount;
+            }
             axios.put(`<?= base_url() ?>api/product/update/${this.productIdEdit}`, {
                     product_code: this.productCodeEdit,
                     product_name: this.productNameEdit,
-                    product_price: this.productPriceEdit,
+                    product_price: parseInt(this.productPriceEdit),
                     product_description: this.productDescriptionEdit,
                     product_image: this.mediaID,
                     product_image1: this.media1,
                     product_image2: this.media2,
                     product_image3: this.media3,
                     product_image4: this.media4,
+                    discount: discount,
                 }, options)
                 .then(res => {
                     // handle success
@@ -1440,6 +1578,8 @@
                         this.imagePreview2 = null;
                         this.imagePreview3 = null;
                         this.imagePreview4 = null;
+                        this.checkDiscount = false;
+                        this.discount = 0;
                         this.getProducts();
                         this.modalEdit = false;
                         this.alert = false;

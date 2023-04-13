@@ -64,7 +64,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
                     <v-menu offset-y>
                         <template v-slot:activator="{ on, attrs }">
                             <v-btn text class="mr-3" v-bind="attrs" v-on="on">
-                            <v-icon>mdi-account-circle</v-icon>&nbsp;<?= session()->get('email') ?> <v-icon>mdi-chevron-down</v-icon>
+                                <v-icon>mdi-account-circle</v-icon>&nbsp;<?= session()->get('email') ?> <v-icon>mdi-chevron-down</v-icon>
                             </v-btn>
                         </template>
 
@@ -77,7 +77,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
                             <v-list-item link>
                                 <v-list-item-content>
                                     <v-list-item-title class="text-h6">
-                                        Hallo, <?= session()->get('username') ?>
+                                        Hallo, <?= session()->get('first_name') . ' ' . session()->get('last_name') ?>
                                     </v-list-item-title>
                                     <v-list-item-subtitle><?= session()->get('email') ?></v-list-item-subtitle>
                                 </v-list-item-content>
@@ -117,7 +117,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
                         </v-list-item-action>
                         <v-list-item-content>
                             <v-list-item-title>
-                                <?= APP_NAME; ?>
+                                <?= APP_WEB; ?>
                             </v-list-item-title>
                         </v-list-item-content>
                     </v-list-item>
@@ -133,31 +133,25 @@ $snackbarsPosition = $setting->info['snackbars_position'];
                                 <v-icon>mdi-view-dashboard</v-icon>
                             </v-list-item-icon>
                             <v-list-item-content>
-                                <v-list-item-title>Member <?= lang('App.dashboard') ?></v-list-item-title>
+                                <v-list-item-title><?= lang('App.dashboard') ?></v-list-item-title>
                             </v-list-item-content>
                         </v-list-item>
+
+                        <v-list-item link href="<?= base_url('member/order-list'); ?>" <?php if ($uri->getSegment(2) == "order-list") { ?> <?= 'class="v-item--active v-list-item--active"'; ?> <?php } ?>>
+                            <v-list-item-icon>
+                                <v-icon>mdi-receipt-text</v-icon><v-badge color="error" :content="orderCounter" :value="orderCounter" overlap v-show="orderCounter > 0"></v-badge>
+                            </v-list-item-icon>
+                            <v-list-item-content>
+                                <v-list-item-title><?= lang('App.orderList') ?></v-list-item-title>
+                            </v-list-item-content>
+                        </v-list-item>
+
                         <v-list-item link href="<?= base_url('member/profile'); ?>" <?php if ($uri->getSegment(2) == "profile") { ?> <?= 'class="v-item--active v-list-item--active"'; ?> <?php } ?>>
                             <v-list-item-icon>
                                 <v-icon>mdi-account</v-icon>
                             </v-list-item-icon>
                             <v-list-item-content class="text-truncate">
                                 <?= session()->get('email') ?>
-                            </v-list-item-content>
-                        </v-list-item>
-                        <v-list-item link href="<?= base_url('member/order-list'); ?>" <?php if ($uri->getSegment(2) == "order-list") { ?> <?= 'class="v-item--active v-list-item--active"'; ?> <?php } ?>>
-                            <v-list-item-icon>
-                                <v-icon>mdi-receipt-text</v-icon>
-                            </v-list-item-icon>
-                            <v-list-item-content>
-                                <v-list-item-title><?= lang('App.orderList') ?></v-list-item-title>
-                            </v-list-item-content>
-                        </v-list-item>
-                        <v-list-item link href="<?= base_url('cart'); ?>">
-                            <v-list-item-icon>
-                                <v-icon>mdi-cart</v-icon>
-                            </v-list-item-icon>
-                            <v-list-item-content>
-                                <v-list-item-title><?= lang('App.cart') ?></v-list-item-title>
                             </v-list-item-content>
                         </v-list-item>
                     <?php endif; ?>
@@ -167,7 +161,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
                 <template v-slot:append>
                     <v-divider></v-divider>
                     <div class="pa-3 text-center text-caption">
-                        <span>&copy; {{ new Date().getFullYear() }}</span>
+                        <span>&copy; {{ new Date().getFullYear() }} <?= COMPANY_NAME; ?></span>
                     </div>
                 </template>
 
@@ -267,6 +261,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
         }
         var mountedVue = function() {
             this.getCartCount();
+            this.getOrderCount();
             const theme = localStorage.getItem("dark_theme");
             if (theme) {
                 if (theme === "true") {
@@ -323,6 +318,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
             show1: false,
             show2: false,
             cartCounter: 0,
+            orderCounter: 0,
             rules: {
                 email: v => !!(v || '').match(/@/) || '<?= lang('App.emailValid'); ?>',
                 length: len => v => (v || '').length <= len || `<?= lang('App.invalidLength'); ?> ${len}`,
@@ -339,18 +335,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
                 this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
                 localStorage.setItem("dark_theme", this.$vuetify.theme.dark.toString());
             },
-            getCartCount() {
-                axios.get(`<?= base_url(); ?>openapi/cart/count`)
-                    .then(res => {
-                        // handle success
-                        var data = res.data;
-                        this.cartCounter = data.data;
-                    })
-                    .catch(err => {
-                        // handle error
-                        console.log(err.response);
-                    })
-            },
+
             // Format Ribuan Rupiah versi 1
             RibuanLocale(key) {
                 const rupiah = 'Rp' + Number(key).toLocaleString('id-ID');
@@ -360,7 +345,6 @@ $snackbarsPosition = $setting->info['snackbars_position'];
                 const rupiah = Number(key).toLocaleString('id-ID');
                 return rupiah
             },
-
             // Format Ribuan Rupiah versi 2
             Ribuan(key) {
                 // versi 1
@@ -376,8 +360,34 @@ $snackbarsPosition = $setting->info['snackbars_position'];
 
                 const format = key.toString().split('').reverse().join('');
                 const convert = format.match(/\d{1,3}/g);
-                const rupiah = 'Rp ' + convert.join('.').split('').reverse().join('');
+                const rupiah = 'Rp' + convert.join('.').split('').reverse().join('');
                 return rupiah;
+            },
+
+            getCartCount() {
+                axios.get(`<?= base_url(); ?>openapi/cart/count`)
+                    .then(res => {
+                        // handle success
+                        var data = res.data;
+                        this.cartCounter = data.data;
+                    })
+                    .catch(err => {
+                        // handle error
+                        console.log(err.response);
+                    })
+            },
+
+            getOrderCount() {
+                axios.get(`<?= base_url(); ?>api/order/count/pending_processed`)
+                    .then(res => {
+                        // handle success
+                        var data = res.data;
+                        this.orderCounter = data.data;
+                    })
+                    .catch(err => {
+                        // handle error
+                        console.log(err.response);
+                    })
             },
         }
         Vue.component('paginate', VuejsPaginate)
@@ -395,6 +405,21 @@ $snackbarsPosition = $setting->info['snackbars_position'];
             methods: methodsVue
         })
     </script>
+    <!--Start of Tawk.to Script-->
+    <script type="text/javascript">
+        var Tawk_API = Tawk_API || {},
+            Tawk_LoadStart = new Date();
+        (function() {
+            var s1 = document.createElement("script"),
+                s0 = document.getElementsByTagName("script")[0];
+            s1.async = true;
+            s1.src = 'https://embed.tawk.to/642f992d31ebfa0fe7f6f669/1gtcusneh';
+            s1.charset = 'UTF-8';
+            s1.setAttribute('crossorigin', '*');
+            s0.parentNode.insertBefore(s1, s0);
+        })();
+    </script>
+    <!--End of Tawk.to Script-->
 </body>
 
 </html>

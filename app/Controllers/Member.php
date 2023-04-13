@@ -2,13 +2,17 @@
 
 namespace App\Controllers;
 
-use App\Models\CartModel;
+use App\Modules\Cart\Models\CartModel;
 use App\Modules\Order\Models\OrderModel;
+use App\Libraries\Settings;
+use App\Modules\Payment\Models\PaymentModel;
 
 class Member extends BaseController
 {
     protected $cart;
     protected $order;
+    protected $setting;
+    protected $bank;
 
     public function __construct()
     {
@@ -20,13 +24,24 @@ class Member extends BaseController
         helper('text');
         $this->cart = new CartModel();
         $this->order = new OrderModel();
+        $this->setting = new Settings();
+        $this->bank = new PaymentModel();
     }
 
     public function index()
     {
-        $order = $this->order->where(['user_id' => session()->get('id')])->countAllResults();
+        $userId = session()->get('id');
+        $order = $this->order->where(['user_id' => $userId])->countAllResults();
+        $orderPending = $this->order->countOrder($userId, 0);
+        $orderProcess = $this->order->countOrder($userId, 1);
+        $orderDeliver = $this->order->countOrder($userId, 2);
+        $orderCancel = $this->order->countOrder($userId, 2);
         return view('member/index', [
             'jmlOrder' => $order,
+            'orderPending' => $orderPending,
+            'orderProcess' => $orderProcess,
+            'orderDeliver' => $orderDeliver,
+            'orderCancel' => $orderCancel
         ]);
     }
 
@@ -105,6 +120,7 @@ class Member extends BaseController
         //}
         $data = [
             'title' => 'Checkout Success',
+            'companyName' => $this->setting->info['company_name'],
             //'order' => $this->order->checkoutOrder($input['idorder'], $input['iduser'])
         ];
         return view('member/checkout_pg', $data);
@@ -113,7 +129,7 @@ class Member extends BaseController
     public function checkoutTFSuccess()
     {
         $input = $this->request->getVar();
-        if ($this->session->id != $input['user_id']) return redirect()->to(base_url('/'));
+        if (!$input || $this->session->id != $input['user_id']) return redirect()->to(base_url('/'));
         $rules = [
             'order_id' => [
                 'rules'  => 'required',
@@ -129,6 +145,7 @@ class Member extends BaseController
         }
         $data = [
             'title' => 'Checkout Success',
+            'companyName' => $this->setting->info['company_name'],
             'order' => $this->order->checkoutOrder($input['order_id'], $input['user_id'])
         ];
         return view('member/checkout_tf', $data);
@@ -141,6 +158,8 @@ class Member extends BaseController
 
     public function order()
     {
-        return view('member/order');
+        return view('member/order', [
+            'bank' => $this->bank->where('payment_id', 2)->first()
+        ]);
     }
 }

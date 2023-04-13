@@ -5,10 +5,9 @@
         <v-parallax src="<?= base_url() ?>/images/Banner-2023-2.jpg" dark class="rounded-lg" height="350">
             <v-row align="center" justify="center">
                 <v-col class="text-center" cols="12">
-                    <h1 class="text-h4 mt-n15 mb-3">
-                        Welcome to<br />PT GLOBAL ITSHOP PURWOKERTO
+                    <h1 class="text-h4 font-weight-thin mt-n15 mb-3">
+                        Welcome to<br /><strong><?= COMPANY_NAME; ?></strong>
                     </h1>
-                    <v-btn elevation="1" color="yellow" large @click="dialog = true">Buy Now</v-btn>
                 </v-col>
             </v-row>
         </v-parallax>
@@ -30,15 +29,18 @@
                 <v-card min-height="150">
                     <v-img v-bind:src="'<?= base_url(); ?>' + item.media_path" height="380px"></v-img>
                     <v-card-title class="subtitle-1"><a link :href="'<?= base_url('source-code/'); ?>' + item.slug" class="font-weight-regular text-decoration-none" title="" alt="">{{ item.product_name }}</a></v-card-title>
-                    <v-card-subtitle class="text-h6 black--text font-weight-bold">
-                        {{ RibuanLocale(item.product_price) }}
+                    <v-card-subtitle class="text-h6 grey--text text--darken-4 font-weight-bold" v-if="item.discount > 0">
                         <v-btn class="float-end" color="primary" @click="saveCart(item)" elevation="1">
-                            <v-icon>mdi-cart</v-icon> Buy
+                            <v-icon>mdi-cart</v-icon> <?= lang('App.buy'); ?>
                         </v-btn>
+                        <span v-if="item.discount > 0">
+                            {{ RibuanLocale(item.product_price - item.discount) }}
+                        </span>
+                        <span v-else>{{ item.product_price }}</span>
+                        <span v-show="item.discount > 0">
+                            <p class="text-body-2 mb-0"><span class="text-decoration-line-through">{{ RibuanLocale(item.product_price) }}</span> <v-chip color="red" label x-small dark class="px-1" title="<?= lang('App.discount'); ?>">{{item.discount_percent}}%</v-chip></p>
+                        </span>
                     </v-card-subtitle>
-                    <v-card-text>
-
-                    </v-card-text>
                 </v-card>
             </v-col>
         </v-row>
@@ -61,31 +63,7 @@
                     </v-btn>
                 </v-card-actions>
                 <v-card-text>
-                    <v-container :fluid="true">
-                        <ul class="text-subtitle-1">
-                            <li>CodeIgniter 4 RESTful API</li>
-                            <li>Vue.js versi 2</li>
-                            <li>Vuetify versi 2</li>
-                            <li>Material Design Icons</li>
-                            <li>Axios HTTP Request</li>
-                            <li>Vue Image Input</li>
-                            <li>Vuejs-paginate</li>
-                            <li>JWT Authorization</li>
-                            <li>Session Auth</li>
-                            <li>Admin dan User Hak Akses</li>
-                            <li>Login, Register, Reset Password, Change Password</li>
-                            <li>DataTables CRUD Tanpa Reload</li>
-                            <li>Export PDF: TCPDF atau mPDF</li>
-                            <li>Export Excel PhpSpreadsheet</li>
-                            <li>Dark & Light Mode</li>
-                            <li>Multi Bahasa: Indonesia & Inggris</li>
-                            <li>Dialog Modal</li>
-                            <li>Pagination</li>
-                            <li>Snackbar Notification</li>
-                            <li>Skeleton Loader</li>
-                            <li>dll</li>
-                        </ul>
-                    </v-container>
+
                 </v-card-text>
             </v-card>
         </v-dialog>
@@ -95,7 +73,7 @@
 <v-dialog v-model="loading" hide-overlay persistent width="300">
     <v-card>
         <v-card-text class="pt-3">
-            Memuat, silahkan tunggu...
+            <?= lang('App.loadingWait'); ?>
             <v-progress-linear indeterminate color="primary" class="mb-0"></v-progress-linear>
         </v-card-text>
     </v-card>
@@ -170,12 +148,6 @@
                     // handle success
                     this.loading = false
                     var data = res.data;
-                    if (data.expired == true) {
-                        this.snackbar = true;
-                        //this.snackbarType = "warning";
-                        this.snackbarMessage = data.message;
-                        setTimeout(() => window.location.href = data.data.url, 1000);
-                    }
                     if (data.status == true) {
                         this.snackbar = true;
                         this.snackbarMessage = data.message;
@@ -193,6 +165,12 @@
                     if (err.response.status == 401) {
                         this.snackbarMessage = '<?= lang('App.pleaseLogin'); ?>';
                         setTimeout(() => window.location.href = '/login', 2000);
+                    }
+                    var error = err.response
+                    if (error.data.expired == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = error.data.message;
+                        setTimeout(() => window.location.href = error.data.data.url, 1000);
                     }
                 })
         },

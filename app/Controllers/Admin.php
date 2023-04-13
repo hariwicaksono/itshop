@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use App\Modules\Order\Models\OrderModel;
 use App\Modules\Product\Models\ProductModel;
-use App\Models\UserModel;
+use App\Modules\User\Models\UserModel;
 use TCPDF;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -57,18 +57,6 @@ class Admin extends BaseController
             'transaksi' => $transaksi
          ]);
     }
-
-    public function payment()
-    {
-        return view('admin/payment');
-    }
-
-    public function shipment()
-    {
-        return view('admin/shipment');
-    }
-
-
 
     public function export()
     {
@@ -183,12 +171,6 @@ class Admin extends BaseController
         header('Cache-Control: max-age=0');
         $writer->save('php://output');
         exit();
-    }
-
-    
-    public function user()
-    {
-        return view('admin/user');
     }
     
 }

@@ -1,7 +1,7 @@
 <?php $this->extend("layouts/app-front"); ?>
 <?php $this->section("content"); ?>
 <template>
-    <v-container class="indigo pa-15" fill-height fluid>
+    <v-container class="indigo lighten-1 pa-15" fill-height fluid>
         <v-layout flex align-center justify-center>
             <v-flex xs12 sm6 md6>
                 <v-card elevation="2" outlined>

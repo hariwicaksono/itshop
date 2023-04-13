@@ -6,7 +6,7 @@ Dibuat oleh: Hari Wicaksono, S.Kom
 06-2022
 */
 
-use App\Models\UserModel;
+use App\Modules\User\Models\UserModel;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 

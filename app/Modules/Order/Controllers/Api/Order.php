@@ -5,9 +5,9 @@ namespace App\Modules\Order\Controllers\Api;
 use App\Controllers\BaseControllerApi;
 use App\Modules\Order\Models\OrderModel;
 use App\Modules\Product\Models\ProductModel;
-use App\Models\CartModel;
-use App\Models\PaymentModel;
-use App\Models\UserModel;
+use App\Modules\Cart\Models\CartModel;
+use App\Modules\Payment\Models\PaymentModel;
+use App\Modules\User\Models\UserModel;
 use App\Libraries\Settings;
 
 class Order extends BaseControllerApi
@@ -87,9 +87,9 @@ class Order extends BaseControllerApi
             $input = $this->request->getVar('data');
 
             foreach ($input as $value) {
-                $product_id[] = $value[0];
-                $stock[] = $value[1];
-                $qty[] = $value[2];
+                $product_id[] = $value[1];
+                $stock[] = $value[3];
+                $qty[] = $value[4];
             }
 
             $total_product = count($product_id);
@@ -165,7 +165,7 @@ class Order extends BaseControllerApi
             $response = [
                 'status' => true,
                 'message' => lang('App.orderSuccess'),
-                'data' => ["url" => "/checkout/success?order_id=$order_id&user_id={$this->session->id}"],
+                'data' => ["url" => "/checkout/success/pending?order_id=$order_id&user_id=$user_id"],
             ];
             return $this->respond($response, 200);
         }
@@ -266,6 +266,38 @@ class Order extends BaseControllerApi
         }
     }
 
+    public function setStatusPayment($id = NULL)
+    {
+        if ($this->request->getJSON()) {
+            $json = $this->request->getJSON();
+            $data = [
+                'status_payment' => $json->status_payment
+            ];
+        } else {
+            $input = $this->request->getRawInput();
+            $data = [
+                'status_payment' => $input['status_payment']
+            ];
+        }
+
+        if ($data > 0) {
+            $this->model->update($id, $data);
+            $response = [
+                'status' => true,
+                'message' => lang('App.updSuccess'),
+                'data' => []
+            ];
+            return $this->respond($response, 200);
+        } else {
+            $response = [
+                'status' => false,
+                'message' => lang('App.updFailed'),
+                'data' => []
+            ];
+            return $this->respond($response, 200);
+        }
+    }
+
     public function chart1()
     {
         return $this->respond(['status' => true, 'message' => lang('App.getSuccess'), 'data' => $this->model->getChart1()], 200);
@@ -273,7 +305,11 @@ class Order extends BaseControllerApi
 
     public function getUserOrder($id = null)
     {
-        return $this->respond(["status" => true, "message" => lang("App.getSuccess"), "data" => $this->model->findOrders($id)], 200);
+        return $this->respond([
+            "status" => true, 
+            "message" => lang("App.getSuccess"), 
+            "data" => $this->model->findOrders($id)
+        ], 200);
     }
 
     public function getUserOrderPending($id = null)
@@ -294,5 +330,11 @@ class Order extends BaseControllerApi
     public function getUserOrderCanceled($id = null)
     {
         return $this->respond(["status" => true, "message" => lang("App.getSuccess"), "data" => $this->model->findUserOrder($id, 3)], 200);
+    }
+
+    public function countUserOrder($userid = null)
+    {
+        $userid = $this->session->id;
+        return $this->respond(['status' => true, 'message' => lang('App.getSuccess'), 'data' => $this->model->countUserOrder($userid)], 200);
     }
 }

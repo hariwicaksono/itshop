@@ -2,7 +2,7 @@
 <?php $this->section("content"); ?>
 
 <template>
-    <v-container class="py-5">
+    <v-container class="py-5 my-3">
         <v-row>
             <v-col cols="12" sm="4">
                 <a :href="'<?= base_url() ?>' + image" target="_blank"><v-img v-model="image" :src="'<?= base_url() ?>' + image" aspect-ratio="1" class="mb-4" title="" alt=""></v-img></a>
@@ -41,8 +41,15 @@
             <v-col cols="12" sm="5">
                 <h1 class="text-h5 font-weight-bold mb-3">{{name}}</h1>
                 <p class="mb-4">{{code}} &nbsp;&bull;&nbsp; <?= lang('App.sold'); ?>: <?= $productSold; ?></p>
-                <h2 class="text-h4 font-weight-bold mb-5">{{RibuanLocale(price)}}</h2>
-
+                <h2 class="text-h4 font-weight-bold mb-5">
+                    <span v-if="discount > 0">
+                        {{ RibuanLocale(price - discount) }}
+                    </span>
+                    <span v-else>{{ RibuanLocale(price) }}</span>
+                    <span v-show="discount > 0">
+                        <p class="text-body-1 mb-0"><span class="text-decoration-line-through">{{ RibuanLocale(price) }}</span> <v-chip color="red" label x-small dark class="px-1" title="<?= lang('App.discount'); ?>">{{discountPercent}}%</v-chip></p>
+                    </span>
+                </h2>
 
                 <h4 class="mb-4 mt-3">Detail Product:</h4>
                 <p v-html="products.product_description"></p>
@@ -61,14 +68,15 @@
                         <v-text-field v-model="qty" type="number" single-line prepend-icon="mdi-minus" append-outer-icon="mdi-plus" @click:append-outer="increment(products)" @click:prepend="decrement(products)" min="1" :error-messages="qtyError"></v-text-field>
                         <span class="text-subtitle-1 font-weight-regular">Stock: <strong class="black--text">{{stock}}</strong></span>
                         <h2 class="mb-5 mt-2"><span class="text-subtitle-1 font-weight-regular">Subtotal:</span> <span class="black--text">{{RibuanLocale(subTotal)}}</span></h2>
-                        <v-btn large block color="primary" @click="saveCart(products)" elevation="0">
+                        <v-btn large block color="success" @click="saveCart(products)" elevation="1" class="mb-3">
                             + <?= lang('App.carts'); ?>
+                        </v-btn>
+                        <v-btn large block color="success" outlined link href="<?= base_url('cart'); ?>" elevation="1">
+                            <?= lang('App.cart'); ?>
                         </v-btn>
                     </v-card-text>
                 </v-card>
-
             </v-col>
-
         </v-row>
     </v-container>
 </template>
@@ -76,12 +84,11 @@
 <v-dialog v-model="loading" hide-overlay persistent width="300">
     <v-card>
         <v-card-text class="pt-3">
-            Memuat, silahkan tunggu...
+            <?= lang('App.loadingWait'); ?>
             <v-progress-linear indeterminate color="primary" class="mb-0"></v-progress-linear>
         </v-card-text>
     </v-card>
 </v-dialog>
-<br />
 <?php $this->endSection("content") ?>
 
 <?php $this->section("js") ?>
@@ -109,6 +116,8 @@
         code: "",
         name: "",
         price: 0,
+        discount: 0,
+        discountPercent: 0,
         stock: 0,
         subTotal: 0,
         pageCount: 0,
@@ -125,7 +134,12 @@
     watchVue = {
         qty: function() {
             if (this.qty >= 1) {
-                this.subTotal = this.price * this.qty;
+                if (this.discount > 0) {
+                    var subtotalDisc = this.price - this.discount;
+                    this.subTotal = subtotalDisc * this.qty;
+                } else {
+                    this.subTotal = this.price * this.qty;
+                }
             }
 
             if (this.qty > this.stock) {
@@ -152,11 +166,18 @@
                         this.products = data.data;
                         this.code = this.products.product_code;
                         this.name = this.products.product_name;
-                        this.price = this.products.product_price;
+                        this.price = parseInt(this.products.product_price);
+                        this.discount = parseInt(this.products.discount);
+                        this.discountPercent = parseInt(this.products.discount_percent);
                         this.stock = parseInt(this.products.stock);
                         this.image = this.products.media_path;
                         if (this.qty == 1) {
-                            this.subTotal = this.price;
+                            if (this.discount > 0) {
+                                var subtotalDisc = this.price - this.discount;
+                                this.subTotal = subtotalDisc * this.qty;
+                            } else {
+                                this.subTotal = this.price * this.qty;
+                            }
                         }
 
                     } else {

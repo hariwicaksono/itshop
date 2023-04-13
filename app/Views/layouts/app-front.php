@@ -27,14 +27,14 @@ $companyTelp = $setting->info['company_telp'];
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
     <?php if ($uri->getSegment(1) == "") { ?>
-        <title><?= COMPANY_NAME; ?> Digital Store - <?= env('appName'); ?></title>
-        <meta name="description" content="Toko Online <?= COMPANY_NAME; ?> - <?= env('appName'); ?>">
+        <title><?= APP_NAME; ?> Digital Store - <?= env('appName'); ?></title>
+        <meta name="description" content="Toko Online <?= APP_NAME; ?> - <?= env('appName'); ?>">
     <?php } else if ($uri->getSegment(1) == "source-code") { ?>
         <title>Source Code <?= $title ?? ""; ?> - <?= env('appName'); ?></title>
-        <meta name="description" content="Source Code <?= $title ?? ""; ?> produk dari <?= COMPANY_NAME; ?> - <?= env('appName'); ?>">
+        <meta name="description" content="Source Code <?= $title ?? ""; ?> produk dari <?= APP_NAME; ?> - <?= env('appName'); ?>">
     <?php } else { ?>
-        <title><?= $title ?? ""; ?> | <?= COMPANY_NAME; ?> Digital Store - <?= env('appName'); ?></title>
-        <meta name="description" content="<?= $title ?? ""; ?> | <?= COMPANY_NAME; ?> Digital Store - <?= env('appName'); ?>">
+        <title><?= $title ?? ""; ?> | <?= APP_NAME; ?> Digital Store - <?= env('appName'); ?></title>
+        <meta name="description" content="<?= $title ?? ""; ?> | <?= APP_NAME; ?> Digital Store - <?= env('appName'); ?>">
     <?php } ?>
 
     <meta name="theme-color" content="#FFFFFF" />
@@ -70,9 +70,7 @@ $companyTelp = $setting->info['company_telp'];
     <div id="app">
         <v-app>
             <v-app-bar app color="white" elevation="2">
-                <v-btn href="<?= base_url() ?>" text>
-                    <v-toolbar-title style="cursor: pointer"><?= env('appName'); ?></v-toolbar-title>
-                </v-btn>
+                <v-toolbar-title class="text-h6 font-weight-medium" style="cursor: pointer;"><a href="<?= base_url() ?>" class="text-decoration-none grey--text text--darken-3" title="" alt=""><?= APP_WEB ?></a></v-toolbar-title>
                 <v-spacer></v-spacer>
                 <v-btn icon class="mr-3" href="<?= base_url('cart') ?>" elevation="0">
                     <v-badge :content="cartCounter" :value="cartCounter" color="red" overlap>
@@ -102,7 +100,7 @@ $companyTelp = $setting->info['company_telp'];
                             <v-list-item link>
                                 <v-list-item-content>
                                     <v-list-item-title class="text-h6">
-                                        Hallo, <?= session()->get('username') ?>
+                                        Hallo, <?= session()->get('first_name') . ' ' . session()->get('last_name') ?>
                                     </v-list-item-title>
                                     <v-list-item-subtitle><?= session()->get('email') ?></v-list-item-subtitle>
                                 </v-list-item-content>
@@ -115,7 +113,7 @@ $companyTelp = $setting->info['company_telp'];
                                 </v-list-item-icon>
 
                                 <v-list-item-content>
-                                    <v-list-item-title><?= session()->get('role') == 2 ? 'Member' : ''; ?> <?= lang('App.dashboard') ?> App</v-list-item-title>
+                                    <v-list-item-title><?= session()->get('role') == 2 ? 'Member' : ''; ?> <?= lang('App.dashboard') ?></v-list-item-title>
                                 </v-list-item-content>
                             </v-list-item>
                             <v-list-item link href="<?= base_url('logout'); ?>" @click="localStorage.removeItem('access_token')">
@@ -183,14 +181,14 @@ $companyTelp = $setting->info['company_telp'];
                 <?= $this->renderSection('content') ?>
             </v-main>
 
-            <v-footer dark padless>
-                <v-card flat tile width="100%" class="flex py-4">
+            <v-footer light padless>
+                <v-card flat tile width="100%" class="grey lighten-5 flex py-3">
                     <v-card-text>
                         <v-container>
                             <v-row>
                                 <v-col>
                                     <h2 class="font-weight-medium subheading">Temukan Toko Online Official kami:</h2>
-                                    <v-list flat class="mb-3">
+                                    <v-list flat class="grey lighten-5 mb-3">
                                         <v-list-item-group>
                                             <v-list-item v-for="(item, i) in items" :key="i" link :href="item.link" target="_blank">
                                                 <v-list-item-icon>
@@ -205,24 +203,20 @@ $companyTelp = $setting->info['company_telp'];
                                 </v-col>
                                 <v-col>
                                     <h2 class="font-weight-medium subheading mb-3"><?= lang('App.aboutUs'); ?>:</h2>
-                                    <h3 class="mb-3"><?= $companyName; ?> (<?= COMPANY_NAME; ?>)</h3>
-                                    <h4 class="font-weight-regular mb-3"><?= $companyAddress; ?></h4>
+                                    <h3 class="grey--text text--darken-4 mb-3"><?= COMPANY_NAME; ?><br />(<?= APP_NAME; ?>)</h3>
+                                    <p><?= $companyAddress; ?></p>
                                     Email: <?= $companyEmail1; ?> / <?= $companyEmail2; ?><br />
                                     Telp: <?= $companyTelp; ?><br />
-
-                                    <h3 class="font-weight-medium subheading mb-3 mt-3"><?= lang('App.payment'); ?>:</h3>
-                                    1. Payment Gateway<br />
-                                    <v-img src="<?= base_url('images/midtrans.png'); ?>" width="80" ratio="1"></v-img><br />
-                                    2. Transfer Manual<br />
+                                    <h3 class="font-weight-medium subheading mb-2 mt-3"><?= lang('App.payment'); ?>: </h3>
+                                    <p>Payment Gateway &amp; Transfer (Konfirmasi Manual)</p>
+                                    <v-img src="<?= base_url('images/midtrans.png'); ?>" width="80" ratio="1" class="float-left mr-3"></v-img>
                                     <v-img src="<?= base_url('images/bri.jpg'); ?>" width="80" ratio="1"></v-img>
-
-                                    <v-divider class="mt-5 mb-3"></v-divider>
-                                    <v-btn v-for="link in links" :key="link" color="white" text rounded class="my-2" link :href="link.link">
-                                        {{ link.text }}
-                                    </v-btn>
+                                    <v-btn small v-for="link in links" :key="link" text rounded class="my-2" link :href="link.link">
+                                    {{ link.text }}
+                                </v-btn>
                                 </v-col>
                             </v-row>
-                            &copy; {{ new Date().getFullYear() }} — <?= COMPANY_NAME; ?>, Jawa Tengah, Indonesia
+                            &copy; {{ new Date().getFullYear() }} <?= COMPANY_NAME; ?>, Jawa Tengah, Indonesia
                         </v-container>
                     </v-card-text>
                 </v-card>
@@ -338,12 +332,16 @@ $companyTelp = $setting->info['company_telp'];
                 },
             ],
             links: [{
-                    text: 'Syarat dan Ketentuan',
+                    text: 'Syarat & Ketentuan',
                     link: '<?= base_url('terms'); ?>'
                 },
                 {
                     text: 'Kebijakan Privasi',
                     link: '<?= base_url('privacy'); ?>'
+                },
+                {
+                    text: 'Legal',
+                    link: '<?= base_url('legal'); ?>'
                 },
             ],
         }
@@ -367,7 +365,7 @@ $companyTelp = $setting->info['company_telp'];
 
             // Format Ribuan Rupiah versi 1
             RibuanLocale(key) {
-                const rupiah = 'Rp ' + Number(key).toLocaleString('id-ID');
+                const rupiah = 'Rp' + Number(key).toLocaleString('id-ID');
                 return rupiah
             },
             RibuanLocaleNoRp(key) {
@@ -390,7 +388,7 @@ $companyTelp = $setting->info['company_telp'];
 
                 const format = key.toString().split('').reverse().join('');
                 const convert = format.match(/\d{1,3}/g);
-                const rupiah = 'Rp ' + convert.join('.').split('').reverse().join('');
+                const rupiah = 'Rp' + convert.join('.').split('').reverse().join('');
                 return rupiah;
             },
 
@@ -416,6 +414,21 @@ $companyTelp = $setting->info['company_telp'];
             }
         })
     </script>
+    <!--Start of Tawk.to Script-->
+    <script type="text/javascript">
+        var Tawk_API = Tawk_API || {},
+            Tawk_LoadStart = new Date();
+        (function() {
+            var s1 = document.createElement("script"),
+                s0 = document.getElementsByTagName("script")[0];
+            s1.async = true;
+            s1.src = 'https://embed.tawk.to/642f992d31ebfa0fe7f6f669/1gtcusneh';
+            s1.charset = 'UTF-8';
+            s1.setAttribute('crossorigin', '*');
+            s0.parentNode.insertBefore(s1, s0);
+        })();
+    </script>
+    <!--End of Tawk.to Script-->
 </body>
 
 </html>

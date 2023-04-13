@@ -86,7 +86,7 @@
 <v-dialog v-model="loading" hide-overlay persistent width="300">
     <v-card>
         <v-card-text class="pt-3">
-            Memuat, silahkan tunggu...
+            <?= lang('App.loadingWait'); ?>
             <v-progress-linear indeterminate color="primary" class="mb-0"></v-progress-linear>
         </v-card-text>
     </v-card>

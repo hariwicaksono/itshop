@@ -18,27 +18,26 @@ function Ribuan($angka)
             </v-card-title>
             <v-divider></v-divider>
             <v-card-text class="py-5">
-                <v-card-text>
-                    <?php foreach ($order as $row) : ?>
-                        <?= lang('App.noOrder'); ?>: <?= $row['no_order']; ?><br />
-                        <?= lang('App.date'); ?>: <?= $row['created_at'] ?><br />
-                        <h3 class="text-center"><?= lang('App.pleaseTransfer'); ?>:</h3>
-                        <h1 class="text-center py-3">Rp.<?= $row['total']; ?></h1>
-                        <h3 class="text-center"><?= lang('App.to'); ?>:</h3>
-                        BANK: <?= $row['payment']; ?><br />
-                        <?= lang('App.account'); ?>: <?= $row['account']; ?><br />
-                        <?= lang('App.number'); ?>: <?= $row['number']; ?><br />
-                    <?php endforeach; ?>
-                    <br />
-                    Terima Kasih<br />
-                    <?= COMPANY_NAME; ?>
-                </v-card-text>
-                <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn color="primary" rounded link href="<?= base_url(); ?>">Home</v-btn>
-                    <v-btn color="primary" rounded link href="<?= base_url('member'); ?>">Member Area</v-btn>
-                    <v-spacer></v-spacer>
-                </v-card-actions>
+                <?php foreach ($order as $row) : ?>
+                    <?= lang('App.noOrder'); ?>: <?= $row['no_order']; ?><br />
+                    <?= lang('App.date'); ?>: <?= $row['created_at'] ?><br />
+                    <h3 class="text-center"><?= lang('App.pleaseTransfer'); ?>:</h3>
+                    <h1 class="text-center py-3">Rp.<?= $row['total']; ?></h1>
+                    <h3 class="text-center"><?= lang('App.to'); ?>:</h3>
+                    BANK: <?= $row['payment']; ?><br />
+                    <?= lang('App.account'); ?>: <?= $row['account']; ?><br />
+                    <?= lang('App.number'); ?>: <?= $row['number']; ?><br />
+                <?php endforeach; ?>
+                <br />
+                Terima Kasih<br />
+                <?= $companyName . ' (' . COMPANY_NAME . ')'; ?>
+            </v-card-text>
+            <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn large color="dark" rounded link href="<?= base_url(); ?>" elevation="1">Home</v-btn>
+                <v-btn large color="primary" rounded link href="<?= base_url('member'); ?>" elevation="1">Member Area</v-btn>
+                <v-spacer></v-spacer>
+            </v-card-actions>
         </v-card>
     </v-container>
 </template>

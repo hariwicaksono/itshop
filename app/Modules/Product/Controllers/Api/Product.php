@@ -4,7 +4,7 @@ namespace App\Modules\Product\Controllers\Api;
 
 use App\Controllers\BaseControllerApi;
 use App\Modules\Product\Models\ProductModel;
-use App\Models\MediaModel;
+use App\Modules\Media\Models\MediaModel;
 use Ramsey\Uuid\Uuid;
 use ShortUUID\ShortUUID;
 
@@ -60,34 +60,56 @@ class Product extends BaseControllerApi
 
         if ($this->request->getJSON()) {
             $json = $this->request->getJSON();
+            $productPrice = (int)$json->product_price;
+            $discount = (int)$json->discount;
+            $hitung = $productPrice - $discount;
+            $persen = $productPrice - $hitung;
+            if ($discount != 0) {
+                $discountPercent = @($persen / $productPrice) * 100;
+            } else {
+                $discountPercent = 0;
+            }
             $data = [
                 'product_uuid' => $suuid->encode($uuid),
                 'product_code' => $json->product_code,
                 'product_name' => $json->product_name,
-                'product_price' => $json->product_price,
+                'product_price' => $productPrice,
                 'product_description' => nl2br($json->product_description),
                 'product_image' => $json->product_image,
                 'product_image1' => $json->product_image1,
                 'product_image2' => $json->product_image2,
                 'product_image3' => $json->product_image3,
                 'product_image4' => $json->product_image4,
+                'discount' => $discount,
+                'discount_percent' => $discountPercent,
                 'stock' => 0,
                 'active' => 1,
                 'user_id' => session()->get('id'),
                 'slug' => $this->slugify($json->product_name)
             ];
         } else {
+            $productPrice = (int)$this->request->getPost('product_price');
+            $discount = (int)$this->request->getPost('discount');
+            $hitung = $productPrice - $discount;
+            $persen = $productPrice - $hitung;
+            if ($discount != 0) {
+                $discountPercent = @($persen / $productPrice) * 100;
+            } else {
+                $discountPercent = 0;
+            }
             $data = [
                 'product_uuid' => $suuid->encode($uuid),
                 'product_code' => $this->request->getPost('product_code'),
                 'product_name' => $this->request->getPost('product_name'),
-                'product_price' => $this->request->getPost('product_price'),
+                'product_price' => $productPrice,
                 'product_description' => nl2br($this->request->getPost('product_description') ?? ""),
                 'product_image' => $this->request->getPost('product_image'),
                 'product_image1' => $this->request->getPost('product_image1'),
                 'product_image2' => $this->request->getPost('product_image2'),
                 'product_image3' => $this->request->getPost('product_image3'),
                 'product_image4' => $this->request->getPost('product_image4'),
+                'discount' => $discount,
+                'discount_percent' => $discountPercent,
                 'stock' => 0,
                 'active' => 1,
                 'user_id' => session()->get('id'),
@@ -136,6 +158,15 @@ class Product extends BaseControllerApi
 
         if ($this->request->getJSON()) {
             $json = $this->request->getJSON();
+            $productPrice = (int)$json->product_price;
+            $discount = (int)$json->discount;
+            $hitung = $productPrice - $discount;
+            $persen = $productPrice - $hitung;
+            if ($discount != 0) {
+                $discountPercent = @($persen / $productPrice) * 100;
+            } else {
+                $discountPercent = 0;
+            }
             $data = [
                 'product_code' => $json->product_code,
                 'product_name' => $json->product_name,
@@ -146,20 +177,33 @@ class Product extends BaseControllerApi
                 'product_image2' => $json->product_image2,
                 'product_image3' => $json->product_image3,
                 'product_image4' => $json->product_image4,
+                'discount' => $discount,
+                'discount_percent' => $discountPercent,
                 'slug' => $this->slugify($json->product_name)
             ];
         } else {
             $input = $this->request->getRawInput();
+            $productPrice = (int)$input['product_price'];
+            $discount = (int)$input['discount'];
+            $hitung = $productPrice - $discount;
+            $persen = $productPrice - $hitung;
+            if ($discount != 0) {
+                $discountPercent = @($persen / $productPrice) * 100;
+            } else {
+                $discountPercent = 0;
+            }
             $data = [
                 'product_code' => $input['product_code'],
                 'product_name' => $input['product_name'],
-                'product_price' => $input['product_price'],
+                'product_price' => $productPrice,
                 'product_description' => $input['product_description'],
                 'product_image' => $input['product_image'],
                 'product_image1' => $input['product_image1'],
                 'product_image2' => $input['product_image2'],
                 'product_image3' => $input['product_image3'],
                 'product_image4' => $input['product_image4'],
+                'discount' => $discount,
+                'discount_percent' => $discountPercent,
                 'slug' => $this->slugify($input['product_name'])
             ];
         }

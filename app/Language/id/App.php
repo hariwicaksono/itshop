@@ -3,7 +3,7 @@ return [
     //home
     'feature' => 'Lihat Fitur',
     'myProfile' => 'Profil saya',
-    'dashboard' => 'Dasbor',
+    'dashboard' => 'Dasboard',
     'product' => 'Produk',
     'dark' => 'Gelap',
     'light' => 'Terang',
@@ -11,6 +11,7 @@ return [
     'viewReport' => 'Lihat Report',
     'sales' => 'Penjualan',
     'save' => 'Simpan',
+    'update' => 'Perbarui',
     'delete' => 'Delete',
     'search' => 'Cari',
     'yes' => 'Ya',
@@ -28,6 +29,7 @@ return [
     'transaction' => 'Transaksi',
     'aboutUs' => 'Tentang Kami',
     'sold' => 'Terjual',
+    'loadingWait' => 'Sedang memuat... Harap tunggu',
 
     //Signin
     'signIn' => 'Masuk',
@@ -70,10 +72,10 @@ return [
     'productDesc' => 'Deskripsi Produk',
     'productImg' => 'Gambar Produk',
     'delConfirm' => 'Apa kamu yakin ingin menghapus ini?',
-    'productInfo' => 'INFO PRODUCT',
-    'price' => 'HARGA',
-    'active' => 'AKTIF',
-    'action' => 'AKSI',
+    'productInfo' => 'Info Produk',
+    'price' => 'Harga',
+    'active' => 'Aktif',
+    'action' => 'Aksi',
     'productSuccess' => 'Produk berhasil ditambahkan',
     'productUpdated' => 'Produk berhasil diperbarui',
     'productDeleted' => 'Produk berhasil dihapus',
@@ -87,6 +89,7 @@ return [
     'imgFailed' => 'Gagal upload gambar',
     'imgDeleted' => 'Gambar berhasil dihapus',
     'disabledImgUploaded' => 'Tutup Dialog Dinonaktifkan karena Gambar sudah di upload, hapus terlebih dahulu',
+    'discount' => 'Diskon',
 
     //User
     'editUser' => 'Ubah User',
@@ -118,5 +121,6 @@ return [
     'status' => 'Status',
     'date' => 'Tanggal',
     'pleaseTransfer' => 'Silahkan Transfer sejumlah uang',
-    'cod' => 'COD'
+    'cod' => 'COD',
+    'send' => 'Kirim',
 ];

@@ -2,8 +2,8 @@
 <?php $this->section("content"); ?>
 <template>
     <v-container>
-        <h1 class="font-weight-medium mb-3"><?= lang('App.cart') ?></h1>
-        <v-data-table height="250" :headers="tbheader" :fixed-header="true" :items="carts" item-key="cart_id" :loading="loading" loading-text="Memuat data, silahkan tunggu...">
+        <h1 class="font-weight-medium mb-3 mt-4"><?= lang('App.cart') ?></h1>
+        <v-data-table height="250" :headers="tbheader" :fixed-header="true" :items="carts" item-key="cart_id" :loading="loading">
             <template v-slot:item="{ item }">
                 <tr>
                     <td>
@@ -13,7 +13,10 @@
                                 <v-img src="<?= base_url('images/no_image.jpg') ?>" v-else></v-img>
                             </v-list-item-avatar>
                             <v-list-item-content>
-                                <p class="text-subtitle-1 text-underlined">{{item.product_name}}</p>
+                                <p class="text-subtitle-1">
+                                    <a link :href="'<?= base_url('source-code/'); ?>' + item.slug" class="font-weight-regular text-decoration-none" title="" alt="">{{ item.product_name }}</a>
+                                    <v-chip color="red" label x-small dark class="px-1" title="<?= lang('App.discount'); ?>"><?= lang('App.discount'); ?> {{item.discount_percent}}%</v-chip>
+                                </p>
                                 <p class="mb-0">Code: {{item.product_code ?? "-"}}</p>
                             </v-list-item-content>
                         </v-list-item>
@@ -202,11 +205,6 @@
                     // handle success
                     this.loading = false;
                     var data = res.data;
-                    if (data.expired == true) {
-                        this.snackbar = true;
-                        this.snackbarMessage = data.message;
-                        setTimeout(() => window.location.href = data.data.url, 1000);
-                    }
                     if (data.status == true) {
                         this.snackbar = true;
                         this.snackbarMessage = data.message;
@@ -225,6 +223,12 @@
                 .catch(err => {
                     // handle error
                     console.log(err);
+                    var error = err.response
+                    if (error.data.expired == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = error.data.message;
+                        setTimeout(() => window.location.href = error.data.data.url, 1000);
+                    }
                 })
         },
         sumTotal(key) {
@@ -250,11 +254,6 @@
                     // handle success
                     this.loading = false
                     var data = res.data;
-                    if (data.expired == true) {
-                        this.snackbar = true;
-                        this.snackbarMessage = data.message;
-                        setTimeout(() => window.location.href = data.data.url, 1000);
-                    }
                     if (data.status == true) {
                         this.snackbar = true;
                         this.snackbarMessage = data.message;
@@ -272,6 +271,12 @@
                     if (err.response.status == 401) {
                         this.snackbarMessage = '<?= lang('App.pleaseLogin'); ?>';
                         setTimeout(() => window.location.href = '/login', 2000);
+                    }
+                    var error = err.response
+                    if (error.data.expired == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = error.data.message;
+                        setTimeout(() => window.location.href = error.data.data.url, 1000);
                     }
                 })
         },
@@ -304,11 +309,6 @@
                     // handle success
                     this.loading = false;
                     var data = res.data;
-                    if (data.expired == true) {
-                        this.snackbar = true;
-                        this.snackbarMessage = data.message;
-                        setTimeout(() => window.location.href = data.data.url, 1000);
-                    }
                     if (data.status == true) {
                         this.snackbar = true;
                         this.snackbarMessage = data.message;
@@ -318,6 +318,12 @@
                 .catch(err => {
                     // handle error
                     console.log(err);
+                    var error = err.response
+                    if (error.data.expired == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = error.data.message;
+                        setTimeout(() => window.location.href = error.data.data.url, 1000);
+                    }
                 })
         },
         // Delete Item Keranjang
@@ -328,11 +334,6 @@
                     // handle success
                     this.loading = false;
                     var data = res.data;
-                    if (data.expired == true) {
-                        this.snackbar = true;
-                        this.snackbarMessage = data.message;
-                        setTimeout(() => window.location.href = data.data.url, 1000);
-                    }
                     if (data.status == true) {
                         this.snackbar = true;
                         this.snackbarMessage = data.message;
@@ -346,6 +347,12 @@
                 .catch(err => {
                     // handle error
                     console.log(err);
+                    var error = err.response
+                    if (error.data.expired == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = error.data.message;
+                        setTimeout(() => window.location.href = error.data.data.url, 1000);
+                    }
                 })
         },
         // Save Order
@@ -365,11 +372,6 @@
                     // handle success
                     this.loading3 = false
                     var data = res.data;
-                    if (data.expired == true) {
-                        this.snackbar = true;
-                        this.snackbarMessage = data.message;
-                        setTimeout(() => window.location.href = data.data.url, 1000);
-                    }
                     if (data.status == true) {
                         this.snackbar = true;
                         this.snackbarMessage = data.message;
@@ -384,6 +386,12 @@
                 .catch(err => {
                     // handle error
                     console.log(err);
+                    var error = err.response
+                    if (error.data.expired == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = error.data.message;
+                        setTimeout(() => window.location.href = error.data.data.url, 1000);
+                    }
                 })
         },
     }

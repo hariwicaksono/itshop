@@ -1,7 +1,7 @@
 <?php $this->extend("layouts/app-front"); ?>
 <?php $this->section("content"); ?>
 <template>
-    <v-container class="indigo pa-15" fill-height fluid>
+    <v-container class="indigo lighten-1 pa-15" fill-height fluid>
         <v-layout flex align-center justify-center>
             <v-flex xs12 sm12 md6>
                 <v-card elevation="2" outlined>
@@ -12,10 +12,12 @@
                         <v-form v-model="valid" ref="form">
                             <v-text-field label="<?= lang('App.labelEmail') ?>" v-model="email" :rules="[rules.required, rules.email]" outlined :disabled="submitted"></v-text-field>
                             <v-layout justify-space-between>
-                                <a href="<?= base_url('login') ?>">Login</a>
-                                <v-btn @click="submit" color="primary" :loading="loading" :disabled="submitted">Reset Password</v-btn>
+                                <p>
+                                    <a href="<?= base_url('login') ?>">Login</a><br />
+                                    <a href="<?= base_url('register') ?>"><?= lang('App.register') ?></a>
+                                </p>
+                                <v-btn large @click="submit" color="primary" :loading="loading" :disabled="submitted">Reset Password</v-btn>
                             </v-layout>
-                            <a href="<?= base_url('register') ?>"><?= lang('App.register') ?></a>
                         </v-form>
                     </v-card-text>
                 </v-card>

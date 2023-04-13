@@ -11,6 +11,7 @@ return [
     'viewReport' => 'View Report',
     'sales' => 'Sales',
     'save' => 'Save',
+    'update' => 'Update',
     'delete' => 'Delete',
     'search' => 'Search',
     'yes' => 'Yes',
@@ -28,6 +29,7 @@ return [
     'transaction' => 'Transaction',
     'aboutUs' => 'About Us',
     'sold' => 'Sold',
+    'loadingWait' => 'Loading... Please wait',
 
     //Signin
     'signIn' => 'Sign in',
@@ -70,10 +72,10 @@ return [
     'productDesc' => 'Product Description',
     'productImg' => 'Product Image',
     'delConfirm' => 'Are you sure you want to delete this?',
-    'productInfo' => 'PRODUCT INFO',
-    'price' => 'PRICE',
-    'active' => 'ACTIVE',
-    'action' => 'ACTION',
+    'productInfo' => 'Product Info',
+    'price' => 'Price',
+    'active' => 'Active',
+    'action' => 'Action',
     'productSuccess' => 'Product added successfully',
     'productUpdated' => 'Product updated successfully',
     'productDeleted' => 'Product deleted successfully',
@@ -86,6 +88,7 @@ return [
     'uploadSuccess' => 'Image upload successfully',
     'uploadFailed' => 'Failed to upload image',
     'disabledImgUploaded' => 'Close Dialog Disabled because Image has already been uploaded, delete it first',
+    'discount' => 'Discount',
 
     //User
     'editUser' => 'Edit User',
@@ -117,5 +120,6 @@ return [
     'status' => 'Status',
     'date' => 'Date',
     'pleaseTransfer' => 'Please Transfer ammount money',
-    'cod' => 'COD'
+    'cod' => 'COD',
+    'send' => 'Send',
 ];

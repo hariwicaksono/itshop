@@ -2,34 +2,30 @@
 <?php $this->section("content"); ?>
 <template>
     <v-container>
-        <v-card>
-            <v-card-text>
-                <div v-if="loading == true">
-                    <v-skeleton-loader type="heading" class="mb-4"></v-skeleton-loader>
-                    <v-skeleton-loader type="paragraph" class="mb-3"></v-skeleton-loader>
-                    <v-skeleton-loader type="paragraph" class="mb-3"></v-skeleton-loader>
-                    <v-skeleton-loader type="paragraph" class="mb-3"></v-skeleton-loader>
-                    <v-skeleton-loader type="paragraph" class="mb-3"></v-skeleton-loader>
-                    <v-skeleton-loader type="paragraph" class="mb-3"></v-skeleton-loader>
-                    <v-skeleton-loader type="paragraph" class="mb-3"></v-skeleton-loader>
-                    <v-skeleton-loader type="paragraph" class="mb-3"></v-skeleton-loader>
-                    <v-skeleton-loader type="paragraph" class="mb-3"></v-skeleton-loader>
-                    <v-skeleton-loader type="paragraph" class="mb-3"></v-skeleton-loader>
-                    <v-skeleton-loader type="paragraph" class="mb-3"></v-skeleton-loader>
-                </div>
-                <div v-else>
-                    <h1 class="text-h4 font-weight-bold mb-4">{{dataPage.page_title}}</h1>
-                    <p v-html="dataPage.page_body"></p>
-                </div>
-            </v-card-text>
-        </v-card>
+        <div class="mt-3" v-if="loading == true">
+            <v-skeleton-loader type="heading" class="mb-4"></v-skeleton-loader>
+            <v-skeleton-loader type="paragraph" class="mb-3"></v-skeleton-loader>
+            <v-skeleton-loader type="paragraph" class="mb-3"></v-skeleton-loader>
+            <v-skeleton-loader type="paragraph" class="mb-3"></v-skeleton-loader>
+            <v-skeleton-loader type="paragraph" class="mb-3"></v-skeleton-loader>
+            <v-skeleton-loader type="paragraph" class="mb-3"></v-skeleton-loader>
+            <v-skeleton-loader type="paragraph" class="mb-3"></v-skeleton-loader>
+            <v-skeleton-loader type="paragraph" class="mb-3"></v-skeleton-loader>
+            <v-skeleton-loader type="paragraph" class="mb-3"></v-skeleton-loader>
+            <v-skeleton-loader type="paragraph" class="mb-3"></v-skeleton-loader>
+            <v-skeleton-loader type="paragraph" class="mb-3"></v-skeleton-loader>
+        </div>
+        <div class="mt-3" v-else>
+            <h1 class="text-h4 font-weight-bold mb-4">{{dataPage.page_title}}</h1>
+            <p v-html="dataPage.page_body"></p>
+        </div>
     </v-container>
 </template>
 
 <v-dialog v-model="loading2" hide-overlay persistent width="300">
     <v-card>
         <v-card-text class="pt-3">
-            Memuat, silahkan tunggu...
+            <?= lang('App.loadingWait'); ?>
             <v-progress-linear indeterminate color="primary" class="mb-0"></v-progress-linear>
         </v-card-text>
     </v-card>

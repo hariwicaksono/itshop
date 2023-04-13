@@ -9,7 +9,7 @@ use App\Modules\Page\Models\PageModel;
 class Page extends BaseController
 {
 	protected $setting;
-	protected $terms;
+	protected $page;
 
 	public function __construct()
 	{
@@ -25,34 +25,22 @@ class Page extends BaseController
 		]);
 	}
 
-	public function show($id = null)
-	{
-		$find = $this->page->where('slug', $id)->first();
-		$idPage = $find['page_id'];
-		$page = $this->page->showPage($idPage);
-		$pageName = $page['page_name'];
-		//var_dump($sold);die;
-		return view('product', [
-			'title' => $pageName,
-			'page_id' => $idPage,
-		]);
-	}
-
 	public function page()
 	{
 		$uri = new \CodeIgniter\HTTP\URI(current_url());
-        $slug = $uri->getSegment(1);
+		$slug = $uri->getSegment(1);
+
 		$page = $this->page->where('slug', $slug)->first();
-		//var_dump(session()->get('lang'));die;
-		if (session()->get('lang') == NULL || session()->get('lang') == "id") {
-			$title = $page['page_title'];
+		if (session()->get('lang') == 'id') {
+			$pageTitle = $page['page_title'];
+		} elseif (session()->get('lang') == 'en') {
+			$pageTitle = $page['page_title_en'];
 		} else {
-			$title = $page['page_title_en'];
+			$pageTitle = $page['page_title'];
 		}
-		
 		return view('page', [
-			'title' => $title,
-			'slug' => $slug
+			'title' => ucfirst($pageTitle),
+			'slug' => $uri->getSegment(1)
 		]);
 	}
 

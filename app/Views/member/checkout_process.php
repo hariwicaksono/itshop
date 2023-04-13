@@ -253,6 +253,9 @@
                 onPending: function(result) {
                     console.log(result.status_message);
                     console.log(JSON.stringify(result));
+                    if (result.transaction_status == 'pending') {
+                        setTimeout(() => window.location.href = '<?= base_url('cart'); ?>', 3000);
+                    }
                 },
                 // Optional
                 onError: function(result) {

@@ -3,7 +3,7 @@
 namespace App\Modules\Auth\Controllers\Api;
 
 use App\Controllers\BaseControllerApi;
-use App\Models\UserModel;
+use App\Modules\User\Models\UserModel;
 use App\Modules\Log\Models\LogModel;
 use App\Modules\Log\Models\LogUserModel;
 use CodeIgniter\HTTP\Response;

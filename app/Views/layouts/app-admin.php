@@ -117,7 +117,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
                         </v-list-item-action>
                         <v-list-item-content>
                             <v-list-item-title>
-                                <?= APP_NAME; ?>
+                                <?= APP_WEB; ?>
                             </v-list-item-title>
                         </v-list-item-content>
                     </v-list-item>
@@ -212,7 +212,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
 
                         <v-divider></v-divider>
 
-                        <v-list-item link href="<?= base_url('admin/user'); ?>" <?php if ($uri->getSegment(2) == "user") { ?> <?php echo 'class="v-item--active v-list-item--active"'; ?> <?php } ?>>
+                        <v-list-item link href="<?= base_url('admin/users'); ?>" <?php if ($uri->getSegment(2) == "user") { ?> <?php echo 'class="v-item--active v-list-item--active"'; ?> <?php } ?>>
                             <v-list-item-icon>
                                 <v-icon>mdi-account-multiple</v-icon>
                             </v-list-item-icon>
@@ -245,7 +245,8 @@ $snackbarsPosition = $setting->info['snackbars_position'];
                 <template v-slot:append>
                     <v-divider></v-divider>
                     <div class="pa-3 text-center text-caption">
-                        <span>&copy; {{ new Date().getFullYear() }}</span>
+                        <span v-if="toggleMini">&copy; {{ new Date().getFullYear() }} <?= COMPANY_NAME; ?></span>
+                        <span v-else>&copy; {{ new Date().getFullYear() }}</span>
                     </div>
                 </template>
 
@@ -463,7 +464,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
                         title: '<?= lang('App.payment') ?>',
                         icon: 'mdi-application-edit',
                         url: '<?= base_url('admin/payment'); ?>',
-                        active: <?php if ($uri->getSegment(2) == "paymen") { ?><?php echo 'true'; ?><?php } else { ?><?php echo 'false'; ?><?php } ?>,
+                        active: <?php if ($uri->getSegment(2) == "payment") { ?><?php echo 'true'; ?><?php } else { ?><?php echo 'false'; ?><?php } ?>,
                     },
                     {
                         title: '<?= lang('App.shipment') ?>',
@@ -545,7 +546,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
 
                 const format = key.toString().split('').reverse().join('');
                 const convert = format.match(/\d{1,3}/g);
-                const rupiah = 'Rp ' + convert.join('.').split('').reverse().join('');
+                const rupiah = 'Rp' + convert.join('.').split('').reverse().join('');
                 return rupiah;
             },
         }

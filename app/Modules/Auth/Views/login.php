@@ -1,7 +1,7 @@
 <?php $this->extend("layouts/app-front"); ?>
 <?php $this->section("content"); ?>
 <template>
-    <v-container class="indigo pa-15" fill-height fluid>
+    <v-container class="indigo lighten-1 pa-15" fill-height fluid>
         <v-layout flex align-center justify-center>
             <v-flex xs12 sm5 md4>
                 <?php if (session()->getFlashdata('success')) { ?>
@@ -18,7 +18,7 @@
                             <v-text-field v-model="password" :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'" :rules="[rules.min]" :type="show1 ? 'text' : 'password'" label="Password" hint="<?= lang('App.minChar') ?>" @click:append="show1 = !show1" :error-messages="passwordError" outlined counter></v-text-field>
                         </v-form>
                         <v-layout justify-space-between>
-                            <v-btn @click="submit" color="primary" dark x-large :loading="loading" elevation="0">Login</v-btn>
+                            <v-btn @click="submit" color="primary" dark x-large :loading="loading" elevation="1">Login</v-btn>
                             <p>
                                 <a href="<?= base_url('password/reset') ?>"><?= lang('App.forgotPass') ?></a><br />
                                 <a href="<?= base_url('register') ?>"><?= lang('App.register') ?></a>
