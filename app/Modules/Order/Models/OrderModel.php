@@ -68,6 +68,7 @@ class OrderModel extends Model
         $this->join("payment py", "py.payment_id = {$this->table}.payment");
         $this->join("shipment sh", "sh.shipment_id = {$this->table}.shipment");
         $this->where("{$this->table}.user_id", $userid);
+        $this->orderBy("{$this->table}.created_at", "DESC");
         $query = $this->findAll();
         return $query;
     }
@@ -80,6 +81,7 @@ class OrderModel extends Model
         $this->join("shipment sh", "sh.shipment_id = {$this->table}.shipment");
         $this->where("{$this->table}.user_id", $userid);
         $this->where("{$this->table}.status", $status);
+        $this->orderBy("{$this->table}.created_at", "DESC");
         $query = $this->findAll();
         return $query;
     }

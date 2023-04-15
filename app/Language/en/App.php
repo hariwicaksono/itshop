@@ -30,6 +30,7 @@ return [
     'aboutUs' => 'About Us',
     'sold' => 'Sold',
     'loadingWait' => 'Loading... Please wait',
+    'do' => 'Do',
 
     //Signin
     'signIn' => 'Sign in',
@@ -122,4 +123,6 @@ return [
     'pleaseTransfer' => 'Please Transfer ammount money',
     'cod' => 'COD',
     'send' => 'Send',
+    'sent' => 'Sent',
+    'trackOrders' => 'Track Orders'
 ];

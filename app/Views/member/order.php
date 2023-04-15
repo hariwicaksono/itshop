@@ -22,7 +22,6 @@
                                 <v-row>
                                     <v-col>
                                         <strong><?= lang('App.product'); ?></strong><br />
-
                                         <div v-if="show == true">
                                             <v-skeleton-loader type="list-item-avatar-three-line"></v-skeleton-loader>
                                         </div>
@@ -33,16 +32,14 @@
                                                     <v-img src="<?= base_url('images/no_image.jpg') ?>" v-else></v-img>
                                                 </v-list-item-avatar>
                                                 <v-list-item-content>
-                                                    <p class="text-caption black--text">{{row.product_name}} - {{row.product_code ?? "-"}}</p>
-
+                                                    <p class="font-weight-medium black--text">{{row.product_name}} - {{row.product_code ?? "-"}}</p>
                                                     <p v-if="row.discount > 0">
-                                                        {{row.qty}} x <strong>{{ RibuanLocale(row.price - row.discount) }}</strong>
+                                                        {{row.qty}} x {{ RibuanLocale(row.price - row.discount) }}
                                                         <span>
                                                             <span class="text-decoration-line-through">{{ RibuanLocale(row.price) }}</span> <v-chip color="red" label x-small dark class="px-1" title="<?= lang('App.discount'); ?>">{{row.discount_percent}}%</v-chip>
                                                         </span>
                                                     </p>
-                                                    <p v-else>{{row.qty}} x <strong>{{ RibuanLocale(row.price) }}</strong></p>
-
+                                                    <p v-else>{{row.qty}} x {{ RibuanLocale(row.price) }}</p>
                                                 </v-list-item-content>
                                             </v-list-item>
                                         </div>
@@ -53,19 +50,29 @@
                                         <strong><?= lang('App.shipment'); ?></strong><br />
                                         {{item.shipment}}<br />
                                         <strong><?= lang('App.payment'); ?></strong><br />
-                                        {{item.payment_name}} / <em>{{item.status_payment}}</em>
+                                        {{item.payment_name}} / <em>{{item.status_payment}}</em> &nbsp;
+                                        <span v-if="item.payment == 2 && item.status == 0">
+                                            <v-btn small color="primary" @click="modalAddOpen(item)" elevation="1">
+                                                <v-icon>mdi-alert-octagon-outline</v-icon> <?= lang('App.confirm') ?>
+                                            </v-btn>
+                                        </span>
+                                        <span v-else-if="item.payment == 1 && item.status == 2">
+                                            <v-icon color="success">mdi-check-circle</v-icon>
+                                        </span>
+                                        <span v-else-if="item.payment == 1 && item.status == 3">
+                                            <v-icon color="error">mdi-alert-circle</v-icon>
+                                        </span>
                                         <p class="text-subtitle-2 mb-0"><strong>Total <?= lang('App.order'); ?></strong><br />
-                                    <span class="text-h6"><strong>{{RibuanLocale(item.total)}}</strong></span>
-                                </p>
+                                            <span class="text-h6"><strong>{{RibuanLocale(item.total)}}</strong></span>
+                                        </p>
                                     </v-col>
                                 </v-row>
-                                
                             </v-card-text>
                             <v-divider></v-divider>
                             <v-card-actions>
                                 <v-spacer></v-spacer>
-                                <v-btn outlined color="primary" @click="modalAddOpen(item)" :loading="loading" elevation="1" v-show="item.payment == 2 && item.status == 0">
-                                    <v-icon>mdi-receipt-text</v-icon> <span class="grey--text text--darken-4"><?= lang('App.confirm') ?></span>
+                                <v-btn small color="primary" outlined @click="modalTrackingOpen(item)" class="py-4" elevation="1">
+                                    <?= lang('App.trackOrders') ?>
                                 </v-btn>
                             </v-card-actions>
                         </v-card>
@@ -83,25 +90,51 @@
                                 <v-row>
                                     <v-col>
                                         <strong><?= lang('App.product'); ?></strong><br />
-                                        {{item.qty}} x {{RibuanLocale(item.total)}} &nbsp;<a @click="showOrder(item)"><?= lang('App.see'); ?> Detail</a><br />
+                                        <div v-if="show == true">
+                                            <v-skeleton-loader type="list-item-avatar-three-line"></v-skeleton-loader>
+                                        </div>
+                                        <div v-for="row in itemOrder" :key="row.cart_id" v-if="show == false && item.order_id == row.order_id">
+                                            <v-list-item class="ma-n3 pa-n3" two-line>
+                                                <v-list-item-avatar size="50" rounded>
+                                                    <v-img lazy-src="<?= base_url('images/no_image.jpg') ?>" :src="'<?= base_url() ?>' + row.media_path" v-if="row.media_path != null"></v-img>
+                                                    <v-img src="<?= base_url('images/no_image.jpg') ?>" v-else></v-img>
+                                                </v-list-item-avatar>
+                                                <v-list-item-content>
+                                                    <p class="font-weight-medium black--text">{{row.product_name}} - {{row.product_code ?? "-"}}</p>
+                                                    <p v-if="row.discount > 0">
+                                                        {{row.qty}} x {{ RibuanLocale(row.price - row.discount) }}
+                                                        <span>
+                                                            <span class="text-decoration-line-through">{{ RibuanLocale(row.price) }}</span> <v-chip color="red" label x-small dark class="px-1" title="<?= lang('App.discount'); ?>">{{row.discount_percent}}%</v-chip>
+                                                        </span>
+                                                    </p>
+                                                    <p v-else>{{row.qty}} x {{ RibuanLocale(row.price) }}</p>
+                                                </v-list-item-content>
+                                            </v-list-item>
+                                        </div>
+                                        <br />
                                         <em>Note: " {{item.note}} "</em>
                                     </v-col>
                                     <v-col>
                                         <strong><?= lang('App.shipment'); ?></strong><br />
                                         {{item.shipment}}<br />
                                         <strong><?= lang('App.payment'); ?></strong><br />
-                                        {{item.payment_name}} / <em>{{item.status_payment}}</em>
+                                        {{item.payment_name}} / <em>{{item.status_payment}}</em> &nbsp;
+                                        <span v-if="item.payment == 2 && item.status == 0">
+                                            <v-btn small color="primary" @click="modalAddOpen(item)" elevation="1">
+                                                <v-icon>mdi-alert-octagon-outline</v-icon> <?= lang('App.confirm') ?>
+                                            </v-btn>
+                                        </span>
+                                        <p class="text-subtitle-2 mb-0"><strong>Total <?= lang('App.order'); ?></strong><br />
+                                            <span class="text-h6"><strong>{{RibuanLocale(item.total)}}</strong></span>
+                                        </p>
                                     </v-col>
                                 </v-row>
-                                <p class="text-subtitle-2 mb-0"><strong>Total <?= lang('App.order'); ?></strong><br />
-                                    <span class="text-h6"><strong>{{RibuanLocale(item.total)}}</strong></span>
-                                </p>
                             </v-card-text>
                             <v-divider></v-divider>
                             <v-card-actions>
                                 <v-spacer></v-spacer>
-                                <v-btn outlined color="primary" @click="modalAddOpen(item)" :loading="loading" elevation="1" v-show="item.payment == 2 && item.status == 0">
-                                    <v-icon>mdi-receipt-text</v-icon> <?= lang('App.confirm') ?>
+                                <v-btn small color="primary" outlined @click="modalTrackingOpen(item)" class="py-4" elevation="1">
+                                    <?= lang('App.trackOrders') ?>
                                 </v-btn>
                             </v-card-actions>
                         </v-card>
@@ -119,20 +152,49 @@
                                 <v-row>
                                     <v-col>
                                         <strong><?= lang('App.product'); ?></strong><br />
-                                        {{item.qty}} x {{RibuanLocale(item.total)}} &nbsp;<a @click="showOrder(item)"><?= lang('App.see'); ?> Detail</a><br />
+                                        <div v-if="show == true">
+                                            <v-skeleton-loader type="list-item-avatar-three-line"></v-skeleton-loader>
+                                        </div>
+                                        <div v-for="row in itemOrder" :key="row.cart_id" v-if="show == false && item.order_id == row.order_id">
+                                            <v-list-item class="ma-n3 pa-n3" two-line>
+                                                <v-list-item-avatar size="50" rounded>
+                                                    <v-img lazy-src="<?= base_url('images/no_image.jpg') ?>" :src="'<?= base_url() ?>' + row.media_path" v-if="row.media_path != null"></v-img>
+                                                    <v-img src="<?= base_url('images/no_image.jpg') ?>" v-else></v-img>
+                                                </v-list-item-avatar>
+                                                <v-list-item-content>
+                                                    <p class="font-weight-medium black--text">{{row.product_name}} - {{row.product_code ?? "-"}}</p>
+                                                    <p v-if="row.discount > 0">
+                                                        {{row.qty}} x {{ RibuanLocale(row.price - row.discount) }}
+                                                        <span>
+                                                            <span class="text-decoration-line-through">{{ RibuanLocale(row.price) }}</span> <v-chip color="red" label x-small dark class="px-1" title="<?= lang('App.discount'); ?>">{{row.discount_percent}}%</v-chip>
+                                                        </span>
+                                                    </p>
+                                                    <p v-else>{{row.qty}} x {{ RibuanLocale(row.price) }}</p>
+                                                </v-list-item-content>
+                                            </v-list-item>
+                                        </div>
+                                        <br />
                                         <em>Note: " {{item.note}} "</em>
                                     </v-col>
                                     <v-col>
                                         <strong><?= lang('App.shipment'); ?></strong><br />
                                         {{item.shipment}}<br />
                                         <strong><?= lang('App.payment'); ?></strong><br />
-                                        {{item.payment_name}} / <em>{{item.status_payment}}</em>
+                                        {{item.payment_name}} / <em>{{item.status_payment}}</em> &nbsp;
+                                        <v-icon color="success">mdi-check-circle</v-icon>
+                                        <p class="text-subtitle-2 mb-0"><strong>Total <?= lang('App.order'); ?></strong><br />
+                                            <span class="text-h6"><strong>{{RibuanLocale(item.total)}}</strong></span>
+                                        </p>
                                     </v-col>
                                 </v-row>
-                                <p class="text-subtitle-2 mb-0"><strong>Total <?= lang('App.order'); ?></strong><br />
-                                    <span class="text-h6"><strong>{{RibuanLocale(item.total)}}</strong></span>
-                                </p>
                             </v-card-text>
+                            <v-divider></v-divider>
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn small color="primary" outlined @click="modalTrackingOpen(item)" class="py-4" elevation="1">
+                                    <?= lang('App.trackOrders') ?>
+                                </v-btn>
+                            </v-card-actions>
                         </v-card>
                     </v-card-text>
                 </v-tab-item>
@@ -148,20 +210,49 @@
                                 <v-row>
                                     <v-col>
                                         <strong><?= lang('App.product'); ?></strong><br />
-                                        {{item.qty}} x {{RibuanLocale(item.total)}} &nbsp;<a @click="showOrder(item)"><?= lang('App.see'); ?> Detail</a><br />
+                                        <div v-if="show == true">
+                                            <v-skeleton-loader type="list-item-avatar-three-line"></v-skeleton-loader>
+                                        </div>
+                                        <div v-for="row in itemOrder" :key="row.cart_id" v-if="show == false && item.order_id == row.order_id">
+                                            <v-list-item class="ma-n3 pa-n3" two-line>
+                                                <v-list-item-avatar size="50" rounded>
+                                                    <v-img lazy-src="<?= base_url('images/no_image.jpg') ?>" :src="'<?= base_url() ?>' + row.media_path" v-if="row.media_path != null"></v-img>
+                                                    <v-img src="<?= base_url('images/no_image.jpg') ?>" v-else></v-img>
+                                                </v-list-item-avatar>
+                                                <v-list-item-content>
+                                                    <p class="font-weight-medium black--text">{{row.product_name}} - {{row.product_code ?? "-"}}</p>
+                                                    <p v-if="row.discount > 0">
+                                                        {{row.qty}} x {{ RibuanLocale(row.price - row.discount) }}
+                                                        <span>
+                                                            <span class="text-decoration-line-through">{{ RibuanLocale(row.price) }}</span> <v-chip color="red" label x-small dark class="px-1" title="<?= lang('App.discount'); ?>">{{row.discount_percent}}%</v-chip>
+                                                        </span>
+                                                    </p>
+                                                    <p v-else>{{row.qty}} x {{ RibuanLocale(row.price) }}</p>
+                                                </v-list-item-content>
+                                            </v-list-item>
+                                        </div>
+                                        <br />
                                         <em>Note: " {{item.note}} "</em>
                                     </v-col>
                                     <v-col>
                                         <strong><?= lang('App.shipment'); ?></strong><br />
                                         {{item.shipment}}<br />
                                         <strong><?= lang('App.payment'); ?></strong><br />
-                                        {{item.payment_name}} / <em>{{item.status_payment}}</em>
+                                        {{item.payment_name}} / <em>{{item.status_payment}}</em> &nbsp;
+                                        <v-icon color="success">mdi-check-circle</v-icon>
+                                        <p class="text-subtitle-2 mb-0"><strong>Total <?= lang('App.order'); ?></strong><br />
+                                            <span class="text-h6"><strong>{{RibuanLocale(item.total)}}</strong></span>
+                                        </p>
                                     </v-col>
                                 </v-row>
-                                <p class="text-subtitle-2 mb-0"><strong>Total <?= lang('App.order'); ?></strong><br />
-                                    <span class="text-h6"><strong>{{RibuanLocale(item.total)}}</strong></span>
-                                </p>
                             </v-card-text>
+                            <v-divider></v-divider>
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn small color="primary" outlined @click="modalTrackingOpen(item)" class="py-4" elevation="1">
+                                    <?= lang('App.trackOrders') ?>
+                                </v-btn>
+                            </v-card-actions>
                         </v-card>
                     </v-card-text>
                 </v-tab-item>
@@ -177,20 +268,49 @@
                                 <v-row>
                                     <v-col>
                                         <strong><?= lang('App.product'); ?></strong><br />
-                                        {{item.qty}} x {{RibuanLocale(item.total)}} &nbsp;<a @click="showOrder(item)"><?= lang('App.see'); ?> Detail</a><br />
+                                        <div v-if="show == true">
+                                            <v-skeleton-loader type="list-item-avatar-three-line"></v-skeleton-loader>
+                                        </div>
+                                        <div v-for="row in itemOrder" :key="row.cart_id" v-if="show == false && item.order_id == row.order_id">
+                                            <v-list-item class="ma-n3 pa-n3" two-line>
+                                                <v-list-item-avatar size="50" rounded>
+                                                    <v-img lazy-src="<?= base_url('images/no_image.jpg') ?>" :src="'<?= base_url() ?>' + row.media_path" v-if="row.media_path != null"></v-img>
+                                                    <v-img src="<?= base_url('images/no_image.jpg') ?>" v-else></v-img>
+                                                </v-list-item-avatar>
+                                                <v-list-item-content>
+                                                    <p class="font-weight-medium black--text">{{row.product_name}} - {{row.product_code ?? "-"}}</p>
+                                                    <p v-if="row.discount > 0">
+                                                        {{row.qty}} x {{ RibuanLocale(row.price - row.discount) }}
+                                                        <span>
+                                                            <span class="text-decoration-line-through">{{ RibuanLocale(row.price) }}</span> <v-chip color="red" label x-small dark class="px-1" title="<?= lang('App.discount'); ?>">{{row.discount_percent}}%</v-chip>
+                                                        </span>
+                                                    </p>
+                                                    <p v-else>{{row.qty}} x {{ RibuanLocale(row.price) }}</p>
+                                                </v-list-item-content>
+                                            </v-list-item>
+                                        </div>
+                                        <br />
                                         <em>Note: " {{item.note}} "</em>
                                     </v-col>
                                     <v-col>
                                         <strong><?= lang('App.shipment'); ?></strong><br />
                                         {{item.shipment}}<br />
                                         <strong><?= lang('App.payment'); ?></strong><br />
-                                        {{item.payment_name}} / <em>{{item.status_payment}}</em>
+                                        {{item.payment_name}} / <em>{{item.status_payment}}</em> &nbsp;
+                                        <v-icon color="error">mdi-alert-circle</v-icon>
+                                        <p class="text-subtitle-2 mb-0"><strong>Total <?= lang('App.order'); ?></strong><br />
+                                            <span class="text-h6"><strong>{{RibuanLocale(item.total)}}</strong></span>
+                                        </p>
                                     </v-col>
                                 </v-row>
-                                <p class="text-subtitle-2 mb-0"><strong>Total <?= lang('App.order'); ?></strong><br />
-                                    <span class="text-h6"><strong>{{RibuanLocale(item.total)}}</strong></span>
-                                </p>
                             </v-card-text>
+                            <v-divider></v-divider>
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn small color="primary" outlined @click="modalTrackingOpen(item)" class="py-4" elevation="1">
+                                    <?= lang('App.trackOrders') ?>
+                                </v-btn>
+                            </v-card-actions>
                         </v-card>
                     </v-card-text>
                 </v-tab-item>
@@ -202,10 +322,10 @@
 <!-- Modal Save -->
 <template>
     <v-row justify="center">
-        <v-dialog v-model="modalAdd" persistent scrollable width="900px">
+        <v-dialog v-model="modalAdd" persistent scrollable width="1000px">
             <v-card>
                 <v-card-title>
-                    <?= lang('App.confirm') ?> Manual #{{ noOrder }}
+                    <?= lang('App.confirm') ?> Transfer Manual #{{ noOrder }}
                     <v-spacer></v-spacer>
                     <v-btn icon @click="modalAddClose">
                         <v-icon>mdi-close</v-icon>
@@ -214,22 +334,62 @@
                 <v-divider></v-divider>
                 <v-card-text class="py-5">
                     <v-row>
-                        <v-col cols="12" md="8">
-                            <v-form ref="form" v-model="valid">
-                                <v-alert v-if="notifType != ''" dismissible dense outlined :type="notifType">{{notifMessage}}</v-alert>
-                                <v-text-field label="Bank *" v-model="bank" :error-messages="bankError" outlined></v-text-field>
-                                <v-text-field label="Nama Rekening *" v-model="nama" :error-messages="namaError" outlined></v-text-field>
-                                <v-text-field label="Nomor Rekening *" v-model="norekening" :error-messages="norekeningError" outlined></v-text-field>
-                                <v-text-field label="Nominal (Rp) *" v-model="nominal" :error-messages="nominalError" outlined></v-text-field>
-                            </v-form>
-                        </v-col>
-                        <v-col cols="12" md="4">
-                            <v-alert color="yellow lighten-2" icon="mdi-information" light class="text-body-2 mt-2" @click="">
-                                Informasi Bank Transfer!<br /><br />
+                        <v-col cols="12" md="6">
+                            <v-alert color="yellow lighten-3" icon="mdi-information" light class="text-body-2 mt-2" dense>
+                                Harap transfer sejumlah uang senilai <strong>{{RibuanLocale(nominal)}}</strong> ke:<br />
                                 <strong><?= $bank['payment']; ?></strong><br />
                                 No. Rekening: <strong><?= $bank['number']; ?></strong><br />
                                 A.N: <?= $bank['account']; ?>
                             </v-alert>
+                            <v-form ref="form" v-model="valid">
+                                <v-alert v-if="notifType != ''" dismissible dense outlined :type="notifType">{{notifMessage}}</v-alert>
+                                <v-text-field label="Bank Anda*" v-model="bank" :error-messages="bankError" outlined></v-text-field>
+                                <v-text-field label="Nama Rekening Anda*" v-model="nama" :error-messages="namaError" outlined></v-text-field>
+                                <v-text-field label="Nomor Rekening Anda*" v-model="norekening" :error-messages="norekeningError" outlined></v-text-field>
+                                <v-text-field label="Nominal (Rp)*" v-model="nominal" :error-messages="nominalError" outlined></v-text-field>
+                            </v-form>
+                        </v-col>
+                        <v-col cols="12" md="6">
+                            <h2 class="font-weight-medium mb-3">Histori Konfirmasi</h2>
+                            <v-simple-table class="mb-3">
+                                <template v-slot:default>
+                                    <thead>
+                                        <tr>
+                                            <th>Tanggal</th>
+                                            <th>Bank</th>
+                                            <th>Nama</th>
+                                            <th>Rekening</th>
+                                            <th>Nominal (Rp)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-if="loading3 == true">
+                                            <td>
+                                                <v-skeleton-loader type="list-item"></v-skeleton-loader>
+                                            </td>
+                                            <td>
+                                                <v-skeleton-loader type="list-item"></v-skeleton-loader>
+                                            </td>
+                                            <td>
+                                                <v-skeleton-loader type="list-item"></v-skeleton-loader>
+                                            </td>
+                                            <td>
+                                                <v-skeleton-loader type="list-item"></v-skeleton-loader>
+                                            </td>
+                                            <td>
+                                                <v-skeleton-loader type="list-item"></v-skeleton-loader>
+                                            </td>
+                                        </tr>
+                                        <tr v-for="item in dataPaymentConfirm" :key="item.confirm_id" v-if="loading3 == false">
+                                            <td>{{item.created_at}}</td>
+                                            <td>{{item.bank}}</td>
+                                            <td>{{item.nama}}</td>
+                                            <td>{{item.norekening}}</td>
+                                            <td>{{RibuanLocale(item.nominal)}}</td>
+                                        </tr>
+                                    </tbody>
+                                </template>
+                            </v-simple-table>
                         </v-col>
                     </v-row>
                 </v-card-text>
@@ -245,6 +405,60 @@
     </v-row>
 </template>
 <!-- End Modal Save -->
+
+<!-- Modal Save -->
+<template>
+    <v-row justify="center">
+        <v-dialog v-model="modalTracking" persistent scrollable width="600px">
+            <v-card>
+                <v-card-title>
+                    <?= lang('App.trackOrders'); ?> #{{ noOrder }}
+                    <v-spacer></v-spacer>
+                    <v-btn icon @click="modalTracking = false">
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                </v-card-title>
+                <v-divider></v-divider>
+                <v-card-text class="py-5">
+                    <div v-if="loading == true">
+                        <v-row justify="space-between">
+                            <v-col cols="3">
+                                <v-skeleton-loader type="list-item"></v-skeleton-loader>
+                                <v-skeleton-loader type="list-item"></v-skeleton-loader>
+                            </v-col>
+                            <v-col cols="9">
+                                <v-skeleton-loader type="list-item"></v-skeleton-loader>
+                                <v-skeleton-loader type="list-item"></v-skeleton-loader>
+                            </v-col>
+                        </v-row>
+                    </div>
+                    <div v-else>
+                        <v-timeline dense clipped>
+                            <v-timeline-item v-for="(item, i) in dataTracking" :key="i" small :color="i == 0 ? 'primary':'grey'">
+                                <v-row justify="space-between">
+                                    <v-col cols="3">
+                                        {{dayjs(item.created_at).format('HH:mm')}}<br />
+                                        {{dayjs(item.created_at).format('DD-MM-YYYY')}}
+                                    </v-col>
+                                    <v-col cols="9">
+                                        {{item.tracking_information}}
+                                    </v-col>
+                                </v-row>
+                            </v-timeline-item>
+                        </v-timeline>
+                    </div>
+                </v-card-text>
+                <v-divider></v-divider>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+    </v-row>
+</template>
+<!-- End Modal Save -->
+
 
 <?php $this->endSection("content") ?>
 
@@ -268,7 +482,7 @@
         dataCanceled: [],
         itemOrder: [],
         modalAdd: false,
-        modalOrder: false,
+        modalTracking: false,
         idOrder: "",
         noOrder: "",
         idPayment: "",
@@ -279,7 +493,9 @@
         norekening: "",
         norekeningError: "",
         nominal: "",
-        nominalError: ""
+        nominalError: "",
+        dataPaymentConfirm: [],
+        dataTracking: []
     }
 
     createdVue = function() {
@@ -433,11 +649,10 @@
             axios.get(`<?= base_url() ?>api/cart/user/orderitem`, options)
                 .then(res => {
                     // handle success
-                    this.loading3 = false;
+                    this.show = false;
                     var data = res.data;
                     if (data.status == true) {
                         this.itemOrder = data.data;
-                        this.show = false;
                     } else {
                         this.snackbar = true;
                         this.snackbarMessage = data.message;
@@ -462,12 +677,44 @@
             this.noOrder = item.no_order;
             this.idPayment = item.payment_id;
             this.nominal = item.total;
+            this.getConfirm();
         },
         modalAddClose: function() {
             this.modalAdd = false;
             this.$refs.form.resetValidation();
         },
-        // Save
+
+        //Get Payment Confirm
+        getConfirm: function() {
+            this.loading3 = true;
+            axios.get(`<?= base_url() ?>api/payment/get/${this.idOrder}`, options)
+                .then(res => {
+                    // handle success
+                    this.loading3 = false;
+                    var data = res.data;
+                    if (data.status == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = data.message;
+                        this.dataPaymentConfirm = data.data;
+                    } else {
+                        this.snackbar = true;
+                        this.snackbarMessage = data.message;
+                        this.dataPaymentConfirm = data.data;
+                    }
+                })
+                .catch(err => {
+                    // handle error
+                    console.log(err);
+                    var error = err.response
+                    if (error.data.expired == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = error.data.message;
+                        setTimeout(() => window.location.href = error.data.data.url, 1000);
+                    }
+                })
+        },
+
+        // Save Confirm
         saveConfirm: function() {
             this.loading2 = true;
             axios.post(`<?= base_url() ?>api/payment/confirm`, {
@@ -514,7 +761,44 @@
                 .catch(err => {
                     // handle error
                     console.log(err.response);
+                    this.loading2 = false;
+                    var error = err.response
+                    if (error.data.expired == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = error.data.message;
+                        setTimeout(() => window.location.href = error.data.data.url, 1000);
+                    }
+                })
+        },
+
+        modalTrackingOpen: function(item) {
+            this.modalTracking = true;
+            this.idOrder = item.order_id;
+            this.noOrder = item.no_order;
+            this.getTracking();
+        },
+
+        //Get Tracking Orders
+        getTracking: function() {
+            this.loading = true;
+            axios.get(`<?= base_url() ?>api/tracking/${this.idOrder}`, options)
+                .then(res => {
+                    // handle success
                     this.loading = false;
+                    var data = res.data;
+                    if (data.status == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = data.message;
+                        this.dataTracking = data.data;
+                    } else {
+                        this.snackbar = true;
+                        this.snackbarMessage = data.message;
+                        this.dataTracking = data.data;
+                    }
+                })
+                .catch(err => {
+                    // handle error
+                    console.log(err);
                     var error = err.response
                     if (error.data.expired == true) {
                         this.snackbar = true;

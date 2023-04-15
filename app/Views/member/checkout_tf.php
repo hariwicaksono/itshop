@@ -24,9 +24,9 @@ function Ribuan($angka)
                     <h3 class="text-center"><?= lang('App.pleaseTransfer'); ?>:</h3>
                     <h1 class="text-center py-3">Rp.<?= $row['total']; ?></h1>
                     <h3 class="text-center"><?= lang('App.to'); ?>:</h3>
-                    BANK: <?= $row['payment']; ?><br />
+                    BANK: <strong><?= $row['payment_name']; ?></strong><br />
+                    <?= lang('App.number'); ?>: <strong><?= $row['number']; ?></strong><br />
                     <?= lang('App.account'); ?>: <?= $row['account']; ?><br />
-                    <?= lang('App.number'); ?>: <?= $row['number']; ?><br />
                 <?php endforeach; ?>
                 <br />
                 Terima Kasih<br />

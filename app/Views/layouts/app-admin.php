@@ -325,7 +325,14 @@ $snackbarsPosition = $setting->info['snackbars_position'];
 
     <script src="https://cdn.jsdelivr.net/npm/vue-quill-editor@3.0.6/dist/vue-quill-editor.js" type="text/javascript"></script>
     <script src="<?= base_url('assets/js/main.js') ?>" type="text/javascript"></script>
+    <script src="<?= base_url('assets/js/dayjs.min.js') ?>"></script>
+    <script src="<?= base_url('assets/js/dayjs-locale-id.js') ?>"></script>
 
+    <script>
+        dayjs.locale('id');
+        dayjs().locale('id').format();
+    </script>
+    
     <script>
         var vue = null;
         var computedVue = {

@@ -30,6 +30,7 @@ return [
     'aboutUs' => 'Tentang Kami',
     'sold' => 'Terjual',
     'loadingWait' => 'Sedang memuat... Harap tunggu',
+    'do' => 'Melakukan',
 
     //Signin
     'signIn' => 'Masuk',
@@ -123,4 +124,6 @@ return [
     'pleaseTransfer' => 'Silahkan Transfer sejumlah uang',
     'cod' => 'COD',
     'send' => 'Kirim',
+    'sent' => 'Dikirim',
+    'trackOrders' => 'Lacak Pesanan'
 ];

@@ -77,6 +77,13 @@ $companyTelp = $setting->info['company_telp'];
                         <v-icon>mdi-cart</v-icon>
                     </v-badge>
                 </v-btn>
+                <v-btn icon class="mr-3" href="<?= base_url('member/order-list') ?>" elevation="0">
+                    <v-badge :content="orderCounter" :value="orderCounter" color="error" overlap>
+                        <v-icon>
+                            mdi-bell
+                        </v-icon>
+                    </v-badge>
+                </v-btn>
                 <?php if (empty(session()->get('username'))) : ?>
                     <v-btn text class="mr-3" href="<?= base_url('login') ?>" elevation="0">
                         <v-icon>mdi-login-variant</v-icon> Login
@@ -242,6 +249,13 @@ $companyTelp = $setting->info['company_telp'];
     <script src="<?= base_url('assets/js/vue-masonry-plugin-window.js') ?>"></script>
     <script src="<?= base_url('assets/js/vue-carousel.min.js') ?>" type="text/javascript"></script>
     <script src="<?= base_url('assets/js/pusher.min.js') ?>"></script>
+    <script src="<?= base_url('assets/js/dayjs.min.js') ?>"></script>
+    <script src="<?= base_url('assets/js/dayjs-locale-id.js') ?>"></script>
+
+    <script>
+        dayjs.locale('id');
+        dayjs().locale('id').format();
+    </script>
 
     <script>
         var computedVue = {
@@ -262,6 +276,7 @@ $companyTelp = $setting->info['company_telp'];
         }
         var mountedVue = function() {
             this.getCartCount();
+            this.getOrderCount();
             const theme = localStorage.getItem("dark_theme");
             if (theme) {
                 if (theme === "true") {
@@ -300,6 +315,7 @@ $companyTelp = $setting->info['company_telp'];
             snackbarMessage: '',
             show: false,
             cartCounter: 0,
+            orderCounter: 0,
             rules: {
                 email: v => !!(v || '').match(/@/) || '<?= lang('App.emailValid'); ?>',
                 length: len => v => (v || '').length <= len || `<?= lang('App.invalidLength'); ?> ${len}`,
@@ -350,19 +366,7 @@ $companyTelp = $setting->info['company_telp'];
                 this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
                 localStorage.setItem("dark_theme", this.$vuetify.theme.dark.toString());
             },
-            getCartCount() {
-                axios.get(`<?= base_url(); ?>openapi/cart/count`)
-                    .then(res => {
-                        // handle success
-                        var data = res.data;
-                        this.cartCounter = data.data;
-                    })
-                    .catch(err => {
-                        // handle error
-                        console.log(err.response);
-                    })
-            },
-
+            
             // Format Ribuan Rupiah versi 1
             RibuanLocale(key) {
                 const rupiah = 'Rp' + Number(key).toLocaleString('id-ID');
@@ -392,6 +396,31 @@ $companyTelp = $setting->info['company_telp'];
                 return rupiah;
             },
 
+            getCartCount() {
+                axios.get(`<?= base_url(); ?>openapi/cart/count`)
+                    .then(res => {
+                        // handle success
+                        var data = res.data;
+                        this.cartCounter = data.data;
+                    })
+                    .catch(err => {
+                        // handle error
+                        console.log(err.response);
+                    })
+            },
+
+            getOrderCount() {
+                axios.get(`<?= base_url(); ?>api/order/count/pending_processed`)
+                    .then(res => {
+                        // handle success
+                        var data = res.data;
+                        this.orderCounter = data.data;
+                    })
+                    .catch(err => {
+                        // handle error
+                        console.log(err.response);
+                    })
+            },
         }
         Vue.component('paginate', VuejsPaginate)
         var VueMasonryPlugin = window["vue-masonry-plugin"].VueMasonryPlugin;

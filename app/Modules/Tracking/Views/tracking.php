@@ -60,7 +60,7 @@
                             <v-col>
                                 <strong><?= lang('App.product'); ?></strong><br />
                                 {{item.qty}} x {{RibuanLocale(item.total)}} &nbsp;<a @click="showOrder(item)"><?= lang('App.see'); ?> Detail</a><br />
-
+                                
                                 <em>Note: " {{item.note}} "</em>
                             </v-col>
                             <v-col>
@@ -74,48 +74,48 @@
                             <span class="text-h6"><strong>{{RibuanLocale(item.total)}}</strong></span>
                         </p>
                         <h3 class="mb-3"><?= lang('App.productInfo') ?></h3>
-                        <v-simple-table class="mb-3">
-                            <template v-slot:default>
-                                <thead>
-                                    <tr>
-                                        <th width="250">Product</th>
-                                        <th>Code</th>
-                                        <th>Qty</th>
-                                        <th>Price</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-if="show == true">
-                                        <td>
-                                            <v-skeleton-loader type="list-item"></v-skeleton-loader>
-                                        </td>
-                                        <td>
-                                            <v-skeleton-loader type="list-item"></v-skeleton-loader>
-                                        </td>
-                                        <td>
-                                            <v-skeleton-loader type="list-item"></v-skeleton-loader>
-                                        </td>
-                                        <td>
-                                            <v-skeleton-loader type="list-item"></v-skeleton-loader>
-                                        </td>
-                                    </tr>
-                                    <tr v-for="item in itemOrder" :key="item.cart_id" v-if="show == false">
-                                        <td>{{item.product_name}}</td>
-                                        <td>{{item.product_code}}</td>
-                                        <td>{{item.qty}}</td>
-                                        <td>
-                                            <span v-if="item.discount > 0">
-                                                {{ RibuanLocale(item.price - item.discount) }}
-                                            </span>
-                                            <span v-else>{{ RibuanLocale(item.price) }}</span>
-                                            <span v-show="item.discount > 0">
-                                                <p class="text-body-2 mb-0"><span class="text-decoration-line-through">{{ RibuanLocale(item.price) }}</span> <v-chip color="red" label x-small dark class="px-1" title="<?= lang('App.discount'); ?>">{{item.discount_percent}}%</v-chip></p>
-                                            </span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </template>
-                        </v-simple-table>
+                                <v-simple-table class="mb-3">
+                                    <template v-slot:default>
+                                        <thead>
+                                            <tr>
+                                                <th width="250">Product</th>
+                                                <th>Code</th>
+                                                <th>Qty</th>
+                                                <th>Price</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-if="show == true">
+                                                <td>
+                                                    <v-skeleton-loader type="list-item"></v-skeleton-loader>
+                                                </td>
+                                                <td>
+                                                    <v-skeleton-loader type="list-item"></v-skeleton-loader>
+                                                </td>
+                                                <td>
+                                                    <v-skeleton-loader type="list-item"></v-skeleton-loader>
+                                                </td>
+                                                <td>
+                                                    <v-skeleton-loader type="list-item"></v-skeleton-loader>
+                                                </td>
+                                            </tr>
+                                            <tr v-for="item in itemOrder" :key="item.cart_id" v-if="show == false">
+                                                <td>{{item.product_name}}</td>
+                                                <td>{{item.product_code}}</td>
+                                                <td>{{item.qty}}</td>
+                                                <td>
+                                                    <span v-if="item.discount > 0">
+                                                        {{ RibuanLocale(item.price - item.discount) }}
+                                                    </span>
+                                                    <span v-else>{{ RibuanLocale(item.price) }}</span>
+                                                    <span v-show="item.discount > 0">
+                                                        <p class="text-body-2 mb-0"><span class="text-decoration-line-through">{{ RibuanLocale(item.price) }}</span> <v-chip color="red" label x-small dark class="px-1" title="<?= lang('App.discount'); ?>">{{item.discount_percent}}%</v-chip></p>
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </template>
+                                </v-simple-table>
                     </div>
                 </v-card-text>
             </v-card>
@@ -205,9 +205,6 @@
             label: 'Pending',
             value: 'pending'
         }, {
-            label: 'Success',
-            value: 'success'
-        }, {
             label: 'Settlement',
             value: 'settlement'
         }, {
@@ -219,6 +216,12 @@
         }, {
             label: 'Expired',
             value: 'expired'
+        }, {
+            label: 'Success',
+            value: 'success'
+        }, {
+            label: 'Challenged by FDS',
+            value: 'challenged'
         }, ],
         dataOrder: [],
         totalData: 0,

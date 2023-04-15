@@ -166,7 +166,7 @@
                             [row.cart_id, row.product_id, row.price, row.stock, row.qty]
                         ));
                         this.itemcart = itemcart;
-                        console.log(this.itemcart)
+                        //console.log(this.itemcart)
                     } else {
                         this.snackbar = true;
                         this.snackbarMessage = data.message;
@@ -225,6 +225,7 @@
                         this.snackbar = true;
                         this.snackbarMessage = data.message;
                     }
+                    this.getOrderCount();
                 })
                 .catch(err => {
                     // handle error

@@ -60,6 +60,13 @@ $snackbarsPosition = $setting->info['snackbars_position'];
                         <v-icon>mdi-cart</v-icon>
                     </v-badge>
                 </v-btn>
+                <v-btn icon class="mr-3" href="<?= base_url('member/order-list') ?>" elevation="0">
+                    <v-badge :content="orderCounter" :value="orderCounter" color="error" overlap>
+                        <v-icon>
+                            mdi-bell
+                        </v-icon>
+                    </v-badge>
+                </v-btn>
                 <?php if (!empty(session()->get('username'))) : ?>
                     <v-menu offset-y>
                         <template v-slot:activator="{ on, attrs }">
@@ -235,6 +242,13 @@ $snackbarsPosition = $setting->info['snackbars_position'];
     <script src="<?= base_url('assets/js/axios.min.js') ?>" type="text/javascript"></script>
     <script src="<?= base_url('assets/js/vuejs-paginate.min.js') ?>" type="text/javascript"></script>
     <script src="<?= base_url('assets/js/main.js') ?>" type="text/javascript"></script>
+    <script src="<?= base_url('assets/js/dayjs.min.js') ?>"></script>
+    <script src="<?= base_url('assets/js/dayjs-locale-id.js') ?>"></script>
+
+    <script>
+        dayjs.locale('id');
+        dayjs().locale('id').format();
+    </script>
 
     <script>
         var vue = null;

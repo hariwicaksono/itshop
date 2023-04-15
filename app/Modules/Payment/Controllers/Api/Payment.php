@@ -7,6 +7,9 @@ use App\Modules\Payment\Models\PaymentConfirmModel;
 use App\Modules\Payment\Models\PaymentModel;
 use App\Libraries\Settings;
 use App\Modules\Order\Models\OrderModel;
+use App\Modules\Log\Models\LogModel;
+use App\Modules\Tracking\Models\TrackingModel;
+use CodeIgniter\I18n\Time;
 
 class Payment extends BaseControllerApi
 {
@@ -15,12 +18,16 @@ class Payment extends BaseControllerApi
     protected $paymentconfirm;
     protected $setting;
     protected $order;
+    protected $tracking;
+    protected $log;
 
     public function __construct()
     {
         $this->paymentconfirm = new PaymentConfirmModel();
         $this->setting = new Settings();
         $this->order = new OrderModel();
+        $this->tracking = new TrackingModel();
+        $this->log = new LogModel();
     }
 
     public function index()
@@ -213,7 +220,7 @@ class Payment extends BaseControllerApi
 
     public function getConfirm($id = null)
     {
-        return $this->respond(['status' => true, 'message' => lang('App.getSuccess'), 'data' => $this->paymentconfirm->where(['order_id' => $id])->first()], 200);
+        return $this->respond(['status' => true, 'message' => lang('App.getSuccess'), 'data' => $this->paymentconfirm->where(['order_id' => $id])->findAll()], 200);
     }
 
     public function confirm()
@@ -285,6 +292,12 @@ class Payment extends BaseControllerApi
 
             $order = $this->order->find($orderId);
             $noOrder = $order['no_order'];
+
+            //Simpan data Tracking
+            $this->tracking->save(["order_id" => $orderId, "tracking_information" => "Konfirmasi  pembayaran berhasil dikirimkan mohon tunggu verifikasi dari admin"]);
+           
+            //Simpan data Log
+            $this->log->save(['keterangan' => session('first_name') . ' ' . session('last_name') . ' (' . session('email') . ') ' . strtolower(lang('App.do')) . ' Create Konfirmasi Pembayaran Pesanan ID: ' . $orderId]);
 
             //Send Email New Confirm
             helper('email');

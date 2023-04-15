@@ -8,10 +8,8 @@ $routes->group('admin', ['filter' => 'auth', 'namespace' => 'App\Modules\Order\C
 	$routes->get('order', 'Order::index');
 });
 
-$routes->group('openapi', ['namespace' => 'App\Modules\Product\Controllers\Api'], function ($routes) {
-
-	$routes->get('product/all', 'Product::allProduct');
-	$routes->get('product/(:segment)', 'Product::show/$1');
+$routes->group('openapi', ['namespace' => 'App\Modules\Order\Controllers\Api'], function ($routes) {
+	$routes->get('order/count/pending_processed', 'Order::countUserOrder');
 });
 
 $routes->group('api', ['filter' => 'jwtauth', 'namespace' => 'App\Modules\Order\Controllers\Api'], function ($routes) {
