@@ -385,6 +385,11 @@ class Order extends BaseControllerApi
         return $this->respond(["status" => true, "message" => lang("App.getSuccess"), "data" => $this->model->findUserOrder($id, 3)], 200);
     }
 
+    public function countNewOrder()
+    {
+        return $this->respond(['status' => true, 'message' => lang('App.getSuccess'), 'data' => $this->model->countNewOrder()], 200);
+    }
+
     public function countUserOrder($userid = null)
     {
         $userid = $this->session->id;

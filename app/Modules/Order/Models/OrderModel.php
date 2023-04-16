@@ -121,6 +121,12 @@ class OrderModel extends Model
         return $query;
     }
 
+    public function countNewOrder()
+    {
+        $query = $this->where('status', 0)->orWhere('status', 1)->countAllResults();
+        return $query;
+    }
+
     public function countUserOrder($userid)
     {
         $query = $this->where('user_id', $userid)->where('status', 0)->orWhere('status', 1)->countAllResults();

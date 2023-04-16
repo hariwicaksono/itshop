@@ -25,7 +25,7 @@
                                         <div v-if="show == true">
                                             <v-skeleton-loader type="list-item-avatar-three-line"></v-skeleton-loader>
                                         </div>
-                                        <div v-for="row in itemOrder" :key="row.cart_id" v-if="show == false && item.order_id == row.order_id">
+                                        <div v-for="row in itemOrder" :key="row.cart_id" v-else-if="show == false && item.order_id == row.order_id">
                                             <v-list-item class="ma-n3 pa-n3" two-line>
                                                 <v-list-item-avatar size="50" rounded>
                                                     <v-img lazy-src="<?= base_url('images/no_image.jpg') ?>" :src="'<?= base_url() ?>' + row.media_path" v-if="row.media_path != null"></v-img>
@@ -83,7 +83,7 @@
                         <div v-if="loader == true">
                             <v-skeleton-loader type="heading,list-item-two-line"></v-skeleton-loader>
                         </div>
-                        <v-card class="mb-4" v-for="item in dataPending" :key="item.order_id" v-if="loader == false">
+                        <v-card class="mb-4" v-for="item in dataPending" :key="item.order_id" v-else-if="loader == false">
                             <v-card-subtitle><strong>{{item.status==0?"Belum Diproses":""}}{{item.status==1?"Sedang Diproses":""}}{{item.status==2?"Dikirim":""}}{{item.status==3?"Dibatalkan":""}}</strong> / {{item.no_order}} / {{item.email}} / {{item.created_at}}
                             </v-card-subtitle>
                             <v-card-text>
@@ -93,7 +93,7 @@
                                         <div v-if="show == true">
                                             <v-skeleton-loader type="list-item-avatar-three-line"></v-skeleton-loader>
                                         </div>
-                                        <div v-for="row in itemOrder" :key="row.cart_id" v-if="show == false && item.order_id == row.order_id">
+                                        <div v-for="row in itemOrder" :key="row.cart_id" v-else-if="show == false && item.order_id == row.order_id">
                                             <v-list-item class="ma-n3 pa-n3" two-line>
                                                 <v-list-item-avatar size="50" rounded>
                                                     <v-img lazy-src="<?= base_url('images/no_image.jpg') ?>" :src="'<?= base_url() ?>' + row.media_path" v-if="row.media_path != null"></v-img>
@@ -145,7 +145,7 @@
                         <div v-if="loader == true">
                             <v-skeleton-loader type="heading,list-item-two-line"></v-skeleton-loader>
                         </div>
-                        <v-card class="mb-4" v-for="item in dataProcessed" :key="item.order_id" v-if="loader == false">
+                        <v-card class="mb-4" v-for="item in dataProcessed" :key="item.order_id" v-else-if="loader == false">
                             <v-card-subtitle><strong>{{item.status==0?"Belum Diproses":""}}{{item.status==1?"Sedang Diproses":""}}{{item.status==2?"Dikirim":""}}{{item.status==3?"Dibatalkan":""}}</strong> / {{item.no_order}} / {{item.email}} / {{item.created_at}}
                             </v-card-subtitle>
                             <v-card-text>
@@ -155,7 +155,7 @@
                                         <div v-if="show == true">
                                             <v-skeleton-loader type="list-item-avatar-three-line"></v-skeleton-loader>
                                         </div>
-                                        <div v-for="row in itemOrder" :key="row.cart_id" v-if="show == false && item.order_id == row.order_id">
+                                        <div v-for="row in itemOrder" :key="row.cart_id" v-else-if="show == false && item.order_id == row.order_id">
                                             <v-list-item class="ma-n3 pa-n3" two-line>
                                                 <v-list-item-avatar size="50" rounded>
                                                     <v-img lazy-src="<?= base_url('images/no_image.jpg') ?>" :src="'<?= base_url() ?>' + row.media_path" v-if="row.media_path != null"></v-img>
@@ -203,7 +203,7 @@
                         <div v-if="loader == true">
                             <v-skeleton-loader type="heading,list-item-two-line"></v-skeleton-loader>
                         </div>
-                        <v-card class="mb-4" v-for="item in dataDelivered" :key="item.order_id" v-if="loader == false">
+                        <v-card class="mb-4" v-for="item in dataDelivered" :key="item.order_id" v-else-if="loader == false">
                             <v-card-subtitle><strong>{{item.status==0?"Belum Diproses":""}}{{item.status==1?"Sedang Diproses":""}}{{item.status==2?"Dikirim":""}}{{item.status==3?"Dibatalkan":""}}</strong> / {{item.no_order}} / {{item.email}} / {{item.created_at}}
                             </v-card-subtitle>
                             <v-card-text>
@@ -213,7 +213,7 @@
                                         <div v-if="show == true">
                                             <v-skeleton-loader type="list-item-avatar-three-line"></v-skeleton-loader>
                                         </div>
-                                        <div v-for="row in itemOrder" :key="row.cart_id" v-if="show == false && item.order_id == row.order_id">
+                                        <div v-for="row in itemOrder" :key="row.cart_id" v-else-if="show == false && item.order_id == row.order_id">
                                             <v-list-item class="ma-n3 pa-n3" two-line>
                                                 <v-list-item-avatar size="50" rounded>
                                                     <v-img lazy-src="<?= base_url('images/no_image.jpg') ?>" :src="'<?= base_url() ?>' + row.media_path" v-if="row.media_path != null"></v-img>
@@ -261,7 +261,7 @@
                         <div v-if="loader == true">
                             <v-skeleton-loader type="heading,list-item-two-line"></v-skeleton-loader>
                         </div>
-                        <v-card class="mb-4" v-for="item in dataCanceled" :key="item.order_id" v-if="loader == false">
+                        <v-card class="mb-4" v-for="item in dataCanceled" :key="item.order_id" v-else-if="loader == false">
                             <v-card-subtitle><strong>{{item.status==0?"Belum Diproses":""}}{{item.status==1?"Sedang Diproses":""}}{{item.status==2?"Dikirim":""}}{{item.status==3?"Dibatalkan":""}}</strong> / {{item.no_order}} / {{item.email}} / {{item.created_at}}
                             </v-card-subtitle>
                             <v-card-text>
@@ -271,7 +271,7 @@
                                         <div v-if="show == true">
                                             <v-skeleton-loader type="list-item-avatar-three-line"></v-skeleton-loader>
                                         </div>
-                                        <div v-for="row in itemOrder" :key="row.cart_id" v-if="show == false && item.order_id == row.order_id">
+                                        <div v-for="row in itemOrder" :key="row.cart_id" v-else-if="show == false && item.order_id == row.order_id">
                                             <v-list-item class="ma-n3 pa-n3" two-line>
                                                 <v-list-item-avatar size="50" rounded>
                                                     <v-img lazy-src="<?= base_url('images/no_image.jpg') ?>" :src="'<?= base_url() ?>' + row.media_path" v-if="row.media_path != null"></v-img>
@@ -325,7 +325,7 @@
         <v-dialog v-model="modalAdd" persistent scrollable width="1000px">
             <v-card>
                 <v-card-title>
-                    <?= lang('App.confirm') ?> Transfer Manual #{{ noOrder }}
+                    <?= lang('App.confirm') ?> Transfer Manual<br />#{{ noOrder }}
                     <v-spacer></v-spacer>
                     <v-btn icon @click="modalAddClose">
                         <v-icon>mdi-close</v-icon>
@@ -406,13 +406,13 @@
 </template>
 <!-- End Modal Save -->
 
-<!-- Modal Save -->
+<!-- Modal Tracking -->
 <template>
     <v-row justify="center">
         <v-dialog v-model="modalTracking" persistent scrollable width="600px">
             <v-card>
                 <v-card-title>
-                    <?= lang('App.trackOrders'); ?> #{{ noOrder }}
+                    <?= lang('App.trackOrders'); ?><br />#{{ noOrder }}
                     <v-spacer></v-spacer>
                     <v-btn icon @click="modalTracking = false">
                         <v-icon>mdi-close</v-icon>
@@ -457,8 +457,7 @@
         </v-dialog>
     </v-row>
 </template>
-<!-- End Modal Save -->
-
+<!-- End Modal Tracking -->
 
 <?php $this->endSection("content") ?>
 
@@ -670,6 +669,7 @@
                     }
                 })
         },
+
         modalAddOpen: function(item) {
             this.modalAdd = true;
             this.notifType = '';

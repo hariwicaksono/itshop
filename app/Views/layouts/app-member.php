@@ -71,7 +71,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
                     <v-menu offset-y>
                         <template v-slot:activator="{ on, attrs }">
                             <v-btn text class="mr-3" v-bind="attrs" v-on="on">
-                                <v-icon>mdi-account-circle</v-icon>&nbsp;<?= session()->get('email') ?> <v-icon>mdi-chevron-down</v-icon>
+                                <v-icon>mdi-account-circle</v-icon>&nbsp;<span class="d-none d-sm-flex d-md-flex d-lg-flex d-xl-flex"><?= session()->get('email') ?></span> <v-icon>mdi-chevron-down</v-icon>
                             </v-btn>
                         </template>
 
@@ -146,7 +146,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
 
                         <v-list-item link href="<?= base_url('member/order-list'); ?>" <?php if ($uri->getSegment(2) == "order-list") { ?> <?= 'class="v-item--active v-list-item--active"'; ?> <?php } ?>>
                             <v-list-item-icon>
-                                <v-icon>mdi-receipt-text</v-icon><v-badge color="error" :content="orderCounter" :value="orderCounter" overlap v-show="orderCounter > 0"></v-badge>
+                                <v-icon>mdi-receipt-text</v-icon><v-badge color="error" dot overlap v-show="orderCounter > 0"></v-badge>
                             </v-list-item-icon>
                             <v-list-item-content>
                                 <v-list-item-title><?= lang('App.orderList') ?></v-list-item-title>

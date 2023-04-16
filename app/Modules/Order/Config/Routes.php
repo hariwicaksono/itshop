@@ -25,5 +25,6 @@ $routes->group('api', ['filter' => 'jwtauth', 'namespace' => 'App\Modules\Order\
 	$routes->get('order/delivered/(:segment)', 'Order::getUserOrderDelivered/$1');
 	$routes->get('order/canceled/(:segment)', 'Order::getUserOrderCanceled/$1');
 	$routes->get('chart1', 'Order::chart1');
+	$routes->get('order/count/new_order', 'Order::countNewOrder');
 	$routes->get('order/count/pending_processed', 'Order::countUserOrder');
 });

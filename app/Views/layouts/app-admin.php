@@ -60,6 +60,13 @@ $snackbarsPosition = $setting->info['snackbars_position'];
                 <v-app-bar-nav-icon @click.stop="sidebarMenu = !sidebarMenu"></v-app-bar-nav-icon>
                 <v-toolbar-title></v-toolbar-title>
                 <v-spacer></v-spacer>
+                <v-btn icon class="mr-3" href="<?= base_url('admin/order') ?>" elevation="0">
+                    <v-badge :content="orderCounter" :value="orderCounter" color="error" overlap>
+                        <v-icon>
+                            mdi-bell
+                        </v-icon>
+                    </v-badge>
+                </v-btn>
                 <?php if (!empty(session()->get('username'))) : ?>
                     <v-menu offset-y>
                         <template v-slot:activator="{ on, attrs }">
@@ -138,7 +145,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
 
                         <v-list-item link href="<?= base_url('admin/order'); ?>" <?php if ($uri->getSegment(2) == "order") { ?> <?php echo 'class="v-item--active v-list-item--active"'; ?> <?php } ?>>
                             <v-list-item-icon>
-                                <v-icon>mdi-receipt-text</v-icon>
+                                <v-icon>mdi-receipt-text</v-icon><v-badge color="error" dot overlap v-show="orderCounter > 0"></v-badge>
                             </v-list-item-icon>
                             <v-list-item-content>
                                 <v-list-item-title><?= lang('App.order') ?></v-list-item-title>
@@ -332,7 +339,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
         dayjs.locale('id');
         dayjs().locale('id').format();
     </script>
-    
+
     <script>
         var vue = null;
         var computedVue = {
@@ -357,6 +364,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
             axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
         }
         var mountedVue = function() {
+            this.getOrderCount();
             const theme = localStorage.getItem("dark_theme");
             if (theme) {
                 if (theme === "true") {
@@ -416,6 +424,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
             show: false,
             show1: false,
             show2: false,
+            orderCounter: 0,
             rules: {
                 email: v => !!(v || '').match(/@/) || '<?= lang('App.emailValid'); ?>',
                 length: len => v => (v || '').length <= len || `<?= lang('App.invalidLength'); ?> ${len}`,
@@ -446,7 +455,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
                         [{
                             'align': []
                         }],
-                        [ 'link', 'image'],
+                        ['link', 'image'],
                         ['clean']
                     ],
                 },
@@ -537,7 +546,6 @@ $snackbarsPosition = $setting->info['snackbars_position'];
                 const rupiah = Number(key).toLocaleString('id-ID');
                 return rupiah
             },
-
             // Format Ribuan Rupiah versi 2
             Ribuan(key) {
                 // versi 1
@@ -555,6 +563,19 @@ $snackbarsPosition = $setting->info['snackbars_position'];
                 const convert = format.match(/\d{1,3}/g);
                 const rupiah = 'Rp' + convert.join('.').split('').reverse().join('');
                 return rupiah;
+            },
+
+            getOrderCount() {
+                axios.get(`<?= base_url(); ?>api/order/count/new_order`)
+                    .then(res => {
+                        // handle success
+                        var data = res.data;
+                        this.orderCounter = data.data;
+                    })
+                    .catch(err => {
+                        // handle error
+                        console.log(err.response);
+                    })
             },
         }
         Vue.component('paginate', VuejsPaginate)

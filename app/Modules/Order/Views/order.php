@@ -54,99 +54,178 @@
                 </v-card-title>
                 <v-divider></v-divider>
                 <v-card-text class="py-5 mb-3">
-                    <div v-for="item in itemOrder" :key="item.cart_id">
+                    <div v-if="loading3 == true">
+                        <v-skeleton-loader type="heading,list-item-two-line"></v-skeleton-loader>
+                    </div>
+                    <div v-for="item in userOrder" :key="item.cart_id" v-else-if="loading3 == false">
                         <h3 class="font-weight-regular mb-3"><strong>{{item.status==0?"Belum Diproses":""}}{{item.status==1?"Sedang Diproses":""}}{{item.status==2?"Dikirim":""}}{{item.status==3?"Dibatalkan":""}}</strong> / {{item.no_order}} / {{item.email}} / {{item.created_at}}</h3>
                         <v-row>
                             <v-col>
                                 <strong><?= lang('App.product'); ?></strong><br />
-                                {{item.qty}} x {{RibuanLocale(item.total)}} &nbsp;<a @click="showOrder(item)"><?= lang('App.see'); ?> Detail</a><br />
-
+                                <div v-if="show == true">
+                                    <v-skeleton-loader type="list-item-avatar-three-line"></v-skeleton-loader>
+                                </div>
+                                <div v-for="row in itemOrder" :key="row.cart_id" v-if="show == false && item.order_id == row.order_id">
+                                    <v-list-item class="ma-n3 pa-n3" two-line>
+                                        <v-list-item-avatar size="50" rounded>
+                                            <v-img lazy-src="<?= base_url('images/no_image.jpg') ?>" :src="'<?= base_url() ?>' + row.media_path" v-if="row.media_path != null"></v-img>
+                                            <v-img src="<?= base_url('images/no_image.jpg') ?>" v-else></v-img>
+                                        </v-list-item-avatar>
+                                        <v-list-item-content>
+                                            <p class="font-weight-medium black--text">{{row.product_name}} - {{row.product_code ?? "-"}}</p>
+                                            <p v-if="row.discount > 0">
+                                                {{row.qty}} x {{ RibuanLocale(row.price - row.discount) }}
+                                                <span>
+                                                    <span class="text-decoration-line-through">{{ RibuanLocale(row.price) }}</span> <v-chip color="red" label x-small dark class="px-1" title="<?= lang('App.discount'); ?>">{{row.discount_percent}}%</v-chip>
+                                                </span>
+                                            </p>
+                                            <p v-else>{{row.qty}} x {{ RibuanLocale(row.price) }}</p>
+                                        </v-list-item-content>
+                                    </v-list-item>
+                                </div>
+                                <br />
                                 <em>Note: " {{item.note}} "</em>
                             </v-col>
                             <v-col>
                                 <strong><?= lang('App.shipment'); ?></strong><br />
                                 {{item.shipment}}<br />
                                 <strong><?= lang('App.payment'); ?></strong><br />
-                                {{item.payment}} / <em>{{item.status_payment}}</em>
+                                {{item.payment_name}} / <em>{{item.status_payment}}</em>
+                                <p class="text-subtitle-2 mb-0"><strong>Total <?= lang('App.order'); ?></strong><br />
+                                    <span class="text-h6"><strong>{{RibuanLocale(item.total)}}</strong></span>
+                                </p>
                             </v-col>
                         </v-row>
-                        <p class="text-subtitle-2 mb-0"><strong>Total <?= lang('App.order'); ?></strong><br />
-                            <span class="text-h6"><strong>{{RibuanLocale(item.total)}}</strong></span>
-                        </p>
-                        <h3 class="mb-3"><?= lang('App.productInfo') ?></h3>
-                        <v-simple-table class="mb-3">
-                            <template v-slot:default>
-                                <thead>
-                                    <tr>
-                                        <th width="250">Product</th>
-                                        <th>Code</th>
-                                        <th>Qty</th>
-                                        <th>Price</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-if="show == true">
-                                        <td>
-                                            <v-skeleton-loader type="list-item"></v-skeleton-loader>
-                                        </td>
-                                        <td>
-                                            <v-skeleton-loader type="list-item"></v-skeleton-loader>
-                                        </td>
-                                        <td>
-                                            <v-skeleton-loader type="list-item"></v-skeleton-loader>
-                                        </td>
-                                        <td>
-                                            <v-skeleton-loader type="list-item"></v-skeleton-loader>
-                                        </td>
-                                    </tr>
-                                    <tr v-for="item in itemOrder" :key="item.cart_id" v-if="show == false">
-                                        <td>{{item.product_name}}</td>
-                                        <td>{{item.product_code}}</td>
-                                        <td>{{item.qty}}</td>
-                                        <td>
-                                            <span v-if="item.discount > 0">
-                                                {{ RibuanLocale(item.price - item.discount) }}
-                                            </span>
-                                            <span v-else>{{ RibuanLocale(item.price) }}</span>
-                                            <span v-show="item.discount > 0">
-                                                <p class="text-body-2 mb-0"><span class="text-decoration-line-through">{{ RibuanLocale(item.price) }}</span> <v-chip color="red" label x-small dark class="px-1" title="<?= lang('App.discount'); ?>">{{item.discount_percent}}%</v-chip></p>
-                                            </span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </template>
-                        </v-simple-table>
                     </div>
                 </v-card-text>
+                <v-divider></v-divider>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn small color="primary" outlined @click="modalTrackingOpen" class="py-4" elevation="1">
+                        <?= lang('App.trackOrders') ?>
+                    </v-btn>
+                </v-card-actions>
             </v-card>
         </v-dialog>
     </v-row>
 </template>
 <!-- End Modal -->
+
 <template>
     <v-row justify="center">
-        <v-dialog v-model="modalConfirm" persistent scrollable width="600px">
+        <v-dialog v-model="modalConfirm" persistent scrollable width="700px">
             <v-card>
                 <v-card-title>
-                    <?= lang('App.confirm') ?> Manual #{{ noOrder }}
+                    <?= lang('App.confirm') ?> Manual
                     <v-spacer></v-spacer>
                     <v-btn icon @click="modalConfirmationClose">
                         <v-icon>mdi-close</v-icon>
                     </v-btn>
                 </v-card-title>
+                <v-card-subtitle>#{{ noOrder }}</v-card-subtitle>
                 <v-divider></v-divider>
                 <v-card-text class="py-5">
-                    BANK: {{bank ?? "-"}}<br />
-                    {{nama ?? "-"}}<br />
-                    {{norekening ?? "-"}}<br />
-                    Tanggal: {{tanggal ?? "-"}}<br />
-                    {{RibuanLocale(nominal)}}
+                    <h2 class="font-weight-medium mb-3">Histori Konfirmasi</h2>
+                    <v-simple-table class="mb-3">
+                        <template v-slot:default>
+                            <thead>
+                                <tr>
+                                    <th>Tanggal</th>
+                                    <th>Bank</th>
+                                    <th>Nama</th>
+                                    <th>Rekening</th>
+                                    <th>Nominal (Rp)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-if="loading3 == true">
+                                    <td>
+                                        <v-skeleton-loader type="list-item"></v-skeleton-loader>
+                                    </td>
+                                    <td>
+                                        <v-skeleton-loader type="list-item"></v-skeleton-loader>
+                                    </td>
+                                    <td>
+                                        <v-skeleton-loader type="list-item"></v-skeleton-loader>
+                                    </td>
+                                    <td>
+                                        <v-skeleton-loader type="list-item"></v-skeleton-loader>
+                                    </td>
+                                    <td>
+                                        <v-skeleton-loader type="list-item"></v-skeleton-loader>
+                                    </td>
+                                </tr>
+                                <tr v-for="item in dataPaymentConfirm" :key="item.confirm_id" v-if="loading3 == false">
+                                    <td>{{item.created_at}}</td>
+                                    <td>{{item.bank}}</td>
+                                    <td>{{item.nama}}</td>
+                                    <td>{{item.norekening}}</td>
+                                    <td>{{RibuanLocale(item.nominal)}}</td>
+                                </tr>
+                            </tbody>
+                        </template>
+                    </v-simple-table>
                 </v-card-text>
             </v-card>
         </v-dialog>
     </v-row>
 </template>
-<!-- End Modal Save -->
+<!-- End Modal Confirm -->
+
+<!-- Modal Tracking -->
+<template>
+    <v-row justify="center">
+        <v-dialog v-model="modalTracking" persistent scrollable width="600px">
+            <v-card>
+                <v-card-title>
+                    <?= lang('App.trackOrders'); ?>
+                    <v-spacer></v-spacer>
+                    <v-btn icon @click="modalTracking = false">
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                </v-card-title>
+                <v-card-subtitle>#{{ noOrder }}</v-card-subtitle>
+                <v-divider></v-divider>
+                <v-card-text class="py-5">
+                    <div v-if="loading == true">
+                        <v-row justify="space-between">
+                            <v-col cols="3">
+                                <v-skeleton-loader type="list-item"></v-skeleton-loader>
+                                <v-skeleton-loader type="list-item"></v-skeleton-loader>
+                            </v-col>
+                            <v-col cols="9">
+                                <v-skeleton-loader type="list-item"></v-skeleton-loader>
+                                <v-skeleton-loader type="list-item"></v-skeleton-loader>
+                            </v-col>
+                        </v-row>
+                    </div>
+                    <div v-else>
+                        <v-timeline dense clipped>
+                            <v-timeline-item v-for="(item, i) in dataTracking" :key="i" small :color="i == 0 ? 'primary':'grey'">
+                                <v-row justify="space-between">
+                                    <v-col cols="3">
+                                        {{dayjs(item.created_at).format('HH:mm')}}<br />
+                                        {{dayjs(item.created_at).format('DD-MM-YYYY')}}
+                                    </v-col>
+                                    <v-col cols="9">
+                                        {{item.tracking_information}}
+                                    </v-col>
+                                </v-row>
+                            </v-timeline-item>
+                        </v-timeline>
+                    </div>
+                </v-card-text>
+                <v-divider></v-divider>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+    </v-row>
+</template>
+<!-- End Modal Tracking -->
+
 <?php $this->endSection("content") ?>
 
 <?php $this->section("js") ?>
@@ -224,6 +303,7 @@
         totalData: 0,
         data: [],
         options: {},
+        userOrder: [],
         itemOrder: [],
         noOrder: "",
         idOrder: "",
@@ -236,11 +316,14 @@
         modalEdit: false,
         modalOrder: false,
         modalConfirm: false,
+        modalTracking: false,
         bank: "",
         nama: "",
         norekening: "",
         nominal: "",
         tanggal: "",
+        dataPaymentConfirm: [],
+        dataTracking: []
     }
 
     createdVue = function() {
@@ -369,26 +452,54 @@
             this.modalOrder = true;
             this.idOrder = item.order_id;
             this.noOrder = item.no_order;
-            setTimeout(() => this.getItemOrder(), 200);
+            setTimeout(() => this.getUserOrder(), 100);
         },
         modalOrderClose: function() {
             this.modalOrder = false;
-            this.itemOrder = [];
+            this.userOrder = [];
         },
-        //Get Item Order
-        getItemOrder: function() {
-            this.show = true;
-            axios.get(`<?= base_url() ?>api/cart/order/${this.idOrder}`, options)
+        //Get Order
+        getUserOrder: function() {
+            this.loading3 = true;
+            axios.get(`<?= base_url() ?>api/order/${this.idOrder}`, options)
                 .then(res => {
                     // handle success
                     this.loading3 = false;
                     var data = res.data;
                     if (data.status == true) {
-                        this.itemOrder = data.data;
-                        this.show = false;
+                        this.userOrder = data.data;
+                        this.getItemOrder();
                     } else {
                         this.snackbar = true;
                         this.snackbarMessage = data.message;
+                        this.userOrder = [];
+                    }
+                })
+                .catch(err => {
+                    // handle error
+                    console.log(err);
+                    var error = err.response
+                    if (error.data.expired == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = error.data.message;
+                        setTimeout(() => window.location.href = error.data.data.url, 1000);
+                    }
+                })
+        },
+        //Get Item Order
+        getItemOrder: function() {
+            this.show = true;
+            axios.get(`<?= base_url() ?>api/cart`, options)
+                .then(res => {
+                    // handle success
+                    this.show = false;
+                    var data = res.data;
+                    if (data.status == true) {
+                        this.itemOrder = data.data;
+                    } else {
+                        this.snackbar = true;
+                        this.snackbarMessage = data.message;
+                        this.itemOrder = [];
                     }
                 })
                 .catch(err => {
@@ -468,31 +579,28 @@
             this.modalConfirm = true;
             this.idOrder = item.order_id;
             this.noOrder = item.no_order;
-            setTimeout(() => this.getConfirmation(), 200);
+            setTimeout(() => this.getConfirmation(), 100);
         },
         modalConfirmationClose: function() {
             this.modalConfirm = false;
             this.dataConfirm = [];
         },
-        //Get
+        //Get Payment Confirm
         getConfirmation: function() {
-            this.show = true;
+            this.loading3 = true;
             axios.get(`<?= base_url() ?>api/payment/get/${this.idOrder}`, options)
                 .then(res => {
                     // handle success
                     this.loading3 = false;
                     var data = res.data;
                     if (data.status == true) {
-                        this.dataConfirm = data.data;
-                        this.bank = this.dataConfirm.bank;
-                        this.nama = this.dataConfirm.nama;
-                        this.norekening = this.dataConfirm.norekening;
-                        this.nominal = this.dataConfirm.nominal;
-                        this.tanggal = this.dataConfirm.created_at;
-                        this.show = false;
+                        this.snackbar = true;
+                        this.snackbarMessage = data.message;
+                        this.dataPaymentConfirm = data.data;
                     } else {
                         this.snackbar = true;
                         this.snackbarMessage = data.message;
+                        this.dataPaymentConfirm = data.data;
                     }
                 })
                 .catch(err => {
@@ -507,6 +615,40 @@
                 })
         },
 
+        modalTrackingOpen: function() {
+            this.modalTracking = true;
+            this.getTracking();
+        },
+
+        //Get Tracking Orders
+        getTracking: function() {
+            this.loading = true;
+            axios.get(`<?= base_url() ?>api/tracking/${this.idOrder}`, options)
+                .then(res => {
+                    // handle success
+                    this.loading = false;
+                    var data = res.data;
+                    if (data.status == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = data.message;
+                        this.dataTracking = data.data;
+                    } else {
+                        this.snackbar = true;
+                        this.snackbarMessage = data.message;
+                        this.dataTracking = data.data;
+                    }
+                })
+                .catch(err => {
+                    // handle error
+                    console.log(err);
+                    var error = err.response
+                    if (error.data.expired == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = error.data.message;
+                        setTimeout(() => window.location.href = error.data.data.url, 1000);
+                    }
+                })
+        },
     }
 </script>
 <?php $this->endSection("js") ?>
