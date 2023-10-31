@@ -16,7 +16,7 @@
                     </v-col>
                 </v-row>
                 <v-text-field label="Alamat *" v-model="alamat" :rules="[rules.required]" outlined></v-text-field>
-                <v-text-field label="Telepon *" v-model="phone" :rules="[rules.required]" outlined></v-text-field>
+                <v-text-field label="Telepon * (Format 62)" v-model="phone" :rules="[rules.required]" outlined></v-text-field>
                 <v-row>
                     <v-col>
                         <v-select label="Provinsi *" v-model="select_provinsi" :items="list_provinsi" item-text="provinsi_nama" item-value="provinsi_id" :eager="true" :loading="loading2" outlined></v-select>
@@ -71,6 +71,15 @@
 
     watchVue = {
         ...watchVue,
+        phone: function() {
+            if (this.phone == '') {
+                const number = name.slice(1);
+                this.phone = '62' + number;
+            } else {
+                this.phone = this.phone;
+            }
+        },
+
         select_provinsi: function() {
             if (!isNaN(this.select_provinsi)) {
                 this.getKabupaten();

@@ -7,6 +7,7 @@ use App\Modules\Product\Models\ProductModel;
 use App\Modules\Media\Models\MediaModel;
 use Ramsey\Uuid\Uuid;
 use ShortUUID\ShortUUID;
+use CodeIgniter\I18n\Time;
 
 class Product extends BaseControllerApi
 {
@@ -26,7 +27,22 @@ class Product extends BaseControllerApi
 
     public function index()
     {
-        return $this->respond(["status" => true, "message" => lang('App.getSuccess'), "data" => $this->model->getProduct()], 200);
+        $data = $this->model->getProduct();
+        if (!empty($data)) {
+            $response = [
+                "status" => true,
+                "message" => lang('App.getSuccess'),
+                "data" => $data
+            ];
+            return $this->respond($response, 200);
+        } else {
+            $response = [
+                'status' => false,
+                'message' => lang('App.noData'),
+                'data' => []
+            ];
+            return $this->respond($response, 200);
+        }
     }
 
     public function show($id = null)
@@ -40,6 +56,10 @@ class Product extends BaseControllerApi
         $suuid = new ShortUUID();
 
         $rules = [
+            'category_id' => [
+                'rules'  => 'required',
+                'errors' => []
+            ],
             'product_code' => [
                 'rules'  => 'required',
                 'errors' => []
@@ -52,7 +72,7 @@ class Product extends BaseControllerApi
                 'rules'  => 'required',
                 'errors' => []
             ],
-            'product_image' => [
+            'stock' => [
                 'rules'  => 'required',
                 'errors' => []
             ],
@@ -70,22 +90,26 @@ class Product extends BaseControllerApi
                 $discountPercent = 0;
             }
             $data = [
+                'product_id' => strtotime(Time::now()),
                 'product_uuid' => $suuid->encode($uuid),
+                'category_id' => $json->category_id,
                 'product_code' => $json->product_code,
                 'product_name' => $json->product_name,
                 'product_price' => $productPrice,
                 'product_description' => nl2br($json->product_description),
-                'product_image' => $json->product_image,
-                'product_image1' => $json->product_image1,
-                'product_image2' => $json->product_image2,
-                'product_image3' => $json->product_image3,
-                'product_image4' => $json->product_image4,
+                'product_image' => $json->product_image ?? null,
+                'product_image1' => $json->product_image1 ?? null,
+                'product_image2' => $json->product_image2 ?? null,
+                'product_image3' => $json->product_image3 ?? null,
+                'product_image4' => $json->product_image4 ?? null,
                 'discount' => $discount,
                 'discount_percent' => $discountPercent,
-                'stock' => 0,
+                'stock' => $json->stock,
+                'stock_min' => $json->stock_min,
                 'active' => 1,
                 'user_id' => session()->get('id'),
-                'slug' => $this->slugify($json->product_name)
+                'slug' => $this->slugify($json->product_name),
+                'link_demo' => $json->link_demo ?? null,
             ];
         } else {
             $productPrice = (int)$this->request->getPost('product_price');
@@ -98,22 +122,26 @@ class Product extends BaseControllerApi
                 $discountPercent = 0;
             }
             $data = [
+                'product_id' => strtotime(Time::now()),
                 'product_uuid' => $suuid->encode($uuid),
+                'category_id' => $this->request->getPost('category_id'),
                 'product_code' => $this->request->getPost('product_code'),
                 'product_name' => $this->request->getPost('product_name'),
                 'product_price' => $productPrice,
                 'product_description' => nl2br($this->request->getPost('product_description') ?? ""),
-                'product_image' => $this->request->getPost('product_image'),
-                'product_image1' => $this->request->getPost('product_image1'),
-                'product_image2' => $this->request->getPost('product_image2'),
-                'product_image3' => $this->request->getPost('product_image3'),
-                'product_image4' => $this->request->getPost('product_image4'),
+                'product_image' => $this->request->getPost('product_image') ?? null,
+                'product_image1' => $this->request->getPost('product_image1') ?? null,
+                'product_image2' => $this->request->getPost('product_image2') ?? null,
+                'product_image3' => $this->request->getPost('product_image3') ?? null,
+                'product_image4' => $this->request->getPost('product_image4') ?? null,
                 'discount' => $discount,
                 'discount_percent' => $discountPercent,
-                'stock' => 0,
+                'stock' => $this->request->getPost('stock'),
+                'stock_min' => $this->request->getPost('stock_min'),
                 'active' => 1,
                 'user_id' => session()->get('id'),
-                'slug' => $this->slugify($this->request->getPost('product_name'))
+                'slug' => $this->slugify($this->request->getPost('product_name')),
+                'link_demo' => $this->request->getPost('link_demo') ?? null,
             ];
         }
 
@@ -150,10 +178,6 @@ class Product extends BaseControllerApi
                 'rules'  => 'required',
                 'errors' => []
             ],
-            'product_image' => [
-                'rules'  => 'required',
-                'errors' => []
-            ],
         ];
 
         if ($this->request->getJSON()) {
@@ -168,6 +192,7 @@ class Product extends BaseControllerApi
                 $discountPercent = 0;
             }
             $data = [
+                'category_id' => $json->category_id,
                 'product_code' => $json->product_code,
                 'product_name' => $json->product_name,
                 'product_price' => $json->product_price,
@@ -179,7 +204,11 @@ class Product extends BaseControllerApi
                 'product_image4' => $json->product_image4,
                 'discount' => $discount,
                 'discount_percent' => $discountPercent,
-                'slug' => $this->slugify($json->product_name)
+                'slug' => $this->slugify($json->product_name),
+                'link_demo' => $json->link_demo,
+                'stock' => $json->stock,
+                'stock_min' => $json->stock_min,
+                
             ];
         } else {
             $input = $this->request->getRawInput();
@@ -193,6 +222,7 @@ class Product extends BaseControllerApi
                 $discountPercent = 0;
             }
             $data = [
+                'category_id' => $input['category_id'],
                 'product_code' => $input['product_code'],
                 'product_name' => $input['product_name'],
                 'product_price' => $productPrice,
@@ -204,7 +234,10 @@ class Product extends BaseControllerApi
                 'product_image4' => $input['product_image4'],
                 'discount' => $discount,
                 'discount_percent' => $discountPercent,
-                'slug' => $this->slugify($input['product_name'])
+                'slug' => $this->slugify($input['product_name']),
+                'link_demo' => $input['link_demo'],
+                'stock' => $this->request->getPost('stock'),
+                'stock_min' => $this->request->getPost('stock_min'),
             ];
         }
 
@@ -261,8 +294,27 @@ class Product extends BaseControllerApi
     {
         $input = $this->request->getVar();
         $page = $input['page'];
-        $limit = 6;
-        return $this->respond(["status" => true, "message" => lang('App.getSuccess'), "data" => $this->model->getProduct($page, $limit), "per_page" => $limit, "total_page" => $this->model->countAllResults()], 200);
+        $limit = $input['limit'];
+        $where = $input['category'] ?? "";
+        $orderBy = $input['sort_by'];
+        $data = $this->model->getProduct($page, $limit, $where, $orderBy);
+        if (!empty($data)) {
+            $response = [
+                "status" => true,
+                "message" => lang('App.getSuccess'),
+                "data" => $data,
+                "per_page" => $limit, 
+                "total_page" => $this->model->countAllResults()
+            ];
+            return $this->respond($response, 200);
+        } else {
+            $response = [
+                'status' => false,
+                'message' => lang('App.noData'),
+                'data' => []
+            ];
+            return $this->respond($response, 200);
+        }
     }
 
     public function setPrice($id = NULL)
@@ -364,4 +416,26 @@ class Product extends BaseControllerApi
             return $this->respond($response, 200);
         }
     }
+
+    public function bestSeller()
+    {
+        $data = $this->model->bestSeller();
+        //var_dump($this->model->getLastQuery()->getQuery());die;
+        if (!empty($data)) {
+            $response = [
+                "status" => true,
+                "message" => lang('App.getSuccess'),
+                "data" => $data
+            ];
+            return $this->respond($response, 200);
+        } else {
+            $response = [
+                'status' => false,
+                'message' => lang('App.noData'),
+                'data' => []
+            ];
+            return $this->respond($response, 200);
+        }
+    }
+
 }

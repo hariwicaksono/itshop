@@ -19,8 +19,9 @@ class Home extends BaseController
 	public function index()
 	{
 		return view('home', [
-			'title' => '',
-			
+			'title' => $this->setting->info['title_home'],
+			'app_name' => $this->setting->info['app_name'],
+			'telepon' => $this->setting->info['company_telepon'],
 		]);
 	}
 
@@ -30,12 +31,14 @@ class Home extends BaseController
 		$idProduct = $find['product_id'];
 		$product = $this->product->showProduct($idProduct);
 		$productName = $product['product_name'];
-		$sold = $this->product->countProductSold($idProduct, 1);
+		$sold = $this->product->countProductSold($idProduct, 2);
 		//var_dump($sold);die;
 		return view('product', [
 			'title' => $productName,
 			'product_id' => $idProduct,
-			'productSold' => $sold
+			'productSold' => $sold,
+			'app_name' => $this->setting->info['app_name'],
+			'telepon' => $this->setting->info['company_telepon'],
 		]);
 	}
 

@@ -1,6 +1,7 @@
 <?php
 return [
     //home
+    'welcome' => 'Welcome to',
     'feature' => 'See Features',
     'myProfile' => 'My Profile',
     'dashboard' => 'Dashboard',
@@ -62,6 +63,7 @@ return [
     'pleaseLogin' => 'Please Login First',
 
     //Products
+    'products' => 'Product',
     'getSuccess' => 'Successfully get data',
     'noData' => 'Data Not Found',
     'listProduct' => 'Product List',
@@ -90,6 +92,9 @@ return [
     'uploadFailed' => 'Failed to upload image',
     'disabledImgUploaded' => 'Close Dialog Disabled because Image has already been uploaded, delete it first',
     'discount' => 'Discount',
+    'bestSeller' => 'Best Seller',
+    'bestSellerProducts' => 'Best Seller Products',
+    'category' => 'Category',
 
     //User
     'editUser' => 'Edit User',

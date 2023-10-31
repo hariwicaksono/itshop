@@ -1,29 +1,34 @@
 <?php $this->extend("layouts/app-front"); ?>
 <?php $this->section("content"); ?>
 <template>
-    <v-container class="indigo pa-15" fill-height fluid>
+    <v-container class="primary px-4 py-15" fill-height fluid>
         <v-layout flex align-center justify-center>
-            <v-flex xs12 sm5 md4>
+            <v-flex xs12 sm8 md8>
                 <?php if (session()->getFlashdata('success')) { ?>
                     <v-alert type="success" dismissible v-model="alert">
                         <?= session()->getFlashdata('success') ?>
                     </v-alert>
                 <?php } ?>
-                <v-card elevation="2" outlined>
-                    <v-card-text class="pa-8">
-                        <v-img class="mx-auto mb-5" lazy-src="<?= base_url('images/logo.png') ?>" max-width="60" src="<?= base_url('images/logo.png') ?>"></v-img>
-                        <h1 class="font-weight-regular text-center mb-8"><?= lang('App.signIn') ?></h1>
-                        <v-form class="mb-3" v-model="valid" ref="form">
-                            <v-text-field label="<?= lang('App.labelEmail') ?>" v-model="email" :rules="[rules.email]" :error-messages="emailError" outlined></v-text-field>
-                            <v-text-field v-model="password" :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'" :rules="[rules.min]" :type="show1 ? 'text' : 'password'" label="Password" hint="<?= lang('App.minChar') ?>" @click:append="show1 = !show1" :error-messages="passwordError" outlined counter></v-text-field>
-                        </v-form>
-                        <v-layout justify-space-between>
-                            <v-btn @click="submit" color="primary" dark x-large :loading="loading" elevation="1">Login</v-btn>
-                            <p>
-                                <a href="<?= base_url('password/reset') ?>"><?= lang('App.forgotPass') ?></a><br />
-                                <a href="<?= base_url('register') ?>"><?= lang('App.register') ?></a>
-                            </p>
-                        </v-layout>
+                <v-card>
+                    <v-card-text>
+                        <v-row>
+                            <v-col cols="12" sm="5" style="background-image: url('https://picsum.photos/800/600?random') !important;background-position: center;background-repeat: no-repeat;-webkit-background-size: cover;-moz-background-size: cover;-o-background-size: cover;background-size: cover;">
+                            </v-col>
+                            <v-col cols="12" sm="7" class="pa-8">
+                                <v-img class="mx-auto mb-5" lazy-src="<?= base_url('images/logo.png') ?>" max-width="60" src="<?= base_url('images/logo.png') ?>"></v-img>
+                                <h1 class="text-center mb-8"><?= lang('App.signIn') ?></h1>
+                                <v-form class="mb-3" v-model="valid" ref="form">
+                                    <v-text-field label="Email" v-model="email" :rules="[rules.email]" :error-messages="emailError" outlined></v-text-field>
+                                    <v-text-field v-model="password" :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'" :rules="[rules.min]" :type="show1 ? 'text' : 'password'" label="Password" hint="<?= lang('App.minChar') ?>" @click:append="show1 = !show1" :error-messages="passwordError" outlined counter></v-text-field>
+                                </v-form>
+                                <v-layout justify-space-between>
+                                    <v-btn @click="submit" color="primary" dark x-large :loading="loading" elevation="1">Login</v-btn>
+                                    <p>
+                                        <a href="<?= base_url('password/reset') ?>"><?= lang('App.forgotPass') ?></a><br />
+                                        <a href="<?= base_url('register') ?>"><?= lang('App.register') ?></a>
+                                    </p>
+                                </v-layout>
+                            </v-col>
                     </v-card-text>
                 </v-card>
             </v-flex>
@@ -42,9 +47,9 @@
         ...dataVue,
         alert: false,
         show1: false,
-        email: "admin@itshop.biz.id",
+        email: "",
         emailError: "",
-        password: "12345678",
+        password: "",
         passwordError: "",
     }
     createdVue = function() {

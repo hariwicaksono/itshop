@@ -40,12 +40,15 @@ class OrderModel extends Model
     protected $beforeDelete         = [];
     protected $afterDelete          = [];
 
-    public function getOrders()
+    public function getOrders($start = false, $end = false)
     {
         $this->select("{$this->table}.*, py.payment_id, py.payment as payment_name, sh.shipment, u.username, u.email, u.phone");
         $this->join("users u", "u.user_id = {$this->table}.user_id");
         $this->join("payment py", "py.payment_id = {$this->table}.payment");
         $this->join("shipment sh", "sh.shipment_id = {$this->table}.shipment");
+        if ($start != "" && $end != "") :
+            $this->where("DATE({$this->table}.created_at) BETWEEN '$start' AND '$end'", null, false);
+        endif;
         $query = $this->findAll();
         return $query;
     }

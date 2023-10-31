@@ -2,7 +2,7 @@
 
 namespace App\Filters;
 /*
-PT. GLOBAL ITSHOP PURWOKERTO
+PT ITSHOP BISNIS DIGITAL
 Toko Online: ITShop Purwokerto (Tokopedia, Shopee, Bukalapak, Blibli)
 Dibuat oleh: Hari Wicaksono, S.Kom
 02-2023

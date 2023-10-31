@@ -1,17 +1,52 @@
 <?php $this->extend("layouts/app-admin"); ?>
 <?php $this->section("content"); ?>
-<h1 class="mb-2 font-weight-medium"><?= lang('App.orderList') ?></h1>
+<h1 class="mb-2 font-weight-medium"><?= lang('App.orderList') ?>&nbsp;<span class="font-weight-regular">{{startDate}} {{startDate != '' ? "&mdash;": ""}} {{endDate}}</span>
+    <template>
+        <v-menu v-model="menu" :close-on-content-click="false" offset-y>
+            <template v-slot:activator="{ on, attrs }">
+                <v-btn icon v-bind="attrs" v-on="on">
+                    <v-icon>mdi-calendar-filter</v-icon>
+                </v-btn>
+            </template>
+            <v-card width="250">
+                <v-card-text>
+                    <p class="mb-1"><strong>Filter:</strong></p>
+                    <div class="mb-3">
+                        <a @click="hariini" title="Hari Ini" alt="Hari Ini">Hari Ini</a> &bull;
+                        <a @click="tujuhHari" title="7 Hari Kemarin" alt="7 Hari Kemarin">7 Hari Kemarin</a> &bull;
+                        <a @click="bulanIni" title="Bulan Ini" alt="Bulan Ini">Bulan Ini</a> &bull;
+                        <a @click="tahunIni" title="Tahun Ini" alt="Tahun Ini">Tahun Ini</a> &bull;
+                        <a @click="reset" title="Reset" alt="Reset">Reset</a>
+                    </div>
+                    <p class="mb-1"><strong>Custom:</strong></p>
+                    <p class="mb-1">Dari Tanggal - Sampai Tanggal</p>
+                    <v-text-field v-model="startDate" type="date"></v-text-field>
+                    <v-text-field v-model="endDate" type="date"></v-text-field>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn text @click="menu = false">
+                        <?= lang('App.close'); ?>
+                    </v-btn>
+                    <v-btn color="primary" text @click="handleSubmit" :loading="loading">
+                        Filter
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-menu>
+    </template>
+</h1>
 <v-row>
     <v-col>
         <!-- Table List Order -->
-        <v-card outlined elevation="1">
+        <v-card>
             <v-card-title>
                 <v-spacer></v-spacer>
                 <v-text-field v-model="search" v-on:keydown.enter="getOrder" @click:clear="getOrder" append-icon="mdi-magnify" label="<?= lang('App.search') ?>" single-line hide-details>
                 </v-text-field>
             </v-card-title>
             <v-data-table :headers="dataTable" :items="data" :options.sync="options" :server-items-length="totalData" :items-per-page="10" :loading="loading">
-                <template v-slot:item="{ item }">
+                <template v-slot:item="{ item, isSelected, select}">
                     <tr>
                         <td>{{item.no_order}}</td>
                         <td>{{item.email}}<br />{{item.phone}}</td>
@@ -32,6 +67,18 @@
                                 <v-icon>mdi-information-outline</v-icon>
                             </v-btn>
                         </td>
+                    </tr>
+                </template>
+                <template slot="body.append">
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td class="text-right">Jumlah Total</td>
+                        <td>{{ Ribuan(sumTotal('total')) }}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
                     </tr>
                 </template>
             </v-data-table>
@@ -100,8 +147,12 @@
                 </v-card-text>
                 <v-divider></v-divider>
                 <v-card-actions>
+                    <v-form ref="form" v-model="valid">
+                        <v-textarea rows="1" label="Link GDrive" v-model="linkGdrive" :error-messages="link_gdriveError" class="mr-3"></v-textarea>
+                    </v-form>
+                    <v-btn color="primary" @click="updateLinkGdrive" elevation="1" :loading="loading1"><v-icon>mdi-content-save</v-icon> <?= lang('App.save'); ?></v-btn>
                     <v-spacer></v-spacer>
-                    <v-btn small color="primary" outlined @click="modalTrackingOpen" class="py-4" elevation="1">
+                    <v-btn small color="success" outlined @click="modalTrackingOpen" class="py-4" elevation="1">
                         <?= lang('App.trackOrders') ?>
                     </v-btn>
                 </v-card-actions>
@@ -238,9 +289,15 @@
         }
     };
 
+    // Deklarasi errorKeys
+    var errorKeys = []
+
     dataVue = {
         ...dataVue,
-        search: '',
+        search: "",
+        menu: false,
+        startDate: "",
+        endDate: "",
         dataTable: [{
             text: 'No. Order',
             value: 'no_order'
@@ -323,7 +380,9 @@
         nominal: "",
         tanggal: "",
         dataPaymentConfirm: [],
-        dataTracking: []
+        dataTracking: [],
+        linkGdrive: "",
+        link_gdriveError: ""
     }
 
     createdVue = function() {
@@ -418,6 +477,41 @@
         },
         // End Server-side paginate and sort
 
+        // Filter Date
+        reset: function() {
+            this.startDate = "";
+            this.endDate = "";
+        },
+        tujuhHari: function() {
+            this.startDate = "<?= $tujuhHari; ?>";
+            this.endDate = "<?= $hariini; ?>";
+        },
+        hariini: function() {
+            this.startDate = "<?= $hariini; ?>";
+            this.endDate = "<?= $hariini; ?>";
+        },
+        bulanIni: function() {
+            this.startDate = "<?= $awalBulan; ?>";
+            this.endDate = "<?= $akhirBulan; ?>";
+        },
+        tahunIni: function() {
+            this.startDate = "<?= $awalTahun; ?>";
+            this.endDate = "<?= $akhirTahun; ?>";
+        },
+
+        // Handle Submit Filter
+        handleSubmit: function() {
+            if (this.startDate != '' && this.endDate != '') {
+                this.getOrderFiltered();
+                this.menu = false;
+            } else {
+                this.getOrder();
+                this.startDate = "";
+                this.endDate = "";
+                this.menu = false;
+            }
+        },
+
         // Get Order
         getOrder: function() {
             this.loading = true;
@@ -427,12 +521,13 @@
                     this.loading = false;
                     var data = res.data;
                     if (data.status == true) {
-                        this.snackbar = true;
-                        this.snackbarMessage = data.message;
+                        //this.snackbar = true;
+                        //this.snackbarMessage = data.message;
                         this.dataOrder = data.data;
                     } else {
                         this.snackbar = true;
                         this.snackbarMessage = data.message;
+                        this.dataOrder = data.data;
                     }
                 })
                 .catch(err => {
@@ -446,18 +541,63 @@
                     }
                 })
         },
+
+        // Get Order Filtered
+        getOrderFiltered: function() {
+            this.loading = true;
+            axios.get(`<?= base_url() ?>api/order?tgl_start=${this.startDate}&tgl_end=${this.endDate}`, options)
+                .then(res => {
+                    // handle success
+                    this.loading = false;
+                    var data = res.data;
+                    if (data.status == true) {
+                        //this.snackbar = true;
+                        //this.snackbarMessage = data.message;
+                        this.dataOrder = data.data;
+                    } else {
+                        this.snackbar = true;
+                        this.snackbarMessage = data.message;
+                        this.dataOrder = data.data;
+                        this.data = data.data;
+                    }
+                })
+                .catch(err => {
+                    // handle error
+                    console.log(err);
+                    var error = err.response
+                    if (error.data.expired == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = error.data.message;
+                        setTimeout(() => window.location.href = error.data.data.url, 1000);
+                    }
+                })
+        },
+
+        // Jumlah Total
+        sumTotal(key) {
+            // sum data in give key (property)
+            let total = 0
+            const sum = this.data.reduce((accumulator, currentValue) => {
+                return (total += +currentValue[key])
+            }, 0)
+            this.total = sum;
+            return sum
+        },
+
         //Show Order
         showOrder: function(item) {
             this.loading3 = true;
             this.modalOrder = true;
             this.idOrder = item.order_id;
             this.noOrder = item.no_order;
+            this.linkGdrive = item.link_gdrive;
             setTimeout(() => this.getUserOrder(), 100);
         },
         modalOrderClose: function() {
             this.modalOrder = false;
             this.userOrder = [];
         },
+
         //Get Order
         getUserOrder: function() {
             this.loading3 = true;
@@ -486,6 +626,7 @@
                     }
                 })
         },
+
         //Get Item Order
         getItemOrder: function() {
             this.show = true;
@@ -505,7 +646,7 @@
                 .catch(err => {
                     // handle error
                     console.log(err);
-                    var error = err.response
+                    var error = err.response;
                     if (error.data.expired == true) {
                         this.snackbar = true;
                         this.snackbarMessage = error.data.message;
@@ -513,6 +654,7 @@
                     }
                 })
         },
+
         // Set Status
         setStatus: function(item) {
             this.loading = true;
@@ -543,6 +685,7 @@
                     }
                 })
         },
+
         // Set Status Payment
         setStatusPayment: function(item) {
             this.loading = true;
@@ -573,6 +716,7 @@
                     }
                 })
         },
+
         //Show Payment Confirm
         showConfirmation: function(item) {
             this.loading3 = true;
@@ -585,6 +729,7 @@
             this.modalConfirm = false;
             this.dataConfirm = [];
         },
+
         //Get Payment Confirm
         getConfirmation: function() {
             this.loading3 = true;
@@ -594,8 +739,6 @@
                     this.loading3 = false;
                     var data = res.data;
                     if (data.status == true) {
-                        this.snackbar = true;
-                        this.snackbarMessage = data.message;
                         this.dataPaymentConfirm = data.data;
                     } else {
                         this.snackbar = true;
@@ -629,8 +772,6 @@
                     this.loading = false;
                     var data = res.data;
                     if (data.status == true) {
-                        this.snackbar = true;
-                        this.snackbarMessage = data.message;
                         this.dataTracking = data.data;
                     } else {
                         this.snackbar = true;
@@ -641,6 +782,50 @@
                 .catch(err => {
                     // handle error
                     console.log(err);
+                    var error = err.response
+                    if (error.data.expired == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = error.data.message;
+                        setTimeout(() => window.location.href = error.data.data.url, 1000);
+                    }
+                })
+        },
+
+        // Update Link GDrive
+        updateLinkGdrive: function() {
+            this.loading1 = true;
+            axios.put(`<?= base_url() ?>api/order/update_link_gdrive/${this.idOrder}`, {
+                    link_gdrive: this.linkGdrive,
+                }, options)
+                .then(res => {
+                    // handle success
+                    this.loading1 = false;
+                    var data = res.data;
+                    if (data.status == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = data.message;
+                        this.linkGdrive = "";
+                        this.getUserOrder()
+                    } else {
+                        this.snackbar = true;
+                        this.snackbarMessage = data.message;
+                        errorKeys = Object.keys(data.data);
+                        errorKeys.map((el) => {
+                            this[`${el}Error`] = data.data[el];
+                        });
+                        if (errorKeys.length > 0) {
+                            setTimeout(() => this.notifType = "", 4000);
+                            setTimeout(() => errorKeys.map((el) => {
+                                this[`${el}Error`] = "";
+                            }), 4000);
+                        }
+                        this.$refs.form.validate();
+                    }
+                })
+                .catch(err => {
+                    // handle error
+                    console.log(err.response);
+                    this.loading1 = false
                     var error = err.response
                     if (error.data.expired == true) {
                         this.snackbar = true;

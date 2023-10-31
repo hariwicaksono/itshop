@@ -32,8 +32,8 @@ class Auth extends BaseControllerApi
     public function register()
     {
         $rules = [
-            'username' => 'required',
-            'email' => 'required|min_length[6]|max_length[50]|valid_email|is_unique[user.email]',
+            'email' => 'required|min_length[6]|max_length[50]|valid_email|is_unique[users.email]',
+            'phone' => 'required|is_unique[users.phone]',
             'password' => 'required|min_length[8]|max_length[255]'
         ];
 
@@ -43,7 +43,8 @@ class Auth extends BaseControllerApi
             return $this->getResponse(
                 [
                     'status' => false,
-                    'message' => $this->validator->getErrors()
+                    'message' => lang('App.isRequired'),
+                    'data' => $this->validator->getErrors()
                 ],
                 ResponseInterface::HTTP_OK
             );
@@ -52,9 +53,11 @@ class Auth extends BaseControllerApi
         $token = base64_encode(mt_rand(100000, 999999));
         $data = [
             'email' => $input['email'],
-            'username' => $input['username'],
+            'username' => $input['email'],
+            'phone' => $input['phone'],
             'password' => $input['password'],
             'role' => 2,
+            'active' => 0,
             'token' => $token
         ];
 
@@ -249,7 +252,7 @@ class Auth extends BaseControllerApi
             //Cek apakah ada riwayat Login
             $cekLogin = $this->loginLog->where(['email' => $user['email'], 'logged_out_at' => null])->findAll();
             foreach ($cekLogin as $cek) :
-                $idLoginLog = $cek['id_user_log'];
+                $idLoginLog = $cek['user_log_id'];
                 $this->loginLog->update($idLoginLog, ['logged_out_at' => date('Y-m-d H:i:s')]);
             endforeach;
             //Simpan Login Log

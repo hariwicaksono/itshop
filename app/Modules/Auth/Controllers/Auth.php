@@ -29,7 +29,7 @@ class Auth extends BaseController
 		}
 		
 		return view('App\Modules\Auth\Views/login', [
-			'title' => 'Login'
+			'title' => 'Masuk / Login'
 		]);
 	}
 
@@ -44,7 +44,7 @@ class Auth extends BaseController
 		}
 
 		return view('App\Modules\Auth\Views/register', [
-			'title' => 'Register'
+			'title' => lang('App.register')
 		]);
 	}
 
@@ -110,7 +110,7 @@ class Auth extends BaseController
 		// Update Login Log
 		$query = $this->loginLog->where('logged_in_at', $this->session->logged_in_at)->first();
 		if ($query) :
-			$id = $query['id_user_log'];
+			$id = $query['user_log_id'];
 			$this->loginLog->update($id, ['logged_out_at' => date('Y-m-d H:i:s')]);
 		endif;
 		$data = ['id', 'email', 'username', 'first_name', 'last_name', 'phone', 'role', 'logged_in', 'logged_in_at'];

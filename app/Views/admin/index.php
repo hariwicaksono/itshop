@@ -73,7 +73,8 @@
                         <template v-slot:default>
                             <thead>
                                 <tr>
-                                    <th rowspan="2">
+                                    <th>No.</th>
+                                    <th>
                                         User
                                     </th>
                                     <th class="text-center" colspan="2">
@@ -81,6 +82,8 @@
                                     </th>
                                 </tr>
                                 <tr>
+                                    <th></th>
+                                    <th></th>
                                     <th class="text-center">
                                         Login
                                     </th>
@@ -90,7 +93,19 @@
                                 </tr>
                             </thead>
                             <tbody>
-                               
+                                <tr v-for="(item, i) in dataLog" :key="i">
+                                    <td>{{i+1}}</td>
+                                    <td>{{ item.email }}<br />{{ item.first_name }} {{ item.last_name }}</td>
+                                    <td>{{ item.logged_in_at }}</td>
+                                    <td>
+                                        <div v-if="item.logged_out_at != null">
+                                            {{item.logged_out_at}}
+                                        </div>
+                                        <div v-else>
+                                            <v-chip color="green" text-color="white" label><v-icon small left>mdi-information-outline</v-icon> Online</v-chip>
+                                        </div>
+                                    </td>
+                                </tr>
                             </tbody>
                         </template>
                     </v-simple-table>
@@ -100,7 +115,7 @@
         <v-col>
             <v-card height="500px">
                 <v-card-title>
-                    Produk Terlaris
+                    <?= lang('App.products'); ?> <?= lang('App.bestSeller'); ?>
                 </v-card-title>
                 <v-card-text class="overflow-auto" style="height: 400px;">
                     <v-simple-table>
@@ -111,6 +126,9 @@
                                         Nama
                                     </th>
                                     <th class="text-left">
+                                        Total
+                                    </th>
+                                    <th class="text-left">
                                         Harga
                                     </th>
                                     <th class="text-left">
@@ -119,7 +137,12 @@
                                 </tr>
                             </thead>
                             <tbody>
-                               
+                                <tr v-for="(item, i) in products" :key="i">
+                                    <td><strong>{{ item.product_name }}</strong><br />Kode: {{ item.product_code }}</td>
+                                    <td>{{ item.qty }}</td>
+                                    <td>{{ RibuanLocale(item.product_price) }}</td>
+                                    <td>{{ item.stock }}</td>
+                                </tr>
                             </tbody>
                         </template>
                     </v-simple-table>
@@ -129,31 +152,6 @@
     </v-row>
 </template>
 
-<!--<template>
-<h1 class="mt-4 mb-3 font-weight-regular"><?= lang('App.latestProduct') ?></h1>
-<v-row v-if="show == true" class="mb-2">
-    <v-col v-for="n in 4" :key="n" cols="12" sm="3">
-        <v-card elevation="1">
-            <v-card-text>
-                <v-skeleton-loader class="mx-auto" max-width="300" type="paragraph, heading"></v-skeleton-loader>
-            </v-card-text>
-        </v-card>
-    </v-col>
-</v-row>
-<v-row v-if="show == false" class="mb-2">
-    <v-col v-for="item in products" :key="item.product_id">
-        <v-card elevation="1">
-            <v-card-title>{{ item.product_name }}</v-card-title>
-            <v-card-text>
-                Rp.{{ item.product_price }}
-            </v-card-text>
-        </v-card>
-    </v-col>
-</v-row>
-
-<paginate :page-count="pageCount" :no-li-surround="true" :container-class="'v-pagination theme--light'" :page-link-class="'v-pagination__item v-btn primary--text'" :active-class="'v-pagination__item--active primary white--text'" :disabled-class="'v-pagination__navigation--disabled'" :prev-link-class="'v-pagination__navigation'" :next-link-class="'v-pagination__navigation'" :click-handler="handlePagination">
-</paginate>
-</template>-->
 <?php $this->endSection("content") ?>
 
 <?php $this->section("js") ?>
@@ -162,7 +160,7 @@
     function addZeroBefore(n) {
         return (n < 10 ? '0' : '') + n;
     }
-    
+
     function number_format(number, decimals, dec_point, thousands_sep) {
         // *     example: number_format(1234.56, 2, ',', ' ');
         // *     return: '1 234,56'
@@ -202,9 +200,8 @@
         products: [],
         sparklineLabel: ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"],
         sparklineData: JSON.parse("<?= json_encode($transaksi) ?>"),
-        pageCount: 0,
-        currentPage: 1,
         tanggal: "",
+        dataLog: []
     }
     createdVue = function() {
         this.alert = true;
@@ -213,6 +210,9 @@
         }, 5000)
 
         setInterval(this.getDayDate, 1000);
+
+        this.getLoginLog();
+        this.getProducts();
 
         // Chart.js 1
         Vue.component('bar-chart1', {
@@ -334,6 +334,34 @@
             this.tanggal = Hari + ', ' + Tanggal;
         },
 
+        // Get Login Log
+        getLoginLog: function() {
+            this.show = true;
+            axios.get(`<?= base_url(); ?>api/loginlog/last10`, options)
+                .then(res => {
+                    // handle success
+                    var data = res.data;
+                    if (data.status == true) {
+                        this.dataLog = data.data;
+                    } else {
+                        this.snackbar = true;
+                        this.snackbarMessage = data.message;
+                        this.dataLog = data.data;
+                    }
+                })
+                .catch(err => {
+                    // handle error
+                    console.log(err);
+                    var error = err.response
+                    if (error.data.expired == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = error.data.message;
+                        setTimeout(() => window.location.href = error.data.data.url, 1000);
+                    }
+                })
+        },
+
+        // Get Charts
         getChart1: function() {
             this.show = true;
             axios.get(`<?= base_url() ?>api/chart1`, options)
@@ -358,51 +386,41 @@
                 })
                 .catch(err => {
                     // handle error
-                    console.log(err.response);
+                    console.log(err);
+                    var error = err.response
+                    if (error.data.expired == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = error.data.message;
+                        setTimeout(() => window.location.href = error.data.data.url, 1000);
+                    }
                 })
         },
+
         // Get Product
         getProducts: function() {
-            this.show = true;
-            axios.get(`<?= base_url() ?>api/product/all?page=${this.currentPage}`, options)
+            axios.get(`<?= base_url() ?>api/product/sold/best_seller`, options)
                 .then(res => {
                     // handle success
                     var data = res.data;
-                    if (data.expired == true) {
-                        this.snackbar = true;
-                        this.snackbarType = "warning";
-                        this.snackbarMessage = data.message;
-                        setTimeout(() => window.location.href = data.data.url, 1000);
-                    }
                     if (data.status == true) {
                         this.products = data.data;
-                        this.pageCount = Math.ceil(data.total_page / data.per_page);
-                        this.show = false;
                     } else {
                         this.snackbar = true;
-                        this.snackbarType = "warning";
                         this.snackbarMessage = data.message;
+                        this.products = data.data;
                     }
                 })
                 .catch(err => {
                     // handle error
-                    console.log(err.response);
+                    console.log(err);
+                    var error = err.response
+                    if (error.data.expired == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = error.data.message;
+                        setTimeout(() => window.location.href = error.data.data.url, 1000);
+                    }
                 })
         },
-        handlePagination: function(pageNumber) {
-            this.show = true;
-            axios.get(`<?= base_url() ?>api/product/all?page=${pageNumber}`, options)
-                .then((res) => {
-                    var data = res.data;
-                    this.products = data.data;
-                    this.pageCount = Math.ceil(data.total_page / data.per_page);
-                    this.show = false;
-                })
-                .catch(err => {
-                    // handle error
-                    console.log(err.response);
-                })
-        }
     }
 </script>
 <?php $this->endSection("js") ?>

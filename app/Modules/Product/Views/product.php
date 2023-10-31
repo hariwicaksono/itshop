@@ -16,8 +16,8 @@
 
                 <v-data-table v-model="selected" item-key="product_id" show-select :headers="dataTable" :items="data" :options.sync="options" :server-items-length="totalData" :items-per-page="10" :loading="loading">
                     <template v-slot:item="{ item, isSelected, select}">
-                        <tr :class="isSelected ? 'grey lighten-2':'' || item.stock <= item.stock_min ? 'red lighten-4':''" @click="toggle(isSelected,select,$event)">
-                            <td>
+                        <tr :class="isSelected ? 'grey lighten-2':'' || item.stock <= item.stock_min ? 'red lighten-4':''">
+                            <td @click="toggle(isSelected,select,$event)">
                                 <v-icon color="primary" v-if="isSelected">mdi-checkbox-marked</v-icon>
                                 <v-icon v-else>mdi-checkbox-blank-outline</v-icon>
                             </td>
@@ -35,6 +35,7 @@
                                     </v-list-item>
                                 </a>
                             </td>
+                            <td>{{item.category_name}}</td>
                             <td>
                                 <v-edit-dialog large :return-value.sync="item.product_price" @save="setPrice(item)" @cancel="" @open="" @close="">
                                     <div v-if="item.discount > 0"><span class="text-decoration-line-through">{{ Ribuan(item.product_price) }}</span>
@@ -197,6 +198,15 @@
                             </v-col>
                         </v-row>
                         <v-row>
+                            <v-col class="mb-n5" cols="12" md="3">
+                                <p class="mb-1 text-subtitle-1 font-weight-bold"><?= lang('App.category') ?>*</p>
+                                <p class="text-caption"></p>
+                            </v-col>
+                            <v-col cols="12" md="9">
+                                <v-select v-model="idCategory" label="<?= lang('App.category'); ?>" :items="dataCategory" item-text="category_name" item-value="category_id" :error-messages="category_idError" :loading="loading2" outlined append-outer-icon="mdi-plus-thick" @click:append-outer="addCategory"></v-select>
+                            </v-col>
+                        </v-row>
+                        <v-row>
                             <v-col class="mb-n5" cols="12" sm="3">
                                 <p class="mb-1 text-subtitle-1 font-weight-bold"><?= lang('App.productCode') ?>*</p>
                                 <p class="text-caption"></p>
@@ -219,6 +229,26 @@
                             </v-col>
                         </v-row>
                         <v-row>
+                            <v-col class="mb-n5" cols="12" md="3">
+                                <p class="mb-1 text-subtitle-1 font-weight-bold"><?= lang('App.stock') ?></p>
+                                <p class="text-caption"></p>
+                            </v-col>
+                            <v-col cols="12" md="5">
+                                <v-text-field label="1000" v-model="stock" type="number" :error-messages="stockError" single-line outlined></v-text-field>
+                            </v-col>
+
+                            <v-col cols="12" md="4">
+                                <v-row class="mt-n5">
+                                    <v-col cols="12" md="5">
+                                        <span class="text-subtitle-1 font-weight-bold mb-0"><?= lang('App.stock') ?> Min</span>
+                                    </v-col>
+                                    <v-col cols="12" md="7">
+                                        <v-text-field label="0" v-model="stockMin" type="number" :error-messages="stock_minError" single-line outlined></v-text-field>
+                                    </v-col>
+                                </v-row>
+                            </v-col>
+                        </v-row>
+                        <v-row>
                             <v-col class="mb-n5" cols="12" sm="3">
                                 <p class="mb-1 text-subtitle-1 font-weight-bold"><?= lang('App.productDesc') ?></p>
                                 <p class="text-caption">Pastikan deskripsi barang memuat spesifikasi, ukuran, bahan, masa berlaku, dan lainnya. Semakin detail, semakin berguna bagi pembeli, cantumkan min. 260 karakter agar pembeli semakin mudah mengerti dan menemukan barang anda</p>
@@ -228,7 +258,15 @@
                                     <!-- <v-textarea v-model="productDescription" counter maxlength="3000" :error-messages="product_descriptionError" rows="10" outlined full-width single-line></v-textarea> -->
                             </v-col>
                         </v-row>
-
+                        <v-row>
+                            <v-col class="mb-n5" cols="12" sm="3">
+                                <p class="mb-1 text-subtitle-1 font-weight-bold">Link Demo</p>
+                                <p class="text-caption"></p>
+                            </v-col>
+                            <v-col cols="12" sm="9">
+                                <v-text-field label="Link Demo" v-model="linkDemo" type="text" outlined></v-text-field>
+                            </v-col>
+                        </v-row>
                     </v-form>
                 </v-card-text>
             </v-card>
@@ -259,32 +297,32 @@
                             <v-row>
                                 <v-col>
                                     <v-card max-width="120">
-                                        <v-img v-model="mediaID" v-bind:src="'<?= base_url(); ?>' + mediaPath" aspect-ratio="1">
-                                        </v-img>
+                                        <v-img v-model="mediaID" lazy-src="<?= base_url('images/no_image.jpg') ?>" v-bind:src="'<?= base_url(); ?>' + mediaPath" aspect-ratio="1" v-if="mediaPath != null"></v-img>
+                                        <v-img src="<?= base_url('images/no_image.jpg') ?>" v-else></v-img>
                                     </v-card>
                                 </v-col>
                                 <v-col>
                                     <v-card max-width="120">
-                                        <v-img v-model="media1" v-bind:src="'<?= base_url(); ?>' + mediaPath1" aspect-ratio="1">
-                                        </v-img>
+                                        <v-img v-model="media1" lazy-src="<?= base_url('images/no_image.jpg') ?>" v-bind:src="'<?= base_url(); ?>' + mediaPath1" aspect-ratio="1" v-if="mediaPath1 != null"></v-img>
+                                        <v-img src="<?= base_url('images/no_image.jpg') ?>" v-else></v-img>
                                     </v-card>
                                 </v-col>
                                 <v-col>
                                     <v-card max-width="120">
-                                        <v-img v-model="media2" v-bind:src="'<?= base_url(); ?>' + mediaPath2" aspect-ratio="1">
-                                        </v-img>
+                                        <v-img v-model="media2" lazy-src="<?= base_url('images/no_image.jpg') ?>" v-bind:src="'<?= base_url(); ?>' + mediaPath2" aspect-ratio="1" v-if="mediaPath2 != null"></v-img>
+                                        <v-img src="<?= base_url('images/no_image.jpg') ?>" v-else></v-img>
                                     </v-card>
                                 </v-col>
                                 <v-col>
                                     <v-card max-width="120">
-                                        <v-img v-model="media3" v-bind:src="'<?= base_url(); ?>' + mediaPath3" aspect-ratio="1">
-                                        </v-img>
+                                        <v-img v-model="media3" lazy-src="<?= base_url('images/no_image.jpg') ?>" v-bind:src="'<?= base_url(); ?>' + mediaPath3" aspect-ratio="1" v-if="mediaPath3 != null"></v-img>
+                                        <v-img src="<?= base_url('images/no_image.jpg') ?>" v-else></v-img>
                                     </v-card>
                                 </v-col>
                                 <v-col>
                                     <v-card max-width="120">
-                                        <v-img v-model="media3" v-bind:src="'<?= base_url(); ?>' + mediaPath4" aspect-ratio="1">
-                                        </v-img>
+                                        <v-img v-model="media3" lazy-src="<?= base_url('images/no_image.jpg') ?>" v-bind:src="'<?= base_url(); ?>' + mediaPath4" aspect-ratio="1" v-if="mediaPath4 != null"></v-img>
+                                        <v-img src="<?= base_url('images/no_image.jpg') ?>" v-else></v-img>
                                     </v-card>
                                 </v-col>
                             </v-row>
@@ -297,6 +335,15 @@
                         </v-col>
                         <v-col cols="12" sm="9">
                             <v-text-field label="<?= lang('App.productName') ?>" v-model="productNameEdit" outlined></v-text-field>
+                        </v-col>
+                    </v-row>
+                    <v-row>
+                        <v-col class="mb-n5" cols="12" md="3">
+                            <p class="mb-1 text-subtitle-1 font-weight-bold"><?= lang('App.category') ?>*</p>
+                            <p class="text-caption"></p>
+                        </v-col>
+                        <v-col cols="12" md="9">
+                            <v-select v-model="idCategoryEdit" label="<?= lang('App.category'); ?>" :items="dataCategory" item-text="category_name" item-value="category_id" :error-messages="category_idError" :loading="loading2" outlined append-outer-icon="mdi-plus-thick" @click:append-outer="addCategory"></v-select>
                         </v-col>
                     </v-row>
                     <v-row>
@@ -321,6 +368,26 @@
                         </v-col>
                     </v-row>
                     <v-row>
+                        <v-col class="mb-n5" cols="12" md="3">
+                            <p class="mb-1 text-subtitle-1 font-weight-bold"><?= lang('App.stock') ?></p>
+                            <p class="text-caption"></p>
+                        </v-col>
+                        <v-col cols="12" md="5">
+                            <v-text-field label="1000" v-model="stock" type="number" :error-messages="stockError" single-line outlined></v-text-field>
+                        </v-col>
+
+                        <v-col cols="12" md="4">
+                            <v-row class="mt-n5">
+                                <v-col cols="12" md="5">
+                                    <span class="text-subtitle-1 font-weight-bold mb-0"><?= lang('App.stock') ?> Min</span>
+                                </v-col>
+                                <v-col cols="12" md="7">
+                                    <v-text-field label="0" v-model="stockMin" type="number" :error-messages="stock_minError" single-line outlined></v-text-field>
+                                </v-col>
+                            </v-row>
+                        </v-col>
+                    </v-row>
+                    <v-row>
                         <v-col class="mb-n5" cols="12" sm="3">
                             <p class="mb-1 text-subtitle-1 font-weight-bold"><?= lang('App.productDesc') ?></p>
                             <p class="text-caption">Pastikan deskripsi barang memuat spesifikasi, ukuran, bahan, masa berlaku, dan lainnya. Semakin detail, semakin berguna bagi pembeli, cantumkan min. 260 karakter agar pembeli semakin mudah mengerti dan menemukan barang anda</p>
@@ -329,7 +396,15 @@
                             <quill-editor v-model="productDescriptionEdit" ref="quillEditor" :options="editorOption" :error-messages="product_descriptionError"></vue-quill-editor>
                         </v-col>
                     </v-row>
-
+                    <v-row>
+                        <v-col class="mb-n5" cols="12" sm="3">
+                            <p class="mb-1 text-subtitle-1 font-weight-bold">Link Demo</p>
+                            <p class="text-caption"></p>
+                        </v-col>
+                        <v-col cols="12" sm="9">
+                            <v-text-field label="Link Demo" v-model="linkdemoEdit" type="text" outlined></v-text-field>
+                        </v-col>
+                    </v-row>
                 </v-card-text>
             </v-card>
         </v-dialog>
@@ -562,7 +637,6 @@
 
                             </v-col>
                         </v-row>
-
                         <v-row>
                             <v-col class="mb-n5" cols="12" sm="3">
                                 <p class="mb-1 text-subtitle-1 font-weight-bold"><?= lang('App.productName') ?>*</p>
@@ -570,6 +644,15 @@
                             </v-col>
                             <v-col cols="12" sm="9">
                                 <v-text-field label="<?= lang('App.productName') ?>" v-model="productNameEdit" :error-messages="product_nameError" outlined></v-text-field>
+                            </v-col>
+                        </v-row>
+                        <v-row>
+                            <v-col class="mb-n5" cols="12" md="3">
+                                <p class="mb-1 text-subtitle-1 font-weight-bold"><?= lang('App.category') ?>*</p>
+                                <p class="text-caption"></p>
+                            </v-col>
+                            <v-col cols="12" md="9">
+                                <v-select v-model="idCategoryEdit" label="<?= lang('App.category'); ?>" :items="dataCategory" item-text="category_name" item-value="category_id" :error-messages="category_idError" :loading="loading2" outlined append-outer-icon="mdi-plus-thick" @click:append-outer="addCategory"></v-select>
                             </v-col>
                         </v-row>
                         <v-row>
@@ -594,6 +677,26 @@
                             </v-col>
                         </v-row>
                         <v-row>
+                            <v-col class="mb-n5" cols="12" md="3">
+                                <p class="mb-1 text-subtitle-1 font-weight-bold"><?= lang('App.stock') ?></p>
+                                <p class="text-caption"></p>
+                            </v-col>
+                            <v-col cols="12" md="5">
+                                <v-text-field label="1000" v-model="stockEdit" type="number" :error-messages="stockError" single-line outlined></v-text-field>
+                            </v-col>
+
+                            <v-col cols="12" md="4">
+                                <v-row class="mt-n5">
+                                    <v-col cols="12" md="5">
+                                        <span class="text-subtitle-1 font-weight-bold mb-0"><?= lang('App.stock') ?> Min</span>
+                                    </v-col>
+                                    <v-col cols="12" md="7">
+                                        <v-text-field label="0" v-model="stockMinEdit" type="number" :error-messages="stock_minError" single-line outlined></v-text-field>
+                                    </v-col>
+                                </v-row>
+                            </v-col>
+                        </v-row>
+                        <v-row>
                             <v-col class="mb-n5" cols="12" sm="3">
                                 <p class="mb-1 text-subtitle-1 font-weight-bold"><?= lang('App.productDesc') ?></p>
                                 <p class="text-caption">Pastikan deskripsi barang memuat spesifikasi, ukuran, bahan, masa berlaku, dan lainnya. Semakin detail, semakin berguna bagi pembeli, cantumkan min. 260 karakter agar pembeli semakin mudah mengerti dan menemukan barang anda</p>
@@ -603,7 +706,15 @@
                                     <!-- <v-textarea v-model="productDescriptionEdit" counter maxlength="3000" rows="10" :error-messages="product_descriptionError" outlined full-width single-line></v-textarea> -->
                             </v-col>
                         </v-row>
-
+                        <v-row>
+                            <v-col class="mb-n5" cols="12" sm="3">
+                                <p class="mb-1 text-subtitle-1 font-weight-bold">Link Demo</p>
+                                <p class="text-caption"></p>
+                            </v-col>
+                            <v-col cols="12" sm="9">
+                                <v-text-field label="Link Demo" v-model="linkdemoEdit" type="text" outlined></v-text-field>
+                            </v-col>
+                        </v-row>
                     </v-form>
                 </v-card-text>
             </v-card>
@@ -617,11 +728,18 @@
     <v-row justify="center">
         <v-dialog v-model="modalDelete" persistent max-width="600px">
             <v-card class="pa-2">
-                <v-card-title class="text-h5"><?= lang('App.delConfirm') ?></v-card-title>
+                <v-card-title>
+                    <v-icon color="error" class="mr-2" x-large>mdi-alert-octagon</v-icon> Confirm Delete
+                </v-card-title>
+                <v-card-text>
+                    <div class="mt-3 py-4">
+                        <h2 class="font-weight-regular"><?= lang('App.delConfirm') ?></h2>
+                    </div>
+                </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn large color="blue darken-1" text @click="modalDelete = false"><?= lang('App.no') ?></v-btn>
-                    <v-btn large color="blue darken-1" dark @click="deleteProduct" :loading="loading"><?= lang('App.yes') ?></v-btn>
+                    <v-btn large text @click="modalDelete = false"><?= lang('App.no') ?></v-btn>
+                    <v-btn large color="error" dark @click="deleteProduct" :loading="loading"><?= lang('App.yes') ?></v-btn>
                     <v-spacer></v-spacer>
                 </v-card-actions>
             </v-card>
@@ -629,6 +747,52 @@
     </v-row>
 </template>
 <!-- End Modal Delete Product -->
+
+<!-- Modal Kategori -->
+<template>
+    <v-row justify="center">
+        <v-dialog v-model="modalCategory" persistent max-width="600px">
+            <v-card>
+                <v-card-title>
+                    <?= lang('App.category') ?>
+                    <v-spacer></v-spacer>
+                    <v-btn icon @click="modalCategoryClose">
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                </v-card-title>
+                <v-divider></v-divider>
+                <v-card-text>
+                    <v-form ref="form" v-model="valid">
+                        <v-container>
+                            <v-row>
+                                <v-col cols="12" md="7">
+                                    <v-text-field label="Nama Kategori" v-model="nameCategory" type="text" :error-messages="category_nameError"></v-text-field>
+                                </v-col>
+
+                                <v-col cols="12" md="5">
+                                    <v-btn color="primary" large @click="saveCategory" :loading="loading6"><?= lang('App.add') ?></v-btn>
+                                </v-col>
+                            </v-row>
+                        </v-container>
+                    </v-form>
+                    <v-data-table :headers="tbCategory" :items="dataCategory" :items-per-page="5" class="elevation-1" :loading="loading1">
+                        <template v-slot:item.actions="{ item }">
+                            <v-btn color="error" icon @click="deleteCategory(item)" :loading="loading7">
+                                <v-icon>mdi-close</v-icon>
+                            </v-btn>
+                        </template>
+                    </v-data-table>
+                </v-card-text>
+                <v-divider></v-divider>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn text large @click="modalCategoryClose"><?= lang('App.close') ?></v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+    </v-row>
+</template>
+
 <?php $this->endSection("content") ?>
 
 <?php $this->section("js") ?>
@@ -674,27 +838,25 @@
         ...dataVue,
         search: "",
         dataTable: [{
-                text: '<?= lang('App.productInfo') ?>',
-                value: 'product_name'
-            },
-            {
-                text: '<?= lang('App.price') ?>',
-                value: 'product_code'
-            },
-            {
-                text: '<?= lang('App.stock') ?>',
-                value: 'stock'
-            },
-            {
-                text: '<?= lang('App.active') ?>',
-                value: 'active'
-            },
-            {
-                text: '<?= lang('App.action') ?>',
-                value: 'actions',
-                sortable: false
-            },
-        ],
+            text: '<?= lang('App.productInfo') ?>',
+            value: 'product_name'
+        }, {
+            text: '<?= lang('App.category') ?>',
+            value: 'category_name'
+        }, {
+            text: '<?= lang('App.price') ?>',
+            value: 'product_price'
+        }, {
+            text: '<?= lang('App.stock') ?>',
+            value: 'stock'
+        }, {
+            text: '<?= lang('App.active') ?>',
+            value: 'active'
+        }, {
+            text: '<?= lang('App.action') ?>',
+            value: 'actions',
+            sortable: false
+        }, ],
         products: [],
         totalData: 0,
         data: [],
@@ -722,6 +884,8 @@
         product_image3Error: "",
         productImage4: null,
         product_image4Error: "",
+        linkDemo: null,
+        link_demoError: "",
         checkDiscount: false,
         discount: 0,
         discountError: "",
@@ -739,6 +903,7 @@
         mediaPathEdit: null,
         productIdDelete: "",
         productNameDelete: "",
+        linkdemoEdit: "",
         mediaID: "",
         media1: "",
         media2: "",
@@ -765,10 +930,37 @@
         overlay3: false,
         overlay4: false,
         alert: false,
+        stock: 1000,
+        stockEdit: "",
+        stockError: "",
+        stockMin: 0,
+        stockMinEdit: "",
+        stock_minError: "",
+
+        modalCategory: false,
+        dataCategory: [],
+        idCategory: "",
+        idCategoryEdit: "",
+        category_idError: "",
+        nameCategory: "",
+        nameCategoryEdit: "",
+        category_nameError: "",
+        tbCategory: [{
+            text: '#',
+            value: 'category_id'
+        }, {
+            text: 'Nama Kategori',
+            value: 'category_name'
+        }, {
+            text: '<?= lang('App.action') ?>',
+            value: 'actions',
+            sortable: false
+        }, ],
     }
 
     createdVue = function() {
         this.getProducts();
+        this.getCategory();
     }
 
     // Vue Watch
@@ -906,6 +1098,8 @@
                     } else {
                         this.snackbar = true;
                         this.snackbarMessage = data.message;
+                        this.products = data.data;
+                        this.data = data.data;
                     }
                 })
                 .catch(err => {
@@ -1411,6 +1605,7 @@
                 var discount = this.discount;
             }
             axios.post(`<?= base_url() ?>api/product/save`, {
+                    category_id: this.idCategory,
                     product_code: this.productCode,
                     product_name: this.productName,
                     product_price: parseInt(this.productPrice),
@@ -1421,6 +1616,9 @@
                     product_image3: this.media3,
                     product_image4: this.media4,
                     discount: discount,
+                    link_demo: this.linkDemo,
+                    stock: this.stock,
+                    stock_min: this.stockMin
                 }, options)
                 .then(res => {
                     // handle success
@@ -1446,6 +1644,7 @@
                         this.media4 = "";
                         this.checkDiscount = false;
                         this.discount = 0;
+                        this.linkDemo = 0;
                         this.alert = false;
                         this.modalAdd = false;
                         this.$refs.form.resetValidation();
@@ -1470,6 +1669,7 @@
                 })
                 .catch(err => {
                     // handle error
+                    this.loading = false
                     console.log(err.response);
                     var error = err.response
                     if (error.data.expired == true) {
@@ -1485,9 +1685,10 @@
             this.modalShow = true;
             this.show = false;
             this.notifType = "";
-            this.productCodeEdit = product.product_code;
             this.productIdEdit = product.product_id;
             this.productNameEdit = product.product_name;
+            this.idCategoryEdit = product.category_id;
+            this.productCodeEdit = product.product_code;
             this.productPriceEdit = product.product_price;
             this.productDescriptionEdit = product.product_description;
             this.mediaID = product.product_image;
@@ -1504,6 +1705,9 @@
             if (Number(this.discount) > 0) {
                 this.checkDiscount = true;
             }
+            this.linkdemoEdit = product.link_demo;
+            this.stock = product.stock;
+            this.stockMin = product.stock_min;
         },
 
         // Get Item Edit Product
@@ -1512,8 +1716,9 @@
             this.show = false;
             this.notifType = "";
             this.productIdEdit = product.product_id;
-            this.productCodeEdit = product.product_code;
             this.productNameEdit = product.product_name;
+            this.idCategoryEdit = product.category_id;
+            this.productCodeEdit = product.product_code;
             this.productPriceEdit = product.product_price;
             this.productDescriptionEdit = product.product_description;
             this.mediaID = product.product_image;
@@ -1530,6 +1735,9 @@
             if (Number(this.discount) > 0) {
                 this.checkDiscount = true;
             }
+            this.linkdemoEdit = product.link_demo;
+            this.stockEdit = product.stock;
+            this.stockMinEdit = product.stock_min;
         },
         modalEditClose: function() {
             this.modalEdit = false;
@@ -1545,6 +1753,7 @@
                 var discount = this.discount;
             }
             axios.put(`<?= base_url() ?>api/product/update/${this.productIdEdit}`, {
+                    category_id: this.idCategoryEdit,
                     product_code: this.productCodeEdit,
                     product_name: this.productNameEdit,
                     product_price: parseInt(this.productPriceEdit),
@@ -1555,6 +1764,9 @@
                     product_image3: this.media3,
                     product_image4: this.media4,
                     discount: discount,
+                    link_demo: this.linkdemoEdit,
+                    stock: this.stockEdit,
+                    stock_min: this.stockMinEdit
                 }, options)
                 .then(res => {
                     // handle success
@@ -1580,7 +1792,8 @@
                         this.imagePreview4 = null;
                         this.checkDiscount = false;
                         this.discount = 0;
-                        this.getProducts();
+                        this.linkdemoEdit = "",
+                            this.getProducts();
                         this.modalEdit = false;
                         this.alert = false;
                         this.$refs.form.resetValidation();
@@ -1605,6 +1818,7 @@
                 })
                 .catch(err => {
                     // handle error
+                    this.loading = true;
                     console.log(err.response);
                     var error = err.response
                     if (error.data.expired == true) {
@@ -1645,6 +1859,7 @@
                 })
                 .catch(err => {
                     // handle error
+                    this.loading = true;
                     console.log(err);
                     var error = err.response
                     if (error.data.expired == true) {
@@ -1745,6 +1960,118 @@
                 })
         },
 
+        // Get Category
+        getCategory: function() {
+            this.loading1 = true;
+            axios.get('<?= base_url(); ?>api/category', options)
+                .then(res => {
+                    // handle success
+                    this.loading1 = false;
+                    var data = res.data;
+                    if (data.status == true) {
+                        this.dataCategory = data.data;
+                    } else {
+                        //this.snackbar = true;
+                        //this.snackbarMessage = data.message;
+                        this.dataCategory = data.data;
+                    }
+                })
+                .catch(err => {
+                    // handle error
+                    console.log(err);
+                    this.loading1 = false;
+                    var error = err.response
+                    if (error.data.expired == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = error.data.message;
+                        setTimeout(() => window.location.href = error.data.data.url, 1000);
+                    }
+                })
+        },
+
+        // Modal Category
+        addCategory: function() {
+            this.modalCategory = true;
+        },
+        modalCategoryClose: function() {
+            this.modalCategory = false;
+            this.$refs.form.resetValidation();
+        },
+
+        // Save Category
+        saveCategory: function() {
+            this.loading6 = true;
+            axios.post(`<?= base_url(); ?>api/category/save`, {
+                    category_name: this.nameCategory,
+                }, options)
+                .then(res => {
+                    // handle success
+                    this.loading6 = false
+                    var data = res.data;
+                    if (data.status == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = data.message;
+                        this.nameCategory = "";
+                        this.getCategory();
+                        this.$refs.form.resetValidation();
+                    } else {
+                        this.snackbar = true;
+                        this.snackbarMessage = data.message;
+                        errorKeys = Object.keys(data.data);
+                        errorKeys.map((el) => {
+                            this[`${el}Error`] = data.data[el];
+                        });
+                        if (errorKeys.length > 0) {
+                            setTimeout(() => this.notifType = "", 4000);
+                            setTimeout(() => errorKeys.map((el) => {
+                                this[`${el}Error`] = "";
+                            }), 4000);
+                        }
+                        this.$refs.form.validate();
+                    }
+                })
+                .catch(err => {
+                    // handle error
+                    console.log(err);
+                    this.loading6 = false;
+                    var error = err.response
+                    if (error.data.expired == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = error.data.message;
+                        setTimeout(() => window.location.href = error.data.data.url, 1000);
+                    }
+                })
+        },
+
+        // Delete Category
+        deleteCategory: function(item) {
+            this.loading7 = true;
+            axios.delete(`<?= base_url(); ?>api/category/delete/${item.category_id}`, options)
+                .then(res => {
+                    // handle success
+                    this.loading7 = false;
+                    var data = res.data;
+                    if (data.status == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = data.message;
+                        this.getCategory();
+                    } else {
+                        this.snackbar = true;
+                        this.snackbarMessage = data.message;
+                    }
+                })
+                .catch(err => {
+                    // handle error
+                    console.log(err);
+                    this.loading7 = false;
+                    var error = err.response
+                    if (error.data.expired == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = error.data.message;
+                        setTimeout(() => window.location.href = error.data.data.url, 1000);
+                    }
+                })
+        },
     }
 </script>
 <?php $this->endSection("js") ?>

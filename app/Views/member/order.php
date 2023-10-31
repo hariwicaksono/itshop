@@ -13,9 +13,10 @@
                 <v-tab-item value="tab-semua">
                     <v-card-text>
                         <div v-if="loader == true">
-                            <v-skeleton-loader type="heading,list-item-two-line"></v-skeleton-loader>
+                            <v-skeleton-loader type="card"></v-skeleton-loader>
+                            <v-skeleton-loader type="card"></v-skeleton-loader>
                         </div>
-                        <v-card class="mb-4" v-for="item in dataOrder" :key="item.order_id" v-if="loader == false">
+                        <v-card class="mb-4" v-for="item in dataOrder" :key="item.order_id" v-else>
                             <v-card-subtitle><strong>{{item.status==0?"Belum Diproses":""}}{{item.status==1?"Sedang Diproses":""}}{{item.status==2?"Dikirim":""}}{{item.status==3?"Dibatalkan":""}}</strong> / {{item.no_order}} / {{item.email}} / {{item.created_at}}
                             </v-card-subtitle>
                             <v-card-text>
@@ -25,23 +26,25 @@
                                         <div v-if="show == true">
                                             <v-skeleton-loader type="list-item-avatar-three-line"></v-skeleton-loader>
                                         </div>
-                                        <div v-for="row in itemOrder" :key="row.cart_id" v-else-if="show == false && item.order_id == row.order_id">
-                                            <v-list-item class="ma-n3 pa-n3" two-line>
-                                                <v-list-item-avatar size="50" rounded>
-                                                    <v-img lazy-src="<?= base_url('images/no_image.jpg') ?>" :src="'<?= base_url() ?>' + row.media_path" v-if="row.media_path != null"></v-img>
-                                                    <v-img src="<?= base_url('images/no_image.jpg') ?>" v-else></v-img>
-                                                </v-list-item-avatar>
-                                                <v-list-item-content>
-                                                    <p class="font-weight-medium black--text">{{row.product_name}} - {{row.product_code ?? "-"}}</p>
-                                                    <p v-if="row.discount > 0">
-                                                        {{row.qty}} x {{ RibuanLocale(row.price - row.discount) }}
-                                                        <span>
-                                                            <span class="text-decoration-line-through">{{ RibuanLocale(row.price) }}</span> <v-chip color="red" label x-small dark class="px-1" title="<?= lang('App.discount'); ?>">{{row.discount_percent}}%</v-chip>
-                                                        </span>
-                                                    </p>
-                                                    <p v-else>{{row.qty}} x {{ RibuanLocale(row.price) }}</p>
-                                                </v-list-item-content>
-                                            </v-list-item>
+                                        <div v-else>
+                                            <div v-for="row in itemOrder" :key="row.cart_id" v-show="item.order_id == row.order_id">
+                                                <v-list-item class="ma-n3 pa-n3" two-line>
+                                                    <v-list-item-avatar size="50" rounded>
+                                                        <v-img lazy-src="<?= base_url('images/no_image.jpg') ?>" :src="'<?= base_url() ?>' + row.media_path" v-if="row.media_path != null"></v-img>
+                                                        <v-img src="<?= base_url('images/no_image.jpg') ?>" v-else></v-img>
+                                                    </v-list-item-avatar>
+                                                    <v-list-item-content>
+                                                        <p class="font-weight-medium black--text">{{row.product_name}} - {{row.product_code ?? "-"}}</p>
+                                                        <p v-if="row.discount > 0">
+                                                            {{row.qty}} x {{ RibuanLocale(row.price - row.discount) }}
+                                                            <span>
+                                                                <span class="text-decoration-line-through">{{ RibuanLocale(row.price) }}</span> <v-chip color="red" label x-small dark class="px-1" title="<?= lang('App.discount'); ?>">{{row.discount_percent}}%</v-chip>
+                                                            </span>
+                                                        </p>
+                                                        <p v-else>{{row.qty}} x {{ RibuanLocale(row.price) }}</p>
+                                                    </v-list-item-content>
+                                                </v-list-item>
+                                            </div>
                                         </div>
                                         <br />
                                         <em>Note: " {{item.note}} "</em>
@@ -52,8 +55,8 @@
                                         <strong><?= lang('App.payment'); ?></strong><br />
                                         {{item.payment_name}} / <em>{{item.status_payment}}</em> &nbsp;
                                         <span v-if="item.payment == 2 && item.status == 0">
-                                            <v-btn small color="primary" @click="modalAddOpen(item)" elevation="1">
-                                                <v-icon>mdi-alert-octagon-outline</v-icon> <?= lang('App.confirm') ?>
+                                            <v-btn text @click="modalAddOpen(item)" elevation="1">
+                                                <v-icon color="error">mdi-alert-octagon</v-icon> <?= lang('App.confirm') ?>
                                             </v-btn>
                                         </span>
                                         <span v-else-if="item.payment == 1 && item.status == 2">
@@ -81,9 +84,10 @@
                 <v-tab-item value="tab-pending">
                     <v-card-text>
                         <div v-if="loader == true">
-                            <v-skeleton-loader type="heading,list-item-two-line"></v-skeleton-loader>
+                            <v-skeleton-loader type="card"></v-skeleton-loader>
+                            <v-skeleton-loader type="card"></v-skeleton-loader>
                         </div>
-                        <v-card class="mb-4" v-for="item in dataPending" :key="item.order_id" v-else-if="loader == false">
+                        <v-card class="mb-4" v-for="item in dataPending" :key="item.order_id" v-else>
                             <v-card-subtitle><strong>{{item.status==0?"Belum Diproses":""}}{{item.status==1?"Sedang Diproses":""}}{{item.status==2?"Dikirim":""}}{{item.status==3?"Dibatalkan":""}}</strong> / {{item.no_order}} / {{item.email}} / {{item.created_at}}
                             </v-card-subtitle>
                             <v-card-text>
@@ -93,23 +97,25 @@
                                         <div v-if="show == true">
                                             <v-skeleton-loader type="list-item-avatar-three-line"></v-skeleton-loader>
                                         </div>
-                                        <div v-for="row in itemOrder" :key="row.cart_id" v-else-if="show == false && item.order_id == row.order_id">
-                                            <v-list-item class="ma-n3 pa-n3" two-line>
-                                                <v-list-item-avatar size="50" rounded>
-                                                    <v-img lazy-src="<?= base_url('images/no_image.jpg') ?>" :src="'<?= base_url() ?>' + row.media_path" v-if="row.media_path != null"></v-img>
-                                                    <v-img src="<?= base_url('images/no_image.jpg') ?>" v-else></v-img>
-                                                </v-list-item-avatar>
-                                                <v-list-item-content>
-                                                    <p class="font-weight-medium black--text">{{row.product_name}} - {{row.product_code ?? "-"}}</p>
-                                                    <p v-if="row.discount > 0">
-                                                        {{row.qty}} x {{ RibuanLocale(row.price - row.discount) }}
-                                                        <span>
-                                                            <span class="text-decoration-line-through">{{ RibuanLocale(row.price) }}</span> <v-chip color="red" label x-small dark class="px-1" title="<?= lang('App.discount'); ?>">{{row.discount_percent}}%</v-chip>
-                                                        </span>
-                                                    </p>
-                                                    <p v-else>{{row.qty}} x {{ RibuanLocale(row.price) }}</p>
-                                                </v-list-item-content>
-                                            </v-list-item>
+                                        <div v-else>
+                                            <div v-for="row in itemOrder" :key="row.cart_id" v-show="item.order_id == row.order_id">
+                                                <v-list-item class="ma-n3 pa-n3" two-line>
+                                                    <v-list-item-avatar size="50" rounded>
+                                                        <v-img lazy-src="<?= base_url('images/no_image.jpg') ?>" :src="'<?= base_url() ?>' + row.media_path" v-if="row.media_path != null"></v-img>
+                                                        <v-img src="<?= base_url('images/no_image.jpg') ?>" v-else></v-img>
+                                                    </v-list-item-avatar>
+                                                    <v-list-item-content>
+                                                        <p class="font-weight-medium black--text">{{row.product_name}} - {{row.product_code ?? "-"}}</p>
+                                                        <p v-if="row.discount > 0">
+                                                            {{row.qty}} x {{ RibuanLocale(row.price - row.discount) }}
+                                                            <span>
+                                                                <span class="text-decoration-line-through">{{ RibuanLocale(row.price) }}</span> <v-chip color="red" label x-small dark class="px-1" title="<?= lang('App.discount'); ?>">{{row.discount_percent}}%</v-chip>
+                                                            </span>
+                                                        </p>
+                                                        <p v-else>{{row.qty}} x {{ RibuanLocale(row.price) }}</p>
+                                                    </v-list-item-content>
+                                                </v-list-item>
+                                            </div>
                                         </div>
                                         <br />
                                         <em>Note: " {{item.note}} "</em>
@@ -120,8 +126,8 @@
                                         <strong><?= lang('App.payment'); ?></strong><br />
                                         {{item.payment_name}} / <em>{{item.status_payment}}</em> &nbsp;
                                         <span v-if="item.payment == 2 && item.status == 0">
-                                            <v-btn small color="primary" @click="modalAddOpen(item)" elevation="1">
-                                                <v-icon>mdi-alert-octagon-outline</v-icon> <?= lang('App.confirm') ?>
+                                            <v-btn text @click="modalAddOpen(item)" elevation="1">
+                                                <v-icon color="error">mdi-alert-octagon</v-icon> <?= lang('App.confirm') ?>
                                             </v-btn>
                                         </span>
                                         <p class="text-subtitle-2 mb-0"><strong>Total <?= lang('App.order'); ?></strong><br />
@@ -143,9 +149,10 @@
                 <v-tab-item value="tab-process">
                     <v-card-text>
                         <div v-if="loader == true">
-                            <v-skeleton-loader type="heading,list-item-two-line"></v-skeleton-loader>
+                            <v-skeleton-loader type="card"></v-skeleton-loader>
+                            <v-skeleton-loader type="card"></v-skeleton-loader>
                         </div>
-                        <v-card class="mb-4" v-for="item in dataProcessed" :key="item.order_id" v-else-if="loader == false">
+                        <v-card class="mb-4" v-for="item in dataProcessed" :key="item.order_id" v-else>
                             <v-card-subtitle><strong>{{item.status==0?"Belum Diproses":""}}{{item.status==1?"Sedang Diproses":""}}{{item.status==2?"Dikirim":""}}{{item.status==3?"Dibatalkan":""}}</strong> / {{item.no_order}} / {{item.email}} / {{item.created_at}}
                             </v-card-subtitle>
                             <v-card-text>
@@ -155,23 +162,25 @@
                                         <div v-if="show == true">
                                             <v-skeleton-loader type="list-item-avatar-three-line"></v-skeleton-loader>
                                         </div>
-                                        <div v-for="row in itemOrder" :key="row.cart_id" v-else-if="show == false && item.order_id == row.order_id">
-                                            <v-list-item class="ma-n3 pa-n3" two-line>
-                                                <v-list-item-avatar size="50" rounded>
-                                                    <v-img lazy-src="<?= base_url('images/no_image.jpg') ?>" :src="'<?= base_url() ?>' + row.media_path" v-if="row.media_path != null"></v-img>
-                                                    <v-img src="<?= base_url('images/no_image.jpg') ?>" v-else></v-img>
-                                                </v-list-item-avatar>
-                                                <v-list-item-content>
-                                                    <p class="font-weight-medium black--text">{{row.product_name}} - {{row.product_code ?? "-"}}</p>
-                                                    <p v-if="row.discount > 0">
-                                                        {{row.qty}} x {{ RibuanLocale(row.price - row.discount) }}
-                                                        <span>
-                                                            <span class="text-decoration-line-through">{{ RibuanLocale(row.price) }}</span> <v-chip color="red" label x-small dark class="px-1" title="<?= lang('App.discount'); ?>">{{row.discount_percent}}%</v-chip>
-                                                        </span>
-                                                    </p>
-                                                    <p v-else>{{row.qty}} x {{ RibuanLocale(row.price) }}</p>
-                                                </v-list-item-content>
-                                            </v-list-item>
+                                        <div v-else>
+                                            <div v-for="row in itemOrder" :key="row.cart_id" v-show="item.order_id == row.order_id">
+                                                <v-list-item class="ma-n3 pa-n3" two-line>
+                                                    <v-list-item-avatar size="50" rounded>
+                                                        <v-img lazy-src="<?= base_url('images/no_image.jpg') ?>" :src="'<?= base_url() ?>' + row.media_path" v-if="row.media_path != null"></v-img>
+                                                        <v-img src="<?= base_url('images/no_image.jpg') ?>" v-else></v-img>
+                                                    </v-list-item-avatar>
+                                                    <v-list-item-content>
+                                                        <p class="font-weight-medium black--text">{{row.product_name}} - {{row.product_code ?? "-"}}</p>
+                                                        <p v-if="row.discount > 0">
+                                                            {{row.qty}} x {{ RibuanLocale(row.price - row.discount) }}
+                                                            <span>
+                                                                <span class="text-decoration-line-through">{{ RibuanLocale(row.price) }}</span> <v-chip color="red" label x-small dark class="px-1" title="<?= lang('App.discount'); ?>">{{row.discount_percent}}%</v-chip>
+                                                            </span>
+                                                        </p>
+                                                        <p v-else>{{row.qty}} x {{ RibuanLocale(row.price) }}</p>
+                                                    </v-list-item-content>
+                                                </v-list-item>
+                                            </div>
                                         </div>
                                         <br />
                                         <em>Note: " {{item.note}} "</em>
@@ -201,9 +210,10 @@
                 <v-tab-item value="tab-deliver">
                     <v-card-text>
                         <div v-if="loader == true">
-                            <v-skeleton-loader type="heading,list-item-two-line"></v-skeleton-loader>
+                            <v-skeleton-loader type="card"></v-skeleton-loader>
+                            <v-skeleton-loader type="card"></v-skeleton-loader>
                         </div>
-                        <v-card class="mb-4" v-for="item in dataDelivered" :key="item.order_id" v-else-if="loader == false">
+                        <v-card class="mb-4" v-for="item in dataDelivered" :key="item.order_id" v-else>
                             <v-card-subtitle><strong>{{item.status==0?"Belum Diproses":""}}{{item.status==1?"Sedang Diproses":""}}{{item.status==2?"Dikirim":""}}{{item.status==3?"Dibatalkan":""}}</strong> / {{item.no_order}} / {{item.email}} / {{item.created_at}}
                             </v-card-subtitle>
                             <v-card-text>
@@ -213,23 +223,25 @@
                                         <div v-if="show == true">
                                             <v-skeleton-loader type="list-item-avatar-three-line"></v-skeleton-loader>
                                         </div>
-                                        <div v-for="row in itemOrder" :key="row.cart_id" v-else-if="show == false && item.order_id == row.order_id">
-                                            <v-list-item class="ma-n3 pa-n3" two-line>
-                                                <v-list-item-avatar size="50" rounded>
-                                                    <v-img lazy-src="<?= base_url('images/no_image.jpg') ?>" :src="'<?= base_url() ?>' + row.media_path" v-if="row.media_path != null"></v-img>
-                                                    <v-img src="<?= base_url('images/no_image.jpg') ?>" v-else></v-img>
-                                                </v-list-item-avatar>
-                                                <v-list-item-content>
-                                                    <p class="font-weight-medium black--text">{{row.product_name}} - {{row.product_code ?? "-"}}</p>
-                                                    <p v-if="row.discount > 0">
-                                                        {{row.qty}} x {{ RibuanLocale(row.price - row.discount) }}
-                                                        <span>
-                                                            <span class="text-decoration-line-through">{{ RibuanLocale(row.price) }}</span> <v-chip color="red" label x-small dark class="px-1" title="<?= lang('App.discount'); ?>">{{row.discount_percent}}%</v-chip>
-                                                        </span>
-                                                    </p>
-                                                    <p v-else>{{row.qty}} x {{ RibuanLocale(row.price) }}</p>
-                                                </v-list-item-content>
-                                            </v-list-item>
+                                        <div v-else>
+                                            <div v-for="row in itemOrder" :key="row.cart_id" v-show="item.order_id == row.order_id">
+                                                <v-list-item class="ma-n3 pa-n3" two-line>
+                                                    <v-list-item-avatar size="50" rounded>
+                                                        <v-img lazy-src="<?= base_url('images/no_image.jpg') ?>" :src="'<?= base_url() ?>' + row.media_path" v-if="row.media_path != null"></v-img>
+                                                        <v-img src="<?= base_url('images/no_image.jpg') ?>" v-else></v-img>
+                                                    </v-list-item-avatar>
+                                                    <v-list-item-content>
+                                                        <p class="font-weight-medium black--text">{{row.product_name}} - {{row.product_code ?? "-"}}</p>
+                                                        <p v-if="row.discount > 0">
+                                                            {{row.qty}} x {{ RibuanLocale(row.price - row.discount) }}
+                                                            <span>
+                                                                <span class="text-decoration-line-through">{{ RibuanLocale(row.price) }}</span> <v-chip color="red" label x-small dark class="px-1" title="<?= lang('App.discount'); ?>">{{row.discount_percent}}%</v-chip>
+                                                            </span>
+                                                        </p>
+                                                        <p v-else>{{row.qty}} x {{ RibuanLocale(row.price) }}</p>
+                                                    </v-list-item-content>
+                                                </v-list-item>
+                                            </div>
                                         </div>
                                         <br />
                                         <em>Note: " {{item.note}} "</em>
@@ -248,6 +260,7 @@
                             </v-card-text>
                             <v-divider></v-divider>
                             <v-card-actions>
+                                <v-textarea rows="1" label="Link Google Drive" v-model="item.link_gdrive" class="mr-3" @focus="$event.target.select()" hint="Press CTRL+C to Copy" persistent-hint append-outer-icon="mdi-open-in-new" @click:append-outer="openLink(item)"></v-textarea>
                                 <v-spacer></v-spacer>
                                 <v-btn small color="primary" outlined @click="modalTrackingOpen(item)" class="py-4" elevation="1">
                                     <?= lang('App.trackOrders') ?>
@@ -259,9 +272,10 @@
                 <v-tab-item value="tab-cancel">
                     <v-card-text>
                         <div v-if="loader == true">
-                            <v-skeleton-loader type="heading,list-item-two-line"></v-skeleton-loader>
+                            <v-skeleton-loader type="card"></v-skeleton-loader>
+                            <v-skeleton-loader type="card"></v-skeleton-loader>
                         </div>
-                        <v-card class="mb-4" v-for="item in dataCanceled" :key="item.order_id" v-else-if="loader == false">
+                        <v-card class="mb-4" v-for="item in dataCanceled" :key="item.order_id" v-else>
                             <v-card-subtitle><strong>{{item.status==0?"Belum Diproses":""}}{{item.status==1?"Sedang Diproses":""}}{{item.status==2?"Dikirim":""}}{{item.status==3?"Dibatalkan":""}}</strong> / {{item.no_order}} / {{item.email}} / {{item.created_at}}
                             </v-card-subtitle>
                             <v-card-text>
@@ -271,23 +285,25 @@
                                         <div v-if="show == true">
                                             <v-skeleton-loader type="list-item-avatar-three-line"></v-skeleton-loader>
                                         </div>
-                                        <div v-for="row in itemOrder" :key="row.cart_id" v-else-if="show == false && item.order_id == row.order_id">
-                                            <v-list-item class="ma-n3 pa-n3" two-line>
-                                                <v-list-item-avatar size="50" rounded>
-                                                    <v-img lazy-src="<?= base_url('images/no_image.jpg') ?>" :src="'<?= base_url() ?>' + row.media_path" v-if="row.media_path != null"></v-img>
-                                                    <v-img src="<?= base_url('images/no_image.jpg') ?>" v-else></v-img>
-                                                </v-list-item-avatar>
-                                                <v-list-item-content>
-                                                    <p class="font-weight-medium black--text">{{row.product_name}} - {{row.product_code ?? "-"}}</p>
-                                                    <p v-if="row.discount > 0">
-                                                        {{row.qty}} x {{ RibuanLocale(row.price - row.discount) }}
-                                                        <span>
-                                                            <span class="text-decoration-line-through">{{ RibuanLocale(row.price) }}</span> <v-chip color="red" label x-small dark class="px-1" title="<?= lang('App.discount'); ?>">{{row.discount_percent}}%</v-chip>
-                                                        </span>
-                                                    </p>
-                                                    <p v-else>{{row.qty}} x {{ RibuanLocale(row.price) }}</p>
-                                                </v-list-item-content>
-                                            </v-list-item>
+                                        <div v-else>
+                                            <div v-for="row in itemOrder" :key="row.cart_id" v-show="item.order_id == row.order_id">
+                                                <v-list-item class="ma-n3 pa-n3" two-line>
+                                                    <v-list-item-avatar size="50" rounded>
+                                                        <v-img lazy-src="<?= base_url('images/no_image.jpg') ?>" :src="'<?= base_url() ?>' + row.media_path" v-if="row.media_path != null"></v-img>
+                                                        <v-img src="<?= base_url('images/no_image.jpg') ?>" v-else></v-img>
+                                                    </v-list-item-avatar>
+                                                    <v-list-item-content>
+                                                        <p class="font-weight-medium black--text">{{row.product_name}} - {{row.product_code ?? "-"}}</p>
+                                                        <p v-if="row.discount > 0">
+                                                            {{row.qty}} x {{ RibuanLocale(row.price - row.discount) }}
+                                                            <span>
+                                                                <span class="text-decoration-line-through">{{ RibuanLocale(row.price) }}</span> <v-chip color="red" label x-small dark class="px-1" title="<?= lang('App.discount'); ?>">{{row.discount_percent}}%</v-chip>
+                                                            </span>
+                                                        </p>
+                                                        <p v-else>{{row.qty}} x {{ RibuanLocale(row.price) }}</p>
+                                                    </v-list-item-content>
+                                                </v-list-item>
+                                            </div>
                                         </div>
                                         <br />
                                         <em>Note: " {{item.note}} "</em>
@@ -325,18 +341,19 @@
         <v-dialog v-model="modalAdd" persistent scrollable width="1000px">
             <v-card>
                 <v-card-title>
-                    <?= lang('App.confirm') ?> Transfer Manual<br />#{{ noOrder }}
+                    <?= lang('App.confirm') ?> Transfer Manual
                     <v-spacer></v-spacer>
                     <v-btn icon @click="modalAddClose">
                         <v-icon>mdi-close</v-icon>
                     </v-btn>
                 </v-card-title>
+                <v-card-subtitle>#{{ noOrder }}</v-card-subtitle>
                 <v-divider></v-divider>
                 <v-card-text class="py-5">
                     <v-row>
                         <v-col cols="12" md="6">
                             <v-alert color="yellow lighten-3" icon="mdi-information" light class="text-body-2 mt-2" dense>
-                                Harap transfer sejumlah uang senilai <strong>{{RibuanLocale(nominal)}}</strong> ke:<br />
+                                Harap transfer sejumlah uang <strong>{{RibuanLocale(nominal)}}</strong> ke:<br />
                                 <strong><?= $bank['payment']; ?></strong><br />
                                 No. Rekening: <strong><?= $bank['number']; ?></strong><br />
                                 A.N: <?= $bank['account']; ?>
@@ -412,12 +429,13 @@
         <v-dialog v-model="modalTracking" persistent scrollable width="600px">
             <v-card>
                 <v-card-title>
-                    <?= lang('App.trackOrders'); ?><br />#{{ noOrder }}
+                    <?= lang('App.trackOrders'); ?>
                     <v-spacer></v-spacer>
                     <v-btn icon @click="modalTracking = false">
                         <v-icon>mdi-close</v-icon>
                     </v-btn>
                 </v-card-title>
+                <v-card-subtitle>#{{ noOrder }}</v-card-subtitle>
                 <v-divider></v-divider>
                 <v-card-text class="py-5">
                     <div v-if="loading == true">
@@ -433,7 +451,7 @@
                         </v-row>
                     </div>
                     <div v-else>
-                        <v-timeline dense clipped>
+                        <v-timeline dense clipped v-show="dataTracking != ''">
                             <v-timeline-item v-for="(item, i) in dataTracking" :key="i" small :color="i == 0 ? 'primary':'grey'">
                                 <v-row justify="space-between">
                                     <v-col cols="3">
@@ -494,7 +512,8 @@
         nominal: "",
         nominalError: "",
         dataPaymentConfirm: [],
-        dataTracking: []
+        dataTracking: [],
+        linkGdrive: ""
     }
 
     createdVue = function() {
@@ -806,6 +825,12 @@
                         setTimeout(() => window.location.href = error.data.data.url, 1000);
                     }
                 })
+        },
+
+        openLink(item) {
+            if (item.link_gdrive != null) {
+                window.open(item.link_gdrive, '_blank');
+            } 
         },
     }
 </script>

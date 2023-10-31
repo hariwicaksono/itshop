@@ -10,6 +10,7 @@ use TCPDF;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Spipu\Html2Pdf\Html2Pdf;
+use CodeIgniter\I18n\Time;
 
 class Order extends BaseController
 {
@@ -31,7 +32,13 @@ class Order extends BaseController
     public function index()
     {
         return view('App\Modules\Order\Views/order', [
-            'title' => 'Pesanan'
+            'title' => 'Pesanan',
+            'hariini' => date('Y-m-d', strtotime(Time::now())),
+			'tujuhHari' => date('Y-m-d', strtotime('-1 week', strtotime(Time::now()))),
+			'awalBulan' => date('Y-m-', strtotime(Time::now())) . '01',
+            'akhirBulan' => date('Y-m-t', strtotime(Time::now())),
+			'awalTahun' => date('Y-', strtotime(Time::now())) . '01-01',
+            'akhirTahun' => date('Y-', strtotime(Time::now())) . '12-31',
         ]);
     }
 }

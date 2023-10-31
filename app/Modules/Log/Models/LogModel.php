@@ -8,7 +8,7 @@ class LogModel extends Model
 {
     protected $DBGroup          = 'default';
     protected $table            = 'logs';
-    protected $primaryKey       = 'id_log';
+    protected $primaryKey       = 'log_id';
     protected $useAutoIncrement = true;
     protected $insertID         = 0;
     protected $returnType       = 'array';

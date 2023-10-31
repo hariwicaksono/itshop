@@ -1,18 +1,19 @@
 <?php
-/*
-PT. GLOBAL ITSHOP PURWOKERTO
-Toko Online: ITShop Purwokerto (Tokopedia, Shopee, Bukalapak, Blibli)
-Dibuat oleh: Hari Wicaksono, S.Kom
-03-2023
-*/
-
-// Memanggil library Setting
+// Memanggil library
 use App\Libraries\Settings;
 
 $setting = new Settings();
 $snackbarsPosition = $setting->info['snackbars_position'];
+$navbarColor = $setting->info['navbar_color'];
+$sidebarColor = $setting->info['sidebar_color'];
 ?>
-
+<!--
+PT ITSHOP BISNIS DIGITAL
+Toko Online: ITSHOP Purwokerto (Tokopedia.com/itshoppwt, Shopee.co.id/itshoppwt, Bukalapak.com/itshoppwt)
+Dibuat oleh: Hari Wicaksono, S.Kom
+Created: 11-2021
+Modified: 07-2023
+-->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -20,7 +21,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
-    <title><?= $title ?? ""; ?> | <?= env('appName'); ?></title>
+    <title><?= $title ?? ""; ?> - <?= env('appName'); ?></title>
     <meta name="theme-color" content="#FFFFFF" />
     <link rel="apple-touch-icon" href="<?= base_url('images/logo.png') ?>">
     <link rel="shortcut icon" href="<?= base_url('images/logo.png') ?>">
@@ -28,9 +29,9 @@ $snackbarsPosition = $setting->info['snackbars_position'];
     <link href="<?= base_url('assets/css/materialdesignicons.min.css') ?>" rel="stylesheet">
     <link href="<?= base_url('assets/css/vuetify.min.css') ?>" rel="stylesheet">
     <link href="<?= base_url('assets/css/styles.css') ?>" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/quill@1.3.6/dist/quill.core.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/quill@1.3.6/dist/quill.snow.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/quill@1.3.6/dist/quill.bubble.css" rel="stylesheet">
+    <link href="<?= base_url('assets/css/quill.core.css') ?>" rel="stylesheet">
+    <link href="<?= base_url('assets/css/quill.snow.css') ?>" rel="stylesheet">
+    <link href="<?= base_url('assets/css/quill.bubble.css') ?>" rel="stylesheet">
 </head>
 
 <body>
@@ -56,7 +57,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
     <div id="app">
         <v-app>
 
-            <v-app-bar app color="primary" dark>
+            <v-app-bar app color="<?= $navbarColor; ?>" <?= ($navbarColor == 'white' ? 'light':'dark'); ?>>
                 <v-app-bar-nav-icon @click.stop="sidebarMenu = !sidebarMenu"></v-app-bar-nav-icon>
                 <v-toolbar-title></v-toolbar-title>
                 <v-spacer></v-spacer>
@@ -84,7 +85,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
                             <v-list-item link>
                                 <v-list-item-content>
                                     <v-list-item-title class="text-h6">
-                                        Hallo, <?= session()->get('username') ?>
+                                        Hai, <?= session()->get('first_name') . ' ' . session()->get('last_name') ?>
                                     </v-list-item-title>
                                     <v-list-item-subtitle><?= session()->get('email') ?></v-list-item-subtitle>
                                 </v-list-item-content>
@@ -116,15 +117,15 @@ $snackbarsPosition = $setting->info['snackbars_position'];
                 </v-btn>
             </v-app-bar>
 
-            <v-navigation-drawer light class="elevation-3" v-model="sidebarMenu" app floating :permanent="sidebarMenu" :mini-variant.sync="mini" v-if="!isMobile">
-                <v-list color="primary" dark dense elevation="1">
+            <v-navigation-drawer color="<?= $sidebarColor; ?>" <?= ($sidebarColor == 'white' ? 'light':'dark'); ?> class="elevation-3" v-model="sidebarMenu" app floating :permanent="sidebarMenu" :mini-variant.sync="mini" v-if="!isMobile">
+                <v-list dark dense elevation="1">
                     <v-list-item>
                         <v-list-item-action>
                             <v-icon @click.stop="toggleMini = !toggleMini">mdi-chevron-left</v-icon>
                         </v-list-item-action>
                         <v-list-item-content>
-                            <v-list-item-title>
-                                <?= APP_WEB; ?>
+                            <v-list-item-title class="text-h6">
+                                <?= env('appName'); ?>
                             </v-list-item-title>
                         </v-list-item-content>
                     </v-list-item>
@@ -134,7 +135,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
                     <?php $uri = new \CodeIgniter\HTTP\URI(current_url()); ?>
 
                     <?php if (session()->get('role') == 1) : ?>
-                        <v-list-item link href="<?= base_url('admin'); ?>" <?php if ($uri->getSegment(2) == "") { ?> <?php echo 'class="v-item--active v-list-item--active"'; ?> <?php } ?>>
+                        <v-list-item  color="white" link href="<?= base_url('admin'); ?>" <?php if ($uri->getSegment(2) == "") { ?> <?php echo 'class="v-item--active v-list-item--active"'; ?> <?php } ?>>
                             <v-list-item-icon>
                                 <v-icon>mdi-home</v-icon>
                             </v-list-item-icon>
@@ -143,7 +144,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
                             </v-list-item-content>
                         </v-list-item>
 
-                        <v-list-item link href="<?= base_url('admin/order'); ?>" <?php if ($uri->getSegment(2) == "order") { ?> <?php echo 'class="v-item--active v-list-item--active"'; ?> <?php } ?>>
+                        <v-list-item  color="white"  link href="<?= base_url('admin/order'); ?>" <?php if ($uri->getSegment(2) == "order") { ?> <?php echo 'class="v-item--active v-list-item--active"'; ?> <?php } ?>>
                             <v-list-item-icon>
                                 <v-icon>mdi-receipt-text</v-icon><v-badge color="error" dot overlap v-show="orderCounter > 0"></v-badge>
                             </v-list-item-icon>
@@ -152,7 +153,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
                             </v-list-item-content>
                         </v-list-item>
 
-                        <v-list-item link href="<?= base_url('admin/product'); ?>" <?php if ($uri->getSegment(2) == "product") { ?> <?php echo 'class="v-item--active v-list-item--active"'; ?> <?php } ?>>
+                        <v-list-item  color="white"  link href="<?= base_url('admin/product'); ?>" <?php if ($uri->getSegment(2) == "product") { ?> <?php echo 'class="v-item--active v-list-item--active"'; ?> <?php } ?>>
                             <v-list-item-icon>
                                 <v-icon>mdi-package-variant-closed</v-icon>
                             </v-list-item-icon>
@@ -163,7 +164,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
 
                         <v-divider></v-divider>
 
-                        <v-list-group v-for="(item, i) in pages" :key="item.title" v-model="item.active" :prepend-icon="item.action" color="grey darken-4">
+                        <v-list-group color="white" v-for="(item, i) in pages" :key="item.title" v-model="item.active" :prepend-icon="item.action">
                             <template v-slot:activator>
                                 <v-list-item-content>
                                     <v-list-item-title v-text="item.title"></v-list-item-title>
@@ -180,7 +181,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
                             </v-list-item>
                         </v-list-group>
 
-                        <v-list-group v-for="(item, i) in masters" :key="item.title" v-model="item.active" :prepend-icon="item.action" color="grey darken-4">
+                        <v-list-group color="white" v-for="(item, i) in masters" :key="item.title" v-model="item.active" :prepend-icon="item.action">
                             <template v-slot:activator>
                                 <v-list-item-content>
                                     <v-list-item-title v-text="item.title"></v-list-item-title>
@@ -199,7 +200,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
 
                         <v-divider></v-divider>
 
-                        <v-list-group v-for="(item, i) in exports" :key="item.title" v-model="item.active" :prepend-icon="item.action" color="grey darken-4">
+                        <v-list-group color="white" v-for="(item, i) in exports" :key="item.title" v-model="item.active" :prepend-icon="item.action">
                             <template v-slot:activator>
                                 <v-list-item-content>
                                     <v-list-item-title v-text="item.title"></v-list-item-title>
@@ -219,7 +220,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
 
                         <v-divider></v-divider>
 
-                        <v-list-item link href="<?= base_url('admin/users'); ?>" <?php if ($uri->getSegment(2) == "user") { ?> <?php echo 'class="v-item--active v-list-item--active"'; ?> <?php } ?>>
+                        <v-list-item color="white" link href="<?= base_url('admin/users'); ?>" <?php if ($uri->getSegment(2) == "user") { ?> <?php echo 'class="v-item--active v-list-item--active"'; ?> <?php } ?>>
                             <v-list-item-icon>
                                 <v-icon>mdi-account-multiple</v-icon>
                             </v-list-item-icon>
@@ -228,7 +229,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
                             </v-list-item-content>
                         </v-list-item>
 
-                        <v-list-group v-for="(item, i) in settings" :key="item.title" v-model="item.active" :prepend-icon="item.action" color="grey darken-4">
+                        <v-list-group color="white" v-for="(item, i) in settings" :key="item.title" v-model="item.active" :prepend-icon="item.action">
                             <template v-slot:activator>
                                 <v-list-item-content>
                                     <v-list-item-title v-text="item.title"></v-list-item-title>
@@ -251,9 +252,8 @@ $snackbarsPosition = $setting->info['snackbars_position'];
 
                 <template v-slot:append>
                     <v-divider></v-divider>
-                    <div class="pa-3 text-center text-caption">
-                        <span v-if="toggleMini">&copy; {{ new Date().getFullYear() }} <?= COMPANY_NAME; ?></span>
-                        <span v-else>&copy; {{ new Date().getFullYear() }}</span>
+                    <div class="pa-3 text-center text-caption white--text">
+                        <img src="<?= base_url('images/logo.png') ?>" alt="Logo" width="35">
                     </div>
                 </template>
 
@@ -303,10 +303,16 @@ $snackbarsPosition = $setting->info['snackbars_position'];
             </v-navigation-drawer>
 
             <v-main>
-                <v-container class="px-5 py-1" fluid>
-                    <div class="py-4">
+                <v-container class="px-5 py-5" fluid>
+                    <div class="mb-10">
                         <?= $this->renderSection('content') ?>
                     </div>
+                    <br />
+                    <v-footer absolute>
+                        <p class="text-caption my-3">
+                            &copy; 2020-{{ new Date().getFullYear() }} <?= env('appCompany'); ?> Software <?= env('appVersion'); ?> All rights reserved
+                        </p>
+                    </v-footer>
                 </v-container>
             </v-main>
 
@@ -328,9 +334,8 @@ $snackbarsPosition = $setting->info['snackbars_position'];
     <script src="<?= base_url('assets/js/vuejs-paginate.min.js') ?>" type="text/javascript"></script>
     <script src="<?= base_url('assets/js/Chart.min.js') ?>" type="text/javascript"></script>
     <script src="<?= base_url('assets/js/vue-chartjs.min.js') ?>" type="text/javascript"></script>
-    <script src="https://cdn.jsdelivr.net/npm/quill@1.3.6/dist/quill.min.js" type="text/javascript"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/vue-quill-editor@3.0.6/dist/vue-quill-editor.js" type="text/javascript"></script>
+    <script src="<?= base_url('assets/js/quill.min.js') ?>" type="text/javascript"></script>
+    <script src="<?= base_url('assets/js/vue-quill-editor.js') ?>" type="text/javascript"></script>
     <script src="<?= base_url('assets/js/main.js') ?>" type="text/javascript"></script>
     <script src="<?= base_url('assets/js/dayjs.min.js') ?>"></script>
     <script src="<?= base_url('assets/js/dayjs-locale-id.js') ?>"></script>
@@ -394,6 +399,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
                 }
             }
         }
+        var updatedVue = function() {}
         var watchVue = {
             toggleMini: function() {
                 localStorage.setItem("toggle_mini", this.toggleMini);
@@ -574,7 +580,13 @@ $snackbarsPosition = $setting->info['snackbars_position'];
                     })
                     .catch(err => {
                         // handle error
-                        console.log(err.response);
+                        console.log(err);
+                        var error = err.response;
+                        if (error.data.expired == true) {
+                            this.snackbar = true;
+                            this.snackbarMessage = error.data.message;
+                            setTimeout(() => window.location.href = error.data.data.url, 1000);
+                        }
                     })
             },
         }
@@ -590,6 +602,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
             data: dataVue,
             mounted: mountedVue,
             created: createdVue,
+            updated: updatedVue,
             watch: watchVue,
             methods: methodsVue
         })

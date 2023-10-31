@@ -38,7 +38,29 @@ class Order extends BaseControllerApi
 
     public function index()
     {
-        return $this->respond(["status" => true, "message" => lang('App.getSuccess'), "data" => $this->model->getOrders()], 200);
+        $input = $this->request->getVar();
+        $start = $input['tgl_start'] ?? "";
+        $end = $input['tgl_end'] ?? "";
+        if ($start == "" && $end == "") {
+            $data = $this->model->getOrders();
+        } else {
+            $data = $this->model->getOrders($start, $end);
+        }
+        if (!empty($data)) {
+            $response = [
+                "status" => true,
+                "message" => lang('App.getSuccess'),
+                "data" => $data
+            ];
+            return $this->respond($response, 200);
+        } else {
+            $response = [
+                'status' => false,
+                'message' => lang('App.noData'),
+                'data' => []
+            ];
+            return $this->respond($response, 200);
+        }
     }
 
     public function show($id = null)
@@ -165,7 +187,7 @@ class Order extends BaseControllerApi
                 $this->log->save(['keterangan' => session('first_name') . ' ' . session('last_name') . ' (' . session('email') . ') ' . strtolower(lang('App.do')) . ' Create Pesanan Baru ID: ' . $order_id]);
             }
 
-            /* if ($cek['payment_id'] == 2) {
+            if ($cek['payment_id'] == 2) {
                 //Send Email New Order
                 helper('email');
                 $email = $this->setting->info['company_email2'];
@@ -179,7 +201,7 @@ class Order extends BaseControllerApi
                     'note' => $note,
                 ];
                 sendEmail("Pesanan Baru #$no_order Siap Dikirim", $email, view('App\Modules\Order\Views\email/order_new_tf', $dataEmail));
-            } */
+            }
 
             $response = [
                 'status' => true,
@@ -215,20 +237,18 @@ class Order extends BaseControllerApi
         if (!$this->validate($rules)) {
             $response = [
                 'status' => false,
-                'message' => lang('App.reqFailed'),
+                'message' => lang('App.updFailed'),
                 'data' => $this->validator->getErrors(),
             ];
             return $this->respond($response, 200);
         } else {
-            $simpan = $this->model->update($id, $data);
-            if ($simpan) {
-                $response = [
-                    'status' => true,
-                    'message' => lang('App.productUpdated'),
-                    'data' => [],
-                ];
-                return $this->respond($response, 200);
-            }
+            $this->model->update($id, $data);
+            $response = [
+                'status' => true,
+                'message' => lang('App.updSuccess'),
+                'data' => [],
+            ];
+            return $this->respond($response, 200);
         }
     }
 
@@ -280,6 +300,10 @@ class Order extends BaseControllerApi
             } else if ($status == '2') {
                 $this->tracking->save(["order_id" => $id, "tracking_information" => "Pesanan telah dikirimkan"]);
             } else if ($status == '3') {
+                $this->model->update($id, [
+                    'status_payment' => 'canceled'
+                ]);
+
                 $this->tracking->save(["order_id" => $id, "tracking_information" => "Pesanan dibatalkan sistem"]);
             }
 
@@ -327,7 +351,7 @@ class Order extends BaseControllerApi
             } else if ($status_payment == 'success') {
                 $this->tracking->save(["order_id" => $id, "tracking_information" => "Pembayaran telah berhasil"]);
             } else if ($status_payment == 'settlement') {
-                $this->tracking->save(["order_id" => $id, "tracking_information" => "Pembayaran telah diterima menunggu pesanan diproses"]);
+                $this->tracking->save(["order_id" => $id, "tracking_information" => "Pembayaran telah terkonfirmasi. Menunggu pesanan dikirimkan"]);
             } else if ($status_payment == 'canceled' || $status_payment == 'expired' || $status_payment == 'expired') {
                 $this->tracking->save(["order_id" => $id, "tracking_information" => "Pesanan dibatalkan sistem"]);
             }
@@ -358,11 +382,7 @@ class Order extends BaseControllerApi
 
     public function getUserOrder($id = null)
     {
-        return $this->respond([
-            "status" => true,
-            "message" => lang("App.getSuccess"),
-            "data" => $this->model->findOrders($id)
-        ], 200);
+        return $this->respond(["status" => true, "message" => lang("App.getSuccess"), "data" => $this->model->findOrders($id)], 200);
     }
 
     public function getUserOrderPending($id = null)
@@ -394,5 +414,51 @@ class Order extends BaseControllerApi
     {
         $userid = $this->session->id;
         return $this->respond(['status' => true, 'message' => lang('App.getSuccess'), 'data' => $this->model->countUserOrder($userid)], 200);
+    }
+
+    public function updateLinkGdrive($id = NULL)
+    {
+        $rules = [
+            'link_gdrive' => [
+                'rules'  => 'required',
+                'errors' => []
+            ],
+        ];
+
+        if ($this->request->getJSON()) {
+            $json = $this->request->getJSON();
+            $data = [
+                'link_gdrive' => $json->link_gdrive
+            ];
+        } else {
+            $input = $this->request->getRawInput();
+            $data = [
+                'link_gdrive' => $input['link_gdrive']
+            ];
+        }
+
+        if (!$this->validate($rules)) {
+            $response = [
+                'status' => false,
+                'message' => lang('App.updFailed'),
+                'data' => $this->validator->getErrors(),
+            ];
+            return $this->respond($response, 200);
+        } else {
+            $this->model->update($id, $data);
+
+            //Simpan data Tracking
+            $this->tracking->save(["order_id" => $id, "tracking_information" => "Link Google Drive sudah dikirimkan oleh Admin"]);
+
+            //Simpan data Log
+            $this->log->save(['keterangan' => session('first_name') . ' ' . session('last_name') . ' (' . session('email') . ') ' . strtolower(lang('App.do')) . ' Update Link GDrive Pesanan ID: ' . $id]);
+
+            $response = [
+                'status' => true,
+                'message' => lang('App.updSuccess'),
+                'data' => []
+            ];
+            return $this->respond($response, 200);
+        }
     }
 }

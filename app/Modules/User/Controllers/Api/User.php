@@ -38,10 +38,6 @@ class User extends BaseControllerApi
     public function update($id = NULL)
     {
         $rules = [
-            'email' => [
-                'rules'  => 'required',
-                'errors' => []
-            ],
             'username' => [
                 'rules'  => 'required',
                 'errors' => []

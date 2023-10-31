@@ -1,13 +1,13 @@
 <?php $this->extend("layouts/app-front"); ?>
 <?php $this->section("content"); ?>
 <template>
-    <v-container class="indigo pa-15" fill-height fluid>
+    <v-container class="primary px-4 py-10" fill-height fluid>
         <v-layout flex align-center justify-center>
             <v-flex xs12 sm6 md6>
-                <v-card elevation="2" outlined>
-                    <v-card-text class="pa-10">
+                <v-card>
+                    <v-card-text class="pa-6">
                         <v-img class="mx-auto mb-5" lazy-src="<?= base_url('images/logo.png') ?>" max-width="60" src="<?= base_url('images/logo.png') ?>"></v-img>
-                        <h1 class="font-weight-regular text-center mb-8"><?= lang('App.newPassword') ?></h1>
+                        <h1 class="text-center mb-5"><?= lang('App.newPassword') ?></h1>
                         <v-alert v-if="notifType != ''" dense :type="notifType">{{notifMessage}}</v-alert>
                         <v-form v-model="valid" ref="form">
                             <v-text-field v-model="password" :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'" :rules="[rules.required, rules.min]" :type="show1 ? 'text' : 'password'" label="Password" hint="<?= lang('App.minChar') ?>" counter @click:append="show1 = !show1" outlined :disabled="submitted"></v-text-field>

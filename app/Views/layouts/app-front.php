@@ -1,24 +1,26 @@
 <?php
-/*
-PT. GLOBAL ITSHOP PURWOKERTO
-Toko Online: ITShop Purwokerto (Tokopedia, Shopee, Bukalapak, Blibli)
-Dibuat oleh: Hari Wicaksono, S.Kom
-03-2023
-*/
-
-$uri = new \CodeIgniter\HTTP\URI(current_url());
-
-// Memanggil library Setting
+// Memanggil library
 use App\Libraries\Settings;
 
+$uri = new \CodeIgniter\HTTP\URI(current_url());
 $setting = new Settings();
+$appName = $setting->info['app_name'];
+$appDesc = $setting->info['app_description'];
 $snackbarsPosition = $setting->info['snackbars_position'];
-$companyName = $setting->info['company_name'];
-$companyAddress = $setting->info['company_address'];
+$companyNama = $setting->info['company_nama'];
+$companyAlamat = $setting->info['company_alamat'];
 $companyEmail1 = $setting->info['company_email1'];
 $companyEmail2 = $setting->info['company_email2'];
-$companyTelp = $setting->info['company_telp'];
+$companyTelp = $setting->info['company_telepon'];
+$navbarColor = $setting->info['navbar_color'];
 ?>
+<!--
+PT ITSHOP BISNIS DIGITAL
+Toko Online: ITSHOP Purwokerto (Tokopedia.com/itshoppwt, Shopee.co.id/itshoppwt, Bukalapak.com/itshoppwt)
+Dibuat oleh: Hari Wicaksono, S.Kom
+Created: 11-2021
+Modified: 07-2023
+-->
 <!DOCTYPE html>
 <html>
 
@@ -27,16 +29,15 @@ $companyTelp = $setting->info['company_telp'];
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
     <?php if ($uri->getSegment(1) == "") { ?>
-        <title><?= APP_NAME; ?> Digital Store - <?= env('appName'); ?></title>
-        <meta name="description" content="Toko Online <?= APP_NAME; ?> - <?= env('appName'); ?>">
+        <title><?= $title; ?> | <?= $appName; ?></title>
+        <meta name="description" content="<?= $appDesc; ?> | <?= $appName; ?> by <?= env('appCompany'); ?>">
     <?php } else if ($uri->getSegment(1) == "source-code") { ?>
-        <title>Source Code <?= $title ?? ""; ?> - <?= env('appName'); ?></title>
-        <meta name="description" content="Source Code <?= $title ?? ""; ?> produk dari <?= APP_NAME; ?> - <?= env('appName'); ?>">
+        <title>Source Code <?= $title; ?> | <?= $appName; ?></title>
+        <meta name="description" content="Source Code <?= $title; ?> | <?= $appName; ?> by <?= env('appCompany'); ?>">
     <?php } else { ?>
-        <title><?= $title ?? ""; ?> | <?= APP_NAME; ?> Digital Store - <?= env('appName'); ?></title>
-        <meta name="description" content="<?= $title ?? ""; ?> | <?= APP_NAME; ?> Digital Store - <?= env('appName'); ?>">
+        <title><?= $title; ?> | <?= $appName; ?></title>
+        <meta name="description" content="<?= $title; ?> | <?= $appName; ?> by <?= env('appCompany'); ?>">
     <?php } ?>
-
     <meta name="theme-color" content="#FFFFFF" />
     <link rel="apple-touch-icon" href="<?= base_url('images/logo.png') ?>">
     <link rel="shortcut icon" href="<?= base_url('images/logo.png') ?>">
@@ -69,8 +70,13 @@ $companyTelp = $setting->info['company_telp'];
     <!-- preloader end -->
     <div id="app">
         <v-app>
-            <v-app-bar app color="white" elevation="2">
-                <v-toolbar-title class="text-h6 font-weight-medium" style="cursor: pointer;"><a href="<?= base_url() ?>" class="text-decoration-none grey--text text--darken-3" title="" alt=""><?= APP_WEB ?></a></v-toolbar-title>
+            <v-app-bar app color="<?= $navbarColor; ?>" <?= ($navbarColor == 'white' ? 'light':'dark'); ?> elevation="2">
+                <v-toolbar-title class="text-h6 font-weight-medium" style="cursor: pointer;">
+                    <a href="<?= base_url() ?>" class="text-decoration-none" title="<?= env('appName') ?>" alt="<?= env('appName') ?>">
+                        <v-img src="<?= base_url('assets/images/logo.png'); ?>" width="160" class="d-none d-sm-none d-md-flex d-lg-flex d-xl-flex"></v-img>
+                        <v-img src="<?= base_url('assets/images/logo-sm.png'); ?>" width="50" class="d-flex d-sm-flex d-md-none d-lg-none d-xl-none"></v-img>
+                    </a>
+                </v-toolbar-title>
                 <v-spacer></v-spacer>
                 <v-btn icon class="mr-3" href="<?= base_url('cart') ?>" elevation="0">
                     <v-badge :content="cartCounter" :value="cartCounter" color="red" overlap>
@@ -107,12 +113,12 @@ $companyTelp = $setting->info['company_telp'];
                             <v-list-item link>
                                 <v-list-item-content>
                                     <v-list-item-title class="text-h6">
-                                        Hallo, <?= session()->get('first_name') . ' ' . session()->get('last_name') ?>
+                                        Hai, <?= session()->get('first_name') . ' ' . session()->get('last_name') ?>
                                     </v-list-item-title>
                                     <v-list-item-subtitle><?= session()->get('email') ?></v-list-item-subtitle>
                                 </v-list-item-content>
                             </v-list-item>
-                            <v-subheader>Login: &nbsp;<v-chip color="primary" small><?= session()->get('role') == 1 ? 'admin' : 'user'; ?></v-chip>
+                            <v-subheader>Login: &nbsp;<v-chip color="primary" small><?= session()->get('role') == 1 ? 'admin' : 'member'; ?></v-chip>
                             </v-subheader>
                             <v-list-item link href="<?= base_url(); ?><?= session()->get('role') == 1 ? 'admin' : 'member'; ?>">
                                 <v-list-item-icon>
@@ -135,7 +141,6 @@ $companyTelp = $setting->info['company_telp'];
                         </v-list>
                     </v-menu>
                 <?php endif; ?>
-                <v-divider class="mx-1" vertical></v-divider>
                 <v-btn icon @click.stop="rightMenu = !rightMenu">
                     <v-icon>mdi-cog-outline</v-icon>
                 </v-btn>
@@ -189,13 +194,13 @@ $companyTelp = $setting->info['company_telp'];
             </v-main>
 
             <v-footer light padless>
-                <v-card flat tile width="100%" class="grey lighten-5 flex py-3">
+                <v-card flat tile width="100%" class="grey lighten-3 flex py-3">
                     <v-card-text>
                         <v-container>
                             <v-row>
                                 <v-col>
-                                    <h2 class="font-weight-medium subheading">Temukan Toko Online Official kami:</h2>
-                                    <v-list flat class="grey lighten-5 mb-3">
+                                    <h2 class="font-weight-medium subheading mb-3">Temukan Toko Online Official kami:</h2>
+                                    <v-list flat class="grey lighten-3 mb-3">
                                         <v-list-item-group>
                                             <v-list-item v-for="(item, i) in items" :key="i" link :href="item.link" target="_blank">
                                                 <v-list-item-icon>
@@ -210,20 +215,23 @@ $companyTelp = $setting->info['company_telp'];
                                 </v-col>
                                 <v-col>
                                     <h2 class="font-weight-medium subheading mb-3"><?= lang('App.aboutUs'); ?>:</h2>
-                                    <h3 class="grey--text text--darken-4 mb-3"><?= COMPANY_NAME; ?><br />(<?= APP_NAME; ?>)</h3>
-                                    <p><?= $companyAddress; ?></p>
-                                    Email: <?= $companyEmail1; ?> / <?= $companyEmail2; ?><br />
-                                    Telp: <?= $companyTelp; ?><br />
+                                    <h2 class="grey--text text--darken-4"><?= env('appStore'); ?></h2>
+                                    <h4><?= env('appCompany'); ?></h4>
+                                    <p><?= $companyAlamat; ?>, Indonesia</p>
+                                    Email 1: <?= $companyEmail1; ?> <br />
+                                    Email 2: <?= $companyEmail2; ?><br />
+                                    Telp/WA: <?= $companyTelp; ?><br />
                                     <h3 class="font-weight-medium subheading mb-2 mt-3"><?= lang('App.payment'); ?>: </h3>
                                     <p>Payment Gateway &amp; Transfer (Konfirmasi Manual)</p>
                                     <v-img src="<?= base_url('images/midtrans.png'); ?>" width="80" ratio="1" class="float-left mr-3"></v-img>
                                     <v-img src="<?= base_url('images/bri.jpg'); ?>" width="80" ratio="1"></v-img>
+                                    <br />
                                     <v-btn small v-for="link in links" :key="link" text rounded class="my-2" link :href="link.link">
-                                    {{ link.text }}
-                                </v-btn>
+                                        {{ link.text }}
+                                    </v-btn>
                                 </v-col>
                             </v-row>
-                            &copy; {{ new Date().getFullYear() }} <?= COMPANY_NAME; ?>, Jawa Tengah, Indonesia
+                            &copy; {{ new Date().getFullYear() }} <?= env('appCompany'); ?>, Jawa Tengah, Indonesia
                         </v-container>
                     </v-card-text>
                 </v-card>
@@ -297,6 +305,7 @@ $companyTelp = $setting->info['company_telp'];
                 );
             }
         }
+        var updatedVue = function() {}
         var watchVue = {}
         var dataVue = {
             sidebarMenu: true,
@@ -366,7 +375,7 @@ $companyTelp = $setting->info['company_telp'];
                 this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
                 localStorage.setItem("dark_theme", this.$vuetify.theme.dark.toString());
             },
-            
+
             // Format Ribuan Rupiah versi 1
             RibuanLocale(key) {
                 const rupiah = 'Rp' + Number(key).toLocaleString('id-ID');
@@ -410,7 +419,7 @@ $companyTelp = $setting->info['company_telp'];
             },
 
             getOrderCount() {
-                axios.get(`<?= base_url(); ?>api/order/count/pending_processed`)
+                axios.get(`<?= base_url(); ?>openapi/order/count/pending_processed`)
                     .then(res => {
                         // handle success
                         var data = res.data;
@@ -435,6 +444,7 @@ $companyTelp = $setting->info['company_telp'];
             data: dataVue,
             mounted: mountedVue,
             created: createdVue,
+            updated: updatedVue,
             watch: watchVue,
             methods: methodsVue,
             components: {

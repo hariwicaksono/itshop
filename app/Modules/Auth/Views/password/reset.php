@@ -1,22 +1,22 @@
 <?php $this->extend("layouts/app-front"); ?>
 <?php $this->section("content"); ?>
 <template>
-    <v-container class="indigo pa-15" fill-height fluid>
+    <v-container class="primary px-4 py-10" fill-height fluid>
         <v-layout flex align-center justify-center>
             <v-flex xs12 sm12 md6>
-                <v-card elevation="2" outlined>
-                    <v-card-text class="pa-10">
+                <v-card>
+                    <v-card-text class="pa-6">
                         <v-img class="mx-auto mb-5" lazy-src="<?= base_url('images/logo.png') ?>" max-width="60" src="<?= base_url('images/logo.png') ?>"></v-img>
-                        <h1 class="font-weight-regular text-center mb-8"><?= lang('App.forgotPass') ?></h1>
+                        <h1 class="text-center mb-5"><?= lang('App.forgotPass') ?></h1>
                         <v-alert v-if="notifType != ''" dense :type="notifType">{{notifMessage}}</v-alert>
                         <v-form v-model="valid" ref="form">
                             <v-text-field label="<?= lang('App.labelEmail') ?>" v-model="email" :rules="[rules.required, rules.email]" outlined :disabled="submitted"></v-text-field>
+                            <v-btn large @click="submit" color="primary" class="mb-5" :loading="loading" :disabled="submitted"><v-icon>mdi mdi-email</v-icon> <?= lang('App.send') ?> Reset Password</v-btn>
                             <v-layout justify-space-between>
                                 <p>
-                                    <a href="<?= base_url('login') ?>">Login</a><br />
+                                    <a href="<?= base_url('login') ?>"><?= lang('App.haveAccount') ?></a><br />
                                     <a href="<?= base_url('register') ?>"><?= lang('App.register') ?></a>
                                 </p>
-                                <v-btn large @click="submit" color="primary" :loading="loading" :disabled="submitted">Reset Password</v-btn>
                             </v-layout>
                         </v-form>
                     </v-card-text>

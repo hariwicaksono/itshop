@@ -27,4 +27,5 @@ $routes->group('api', ['filter' => 'jwtauth', 'namespace' => 'App\Modules\Order\
 	$routes->get('chart1', 'Order::chart1');
 	$routes->get('order/count/new_order', 'Order::countNewOrder');
 	$routes->get('order/count/pending_processed', 'Order::countUserOrder');
+	$routes->put('order/update_link_gdrive/(:segment)', 'Order::updateLinkGdrive/$1');
 });

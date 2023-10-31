@@ -7,7 +7,7 @@ use CodeIgniter\Model;
 class CartModel extends Model
 {
     protected $DBGroup              = 'default';
-    protected $table                = 'cart';
+    protected $table                = 'carts';
     protected $primaryKey           = 'cart_id';
     protected $useAutoIncrement     = true;
     protected $insertID             = 0;
@@ -43,7 +43,7 @@ class CartModel extends Model
     public function getCart()
     {
         $this->select("{$this->table}.*, p.product_code, p.product_name, p.product_price, m.media_path, m1.media_path as media_path1,  m2.media_path as media_path2, m3.media_path as media_path3, m4.media_path as media_path4, p.slug");
-        $this->join("product p", "p.product_id = {$this->table}.product_id");
+        $this->join("products p", "p.product_id = {$this->table}.product_id");
         $this->join("media m", "m.media_id = p.product_image", "left");
         $this->join("media m1", "m1.media_id = p.product_image1", "left");
         $this->join("media m2", "m2.media_id = p.product_image2", "left");
@@ -57,7 +57,7 @@ class CartModel extends Model
     public function getUserCart($userid = null, $where = false)
     {
         $this->select("{$this->table}.*, p.product_code, p.product_name, p.product_price, m.media_path, m1.media_path as media_path1,  m2.media_path as media_path2, m3.media_path as media_path3,  m4.media_path as media_path4, p.slug");
-        $this->join("product p", "p.product_id = {$this->table}.product_id");
+        $this->join("products p", "p.product_id = {$this->table}.product_id");
         $this->join("media m", "m.media_id = p.product_image", "left");
         $this->join("media m1", "m1.media_id = p.product_image1", "left");
         $this->join("media m2", "m2.media_id = p.product_image2", "left");
@@ -90,7 +90,7 @@ class CartModel extends Model
     {
         $this->select("{$this->table}.*, p.product_code, p.product_name, o.no_order, o.total, o.note, o.status, o.status_payment, py.payment_id, py.payment, sh.shipment, u.username, u.email");
         $this->join("orders o", "o.order_id = {$this->table}.order_id");
-        $this->join("product p", "p.product_id = {$this->table}.product_id");
+        $this->join("products p", "p.product_id = {$this->table}.product_id");
         $this->join("users u", "u.user_id = {$this->table}.user_id");
         $this->join("payment py", "py.payment_id = o.payment");
         $this->join("shipment sh", "sh.shipment_id = o.shipment");

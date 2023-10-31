@@ -2,7 +2,7 @@
 
 namespace App\Filters;
 /*
-PT. GLOBAL ITSHOP PURWOKERTO
+PT ITSHOP BISNIS DIGITAL
 Toko Online: ITShop Purwokerto (Tokopedia, Shopee, Bukalapak, Blibli)
 Dibuat oleh: Hari Wicaksono, S.Kom
 02-2023
@@ -56,6 +56,8 @@ class JWTAuthenticationFilter implements FilterInterface
             return $request;
         } catch (Exception $e) {
             if ($e->getMessage() == "Expired token") {
+                return Services::response()->setJSON(['expired' => true, 'message' => $e->getMessage(), 'data' => ['url' => base_url("/logout")]])->setStatusCode(ResponseInterface::HTTP_UNAUTHORIZED);
+            } else if ($e->getMessage() == "Missing or invalid JWT in request") {
                 return Services::response()->setJSON(['expired' => true, 'message' => $e->getMessage(), 'data' => ['url' => base_url("/logout")]])->setStatusCode(ResponseInterface::HTTP_UNAUTHORIZED);
             } else {
                 return Services::response()->setJSON(['message' => $e->getMessage()])->setStatusCode(ResponseInterface::HTTP_UNAUTHORIZED);

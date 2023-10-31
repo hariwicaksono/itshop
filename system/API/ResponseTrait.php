@@ -20,9 +20,6 @@ use Config\Services;
  * Provides common, more readable, methods to provide
  * consistent HTTP responses under a variety of common
  * situations when working as an API.
- *
- * @property IncomingRequest   $request
- * @property ResponseInterface $response
  */
 trait ResponseTrait
 {

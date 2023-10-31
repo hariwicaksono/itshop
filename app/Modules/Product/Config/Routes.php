@@ -9,7 +9,6 @@ $routes->group('admin', ['filter' => 'auth', 'namespace' => 'App\Modules\Product
 });
 
 $routes->group('openapi', ['namespace' => 'App\Modules\Product\Controllers\Api'], function ($routes) {
-
 	$routes->get('product/all', 'Product::allProduct');
 	$routes->get('product/(:segment)', 'Product::show/$1');
 });
@@ -25,4 +24,5 @@ $routes->group('api', ['filter' => 'jwtauth', 'namespace' => 'App\Modules\Produc
 	$routes->put('product/setactive/(:segment)', 'Product::setActive/$1');
 	$routes->put('product/setstock/(:segment)', 'Product::setStock/$1');
 	$routes->put('product/setprice/(:segment)', 'Product::setPrice/$1');
+	$routes->get('product/sold/best_seller', 'Product::bestSeller');
 });

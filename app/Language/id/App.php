@@ -1,6 +1,7 @@
 <?php
 return [
     //home
+    'welcome' => 'Selamat Datang di',
     'feature' => 'Lihat Fitur',
     'myProfile' => 'Profil saya',
     'dashboard' => 'Dasboard',
@@ -34,7 +35,7 @@ return [
 
     //Signin
     'signIn' => 'Masuk',
-    'register' => 'Register Akun',
+    'register' => 'Daftar Akun',
     'labelEmail' => 'Masukkan alamat email Anda',
     'emailRequired' => 'E-mail wajib diisi',
     'required' => 'Wajib',
@@ -62,6 +63,7 @@ return [
     'pleaseLogin' => 'Silahkan Login terlebih dahulu',
 
     //Products
+    'products' => 'Produk',
     'getSuccess' => 'Berhasil mendapatkan data',
     'noData' => 'Data Tidak Ditemukan',
     'listProduct' => 'Daftar Produk',
@@ -91,6 +93,9 @@ return [
     'imgDeleted' => 'Gambar berhasil dihapus',
     'disabledImgUploaded' => 'Tutup Dialog Dinonaktifkan karena Gambar sudah di upload, hapus terlebih dahulu',
     'discount' => 'Diskon',
+    'bestSeller' => 'Paling Laku',
+    'bestSellerProducts' => 'Produk Terlaris',
+    'category' => 'Kategori',
 
     //User
     'editUser' => 'Ubah User',

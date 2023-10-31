@@ -2,10 +2,14 @@
 <?php $this->section("content"); ?>
 
 <template>
-    <v-container class="py-5 my-3">
+    <v-container class="mb-5">
+        <v-breadcrumbs :items="itemsBC"></v-breadcrumbs>
         <v-row>
             <v-col cols="12" sm="4">
-                <a :href="'<?= base_url() ?>' + image" target="_blank"><v-img v-model="image" :src="'<?= base_url() ?>' + image" aspect-ratio="1" class="mb-4" title="" alt=""></v-img></a>
+                <a :href="'<?= base_url() ?>' + image" target="_blank" v-if="image != null">
+                    <v-img v-model="image" :src="'<?= base_url() ?>' + image" aspect-ratio="1" class="mb-4" title="Cover" alt="Cover"></v-img>
+                </a>
+                <v-img src="<?= base_url('images/no_image.jpg') ?>" v-else></v-img>
 
                 <v-row>
                     <v-col>
@@ -34,8 +38,6 @@
                         </a>
                     </v-col>
                 </v-row>
-
-
                 <!-- <v-img src="<?= base_url('images/no_image.jpg') ?>" class="mb-3" v-else></v-img> -->
             </v-col>
             <v-col cols="12" sm="5">
@@ -50,16 +52,21 @@
                         <p class="text-body-1 mb-0"><span class="text-decoration-line-through">{{ RibuanLocale(price) }}</span> <v-chip color="red" label x-small dark class="px-1" title="<?= lang('App.discount'); ?>">{{discountPercent}}%</v-chip></p>
                     </span>
                 </h2>
-
-                <h4 class="mb-4 mt-3">Detail Product:</h4>
+                <v-divider></v-divider>
+                <h4 class="mb-3 mt-5">Detail Produk:</h4>
                 <p v-html="products.product_description"></p>
 
-                <h4 class="mb-3 mt-3">Pengiriman:</h4>
+                <h4 class="mb-3 mt-7"><?= lang('App.category'); ?>:</h4>
+                <v-chip close close-icon="mdi-check-circle">{{category}}</v-chip>
+         
+                <h4 class="mb-3 mt-7">Link Demo:</h4>
+                <v-btn text outlined :href="linkDemo" link target="_blank" :disabled="linkDemo == null"><v-icon>mdi mdi-link</v-icon> Link Demo</v-btn>
+   
+                <h4 class="mb-3 mt-7">Pengiriman:</h4>
                 <p><v-icon>mdi-map-marker-outline</v-icon> Dikirim dari <strong>Purwokerto, Kab. Banyumas</strong></p>
                 <ul>
                     <li v-for="item in shipment" :key="item.shipment_id">{{item.shipment}}</li>
                 </ul>
-
             </v-col>
             <v-col cols="12" sm="3">
                 <v-card outlined>
@@ -68,11 +75,15 @@
                         <v-text-field v-model="qty" type="number" single-line prepend-icon="mdi-minus" append-outer-icon="mdi-plus" @click:append-outer="increment(products)" @click:prepend="decrement(products)" min="1" :error-messages="qtyError"></v-text-field>
                         <span class="text-subtitle-1 font-weight-regular">Stock: <strong class="black--text">{{stock}}</strong></span>
                         <h2 class="mb-5 mt-2"><span class="text-subtitle-1 font-weight-regular">Subtotal:</span> <span class="black--text">{{RibuanLocale(subTotal)}}</span></h2>
-                        <v-btn large block color="success" @click="saveCart(products)" elevation="1" class="mb-3">
-                            + <?= lang('App.carts'); ?>
+
+                        <v-btn large block color="success" @click="sendWhatsApp(products)" elevation="1" class="mb-3">
+                            <v-icon>mdi-whatsapp</v-icon> Chat WhatsApp
                         </v-btn>
-                        <v-btn large block color="success" outlined link href="<?= base_url('cart'); ?>" elevation="1">
-                            <?= lang('App.cart'); ?>
+                        <v-btn large block color="primary" @click="saveCart(products)" elevation="1" class="mb-3">
+                            <v-icon>mdi-cart-plus</v-icon> <?= lang('App.carts'); ?>
+                        </v-btn>
+                        <v-btn large block color="primary" outlined link href="<?= base_url('cart'); ?>" elevation="1">
+                            <v-icon>mdi-cart</v-icon> <?= lang('App.cart'); ?>
                         </v-btn>
                     </v-card-text>
                 </v-card>
@@ -107,6 +118,15 @@
 
     dataVue = {
         ...dataVue,
+        itemsBC: [{
+            text: 'Home',
+            disabled: false,
+            href: '/',
+        }, {
+            text: '<?= $title; ?>',
+            disabled: true,
+            href: '',
+        }, ],
         dialog: false,
         idProduct: '<?= $product_id; ?>',
         qty: 1,
@@ -123,6 +143,8 @@
         pageCount: 0,
         currentPage: 1,
         image: "",
+        linkDemo: "",
+        category: ""
     }
 
     createdVue = function() {
@@ -179,7 +201,8 @@
                                 this.subTotal = this.price * this.qty;
                             }
                         }
-
+                        this.linkDemo = this.products.link_demo;
+                        this.category = this.products.category_name;
                     } else {
                         this.snackbar = true;
                         this.snackbarMessage = data.message;
@@ -273,6 +296,12 @@
                     // handle error
                     console.log(err.response);
                 })
+        },
+
+        // send WhatsApp (Wa.me)
+        sendWhatsApp: function(item) {
+            let encoded = encodeURIComponent('Halo Kak Admin <?= $app_name; ?>, Saya mau order ' + item.category_name + ': ' + item.product_name);
+            setTimeout(() => window.location.href = `https://wa.me/<?= $telepon; ?>?text=${encoded}`, 100);
         },
     }
 </script>

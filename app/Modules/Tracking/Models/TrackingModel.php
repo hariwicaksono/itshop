@@ -7,7 +7,7 @@ use CodeIgniter\Model;
 class TrackingModel extends Model
 {
     protected $DBGroup              = 'default';
-    protected $table                = 'orders_tracking';
+    protected $table                = 'trackings';
     protected $primaryKey           = 'tracking_id';
     protected $useAutoIncrement     = true;
     protected $insertID             = 0;

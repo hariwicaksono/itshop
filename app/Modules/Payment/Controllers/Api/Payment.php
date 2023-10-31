@@ -220,7 +220,22 @@ class Payment extends BaseControllerApi
 
     public function getConfirm($id = null)
     {
-        return $this->respond(['status' => true, 'message' => lang('App.getSuccess'), 'data' => $this->paymentconfirm->where(['order_id' => $id])->findAll()], 200);
+        $data = $this->paymentconfirm->where(['order_id' => $id])->findAll();
+        if (!empty($data)) {
+            $response = [
+                "status" => true,
+                "message" => lang('App.getSuccess'),
+                "data" => $data
+            ];
+            return $this->respond($response, 200);
+        } else {
+            $response = [
+                'status' => false,
+                'message' => lang('App.noData'),
+                'data' => []
+            ];
+            return $this->respond($response, 200);
+        }
     }
 
     public function confirm()

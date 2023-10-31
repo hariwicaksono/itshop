@@ -1,17 +1,19 @@
 <?php
-/*
-PT. GLOBAL ITSHOP PURWOKERTO
-Toko Online: ITShop Purwokerto (Tokopedia, Shopee, Bukalapak, Blibli)
-Dibuat oleh: Hari Wicaksono, S.Kom
-03-2023
-*/
-
-// Memanggil library Setting
+// Memanggil library
 use App\Libraries\Settings;
 
 $setting = new Settings();
 $snackbarsPosition = $setting->info['snackbars_position'];
+$navbarColor = $setting->info['navbar_color'];
+$sidebarColor = $setting->info['sidebar_color'];
 ?>
+<!--
+PT ITSHOP BISNIS DIGITAL
+Toko Online: ITSHOP Purwokerto (Tokopedia.com/itshoppwt, Shopee.co.id/itshoppwt, Bukalapak.com/itshoppwt)
+Dibuat oleh: Hari Wicaksono, S.Kom
+Created: 11-2021
+Modified: 07-2023
+-->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -19,7 +21,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
-    <title>Member | <?= env('appName'); ?></title>
+    <title>Member - <?= env('appName'); ?></title>
     <meta name="theme-color" content="#FFFFFF" />
     <link rel="apple-touch-icon" href="<?= base_url('images/logo.png') ?>">
     <link rel="shortcut icon" href="<?= base_url('images/logo.png') ?>">
@@ -51,7 +53,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
     <!-- preloader end -->
     <div id="app">
         <v-app>
-            <v-app-bar app color="primary" dark>
+            <v-app-bar app color="<?= $navbarColor; ?>" <?= ($navbarColor == 'white' ? 'light':'dark'); ?>>
                 <v-app-bar-nav-icon @click.stop="sidebarMenu = !sidebarMenu"></v-app-bar-nav-icon>
                 <v-toolbar-title></v-toolbar-title>
                 <v-spacer></v-spacer>
@@ -84,12 +86,12 @@ $snackbarsPosition = $setting->info['snackbars_position'];
                             <v-list-item link>
                                 <v-list-item-content>
                                     <v-list-item-title class="text-h6">
-                                        Hallo, <?= session()->get('first_name') . ' ' . session()->get('last_name') ?>
+                                        Hai, <?= session()->get('first_name') . ' ' . session()->get('last_name') ?>
                                     </v-list-item-title>
                                     <v-list-item-subtitle><?= session()->get('email') ?></v-list-item-subtitle>
                                 </v-list-item-content>
                             </v-list-item>
-                            <v-subheader>Login: &nbsp;<v-chip color="primary" small><?= session()->get('role') == 1 ? 'admin' : 'user'; ?></v-chip>
+                            <v-subheader>Login: &nbsp;<v-chip color="primary" small><?= session()->get('role') == 1 ? 'admin' : 'member'; ?></v-chip>
                             </v-subheader>
                             <v-list-item link href="<?= base_url(); ?>">
                                 <v-list-item-icon>
@@ -117,19 +119,18 @@ $snackbarsPosition = $setting->info['snackbars_position'];
             </v-app-bar>
 
             <v-navigation-drawer light class="elevation-3" v-model="sidebarMenu" app floating :permanent="sidebarMenu" :mini-variant.sync="mini" v-if="!isMobile">
-                <v-list color="primary" dark dense elevation="1">
+                <v-list light dense elevation="1">
                     <v-list-item>
                         <v-list-item-action>
                             <v-icon @click.stop="toggleMini = !toggleMini">mdi-chevron-left</v-icon>
                         </v-list-item-action>
                         <v-list-item-content>
-                            <v-list-item-title>
-                                <?= APP_WEB; ?>
+                            <v-list-item-title class="text-h6">
+                                <?= env('appName'); ?>
                             </v-list-item-title>
                         </v-list-item-content>
                     </v-list-item>
                 </v-list>
-
 
                 <v-list nav>
                     <?php $uri = new \CodeIgniter\HTTP\URI(current_url()); ?>
@@ -158,7 +159,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
                                 <v-icon>mdi-account</v-icon>
                             </v-list-item-icon>
                             <v-list-item-content class="text-truncate">
-                                <?= session()->get('email') ?>
+                                <?= lang('App.myProfile') ?>
                             </v-list-item-content>
                         </v-list-item>
                     <?php endif; ?>
@@ -168,7 +169,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
                 <template v-slot:append>
                     <v-divider></v-divider>
                     <div class="pa-3 text-center text-caption">
-                        <span>&copy; {{ new Date().getFullYear() }} <?= COMPANY_NAME; ?></span>
+                        <img src="<?= base_url('images/logo.png') ?>" alt="Logo" width="35">
                     </div>
                 </template>
 
@@ -218,12 +219,19 @@ $snackbarsPosition = $setting->info['snackbars_position'];
             </v-navigation-drawer>
 
             <v-main>
-                <v-container class="px-5 py-1" fluid>
-                    <div class="py-4">
+                <v-container class="px-5 py-5" fluid>
+                    <div class="mb-10">
                         <?= $this->renderSection('content') ?>
                     </div>
+                    <br />
+                    <v-footer absolute>
+                        <p class="text-caption mb-0">
+                            &copy; 2020-{{ new Date().getFullYear() }} <?= env('appCompany'); ?> Software <?= env('appVersion'); ?> All rights reserved
+                        </p>
+                    </v-footer>
                 </v-container>
             </v-main>
+
 
             <v-snackbar v-model="snackbar" :timeout="timeout" style="bottom:20px;">
                 <span v-if="snackbar">{{snackbarMessage}}</span>
@@ -305,6 +313,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
                 }
             }
         }
+        var updatedVue = function() {}
         var watchVue = {
             toggleMini: function() {
                 localStorage.setItem("toggle_mini", this.toggleMini);
@@ -400,7 +409,13 @@ $snackbarsPosition = $setting->info['snackbars_position'];
                     })
                     .catch(err => {
                         // handle error
-                        console.log(err.response);
+                        console.log(err);
+                        var error = err.response;
+                        if (error.data.expired == true) {
+                            this.snackbar = true;
+                            this.snackbarMessage = error.data.message;
+                            setTimeout(() => window.location.href = error.data.data.url, 1000);
+                        }
                     })
             },
         }
@@ -415,6 +430,7 @@ $snackbarsPosition = $setting->info['snackbars_position'];
             data: dataVue,
             mounted: mountedVue,
             created: createdVue,
+            updated: updatedVue,
             watch: watchVue,
             methods: methodsVue
         })

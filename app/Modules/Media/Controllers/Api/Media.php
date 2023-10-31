@@ -3,6 +3,7 @@ namespace App\Modules\Media\Controllers\Api;
 
 use App\Controllers\BaseControllerApi;
 use App\Modules\Media\Models\MediaModel;
+use CodeIgniter\I18n\Time;
 
 class Media extends BaseControllerApi
 {
@@ -11,16 +12,17 @@ class Media extends BaseControllerApi
 
 	public function create()
     {
-        $gambar = $this->request->getFile('productImage');
-        $fileName = $gambar->getRandomName();
-        if ($gambar !== "") {
-            $path = "images/";
-            $moved = $gambar->move($path, $fileName);
+        $image = $this->request->getFile('productImage');
+        $fileName = $image->getRandomName();
+        if ($image !== "") {
+            $path = "images/products/";
+            $moved = $image->move($path, $fileName);
             if ($moved) {
-                $simpan = $this->model->save([
+                $save = $this->model->save([
+                    'media_id' => strtotime(Time::now()),
                     'media_path' => $path . $fileName
                 ]);
-                if ($simpan) {
+                if ($save) {
                     return $this->respond(["status" => true, "message" => lang('App.imgSuccess'), "data" => $this->model->getInsertID()], 200);
                 } else {
                     return $this->respond(["status" => false, "message" => lang('App.imgFailed'), "data" => []], 200);
