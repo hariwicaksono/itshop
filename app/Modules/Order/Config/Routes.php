@@ -5,11 +5,12 @@ if (!isset($routes)) {
 }
 
 $routes->group('admin', ['filter' => 'auth', 'namespace' => 'App\Modules\Order\Controllers'], function ($routes) {
-	$routes->get('order', 'Order::index');
+	$routes->get('orders', 'Order::index');
 });
 
 $routes->group('openapi', ['namespace' => 'App\Modules\Order\Controllers\Api'], function ($routes) {
 	$routes->get('order/count/pending_processed', 'Order::countUserOrder');
+	$routes->get('order/push_neworder', 'Order::pushNewOrder');
 });
 
 $routes->group('api', ['filter' => 'jwtauth', 'namespace' => 'App\Modules\Order\Controllers\Api'], function ($routes) {
@@ -28,4 +29,5 @@ $routes->group('api', ['filter' => 'jwtauth', 'namespace' => 'App\Modules\Order\
 	$routes->get('order/count/new_order', 'Order::countNewOrder');
 	$routes->get('order/count/pending_processed', 'Order::countUserOrder');
 	$routes->put('order/update_link_gdrive/(:segment)', 'Order::updateLinkGdrive/$1');
+	$routes->post('order/save_manual', 'Order::create1');
 });

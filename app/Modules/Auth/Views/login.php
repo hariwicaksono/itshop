@@ -1,7 +1,7 @@
 <?php $this->extend("layouts/app-front"); ?>
 <?php $this->section("content"); ?>
 <template>
-    <v-container class="primary px-4 py-15" fill-height fluid>
+    <v-container class="px-4 py-15" fill-height fluid>
         <v-layout flex align-center justify-center>
             <v-flex xs12 sm8 md8>
                 <?php if (session()->getFlashdata('success')) { ?>
@@ -9,7 +9,7 @@
                         <?= session()->getFlashdata('success') ?>
                     </v-alert>
                 <?php } ?>
-                <v-card>
+                <v-card outlined>
                     <v-card-text>
                         <v-row>
                             <v-col cols="12" sm="5" style="background-image: url('https://picsum.photos/800/600?random') !important;background-position: center;background-repeat: no-repeat;-webkit-background-size: cover;-moz-background-size: cover;-o-background-size: cover;background-size: cover;">

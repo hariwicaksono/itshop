@@ -1,7 +1,10 @@
 <?php $this->extend("layouts/app-front"); ?>
 <?php $this->section("content"); ?>
 <template>
-    <v-container>
+    <v-container class="mt-3">
+        <v-card outlined>
+            <v-breadcrumbs :items="itemsBC"></v-breadcrumbs>
+        </v-card>
         <div class="mt-3" v-if="loading == true">
             <v-skeleton-loader type="heading" class="mb-4"></v-skeleton-loader>
             <v-skeleton-loader type="paragraph" class="mb-3"></v-skeleton-loader>
@@ -45,9 +48,17 @@
 
     dataVue = {
         ...dataVue,
+        itemsBC: [{
+            text: 'Home',
+            disabled: false,
+            href: '/',
+        }, {
+            text: '<?= $title; ?>',
+            disabled: true,
+            href: '',
+        }, ],
         dataPage: [],
         slug: "<?= $slug; ?>"
-
     }
 
     var errorKeys = []

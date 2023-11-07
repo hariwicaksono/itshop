@@ -26,7 +26,7 @@
                                     <v-list-item class="ma-n3 pa-n3" two-line>
                                         <v-list-item-avatar size="80" rounded>
                                             <v-img lazy-src="<?= base_url('images/no_image.jpg') ?>" :src="'<?= base_url() ?>' + item.media_path" v-if="item.media_path != null"></v-img>
-                                            <v-img src="<?= base_url('images/no_image.jpg') ?>" v-else></v-img>
+                                            <v-img lazy-src="<?= base_url('images/no_image.jpg') ?>" src="<?= base_url('images/no_image.jpg') ?>" v-else></v-img>
                                         </v-list-item-avatar>
                                         <v-list-item-content>
                                             <p class="text-subtitle-2 text-underlined primary--text">{{item.product_name}}</p>
@@ -364,7 +364,7 @@
                             <v-text-field label="" v-model="productPriceEdit" type="number" prefix="Rp" outlined></v-text-field>
 
                             <v-checkbox v-model="checkDiscount" label="Aktifkan <?= lang('App.discount') ?>" class="mt-n2"></v-checkbox>
-                            <v-text-field v-model="discount" label="<?= lang('App.discount') ?> (Rp)" type="number" :error-messages="discountError" prefix="Rp" :suffix=" discountPercent.toFixed() + '%'" @focus="$event.target.select()" outlined v-show="checkDiscount == true"></v-text-field>
+                            <v-text-field v-model="discountEdit" label="<?= lang('App.discount') ?> (Rp)" type="number" :error-messages="discountError" prefix="Rp" :suffix=" discountPercentEdit.toFixed() + '%'" @focus="$event.target.select()" outlined v-show="checkDiscount == true"></v-text-field>
                         </v-col>
                     </v-row>
                     <v-row>
@@ -673,7 +673,7 @@
                                 <v-text-field label="" v-model="productPriceEdit" type="number" :error-messages="product_priceError" prefix="Rp" outlined></v-text-field>
 
                                 <v-checkbox v-model="checkDiscount" label="Aktifkan <?= lang('App.discount') ?>" class="mt-n2"></v-checkbox>
-                                <v-text-field v-model="discount" label="<?= lang('App.discount') ?> (Rp)" type="number" :error-messages="discountError" prefix="Rp" :suffix=" discountPercent.toFixed() + '%'" @focus="$event.target.select()" outlined v-show="checkDiscount == true"></v-text-field>
+                                <v-text-field v-model="discountEdit" label="<?= lang('App.discount') ?> (Rp)" type="number" :error-messages="discountError" prefix="Rp" :suffix=" discountPercentEdit.toFixed() + '%'" @focus="$event.target.select()" outlined v-show="checkDiscount == true"></v-text-field>
                             </v-col>
                         </v-row>
                         <v-row>
@@ -729,7 +729,7 @@
         <v-dialog v-model="modalDelete" persistent max-width="600px">
             <v-card class="pa-2">
                 <v-card-title>
-                    <v-icon color="error" class="mr-2" x-large>mdi-alert-octagon</v-icon> Confirm Delete
+                    <v-icon color="error" class="mr-2" x-large>mdi-alert-octagon</v-icon> <?= lang('App.confirm'); ?> <?= lang('App.delete'); ?>
                 </v-card-title>
                 <v-card-text>
                     <div class="mt-3 py-4">
@@ -888,8 +888,10 @@
         link_demoError: "",
         checkDiscount: false,
         discount: 0,
+        discountEdit: 0,
         discountError: "",
         discountPercent: 0,
+        discountPercentEdit: 0,
         stock: "",
         stockError: "",
         active: "",
@@ -990,10 +992,18 @@
                 let hitung = Number(this.productPrice) - Number(this.discount)
                 let persen = Number(this.productPrice) - hitung
                 this.discountPercent = (persen / Number(this.productPrice)) * 100;
+            }
+        },
 
-                let hitungEdit = Number(this.productPriceEdit) - Number(this.discount)
+        discountEdit: function() {
+            if (Number(this.discountEdit) == 0) {
+                this.discountPercentEdit = 0;
+            }
+
+            if (Number(this.discountEdit) > 0) {
+                let hitungEdit = Number(this.productPriceEdit) - Number(this.discountEdit)
                 let persenEdit = Number(this.productPriceEdit) - hitungEdit
-                this.discountPercent = (persenEdit / Number(this.productPriceEdit)) * 100;
+                this.discountPercentEdit = (persenEdit / Number(this.productPriceEdit)) * 100;
             }
         },
 
@@ -1630,7 +1640,7 @@
                         this.getProducts();
                         this.productCode = "";
                         this.productName = "";
-                        this.productPrice = "";
+                        this.productPrice = 0;
                         this.productDescription = "";
                         this.productImage = null;
                         this.productImage1 = null;
@@ -1644,7 +1654,24 @@
                         this.media4 = "";
                         this.checkDiscount = false;
                         this.discount = 0;
-                        this.linkDemo = 0;
+                        this.linkDemo = null;
+
+                        this.image = null;
+                        this.imagePreview = null;
+                        this.overlay = false;
+                        this.image1 = null;
+                        this.imagePreview1 = null;
+                        this.overlay1 = false;
+                        this.image2 = null;
+                        this.imagePreview2 = null;
+                        this.overlay2 = false;
+                        this.image3 = null;
+                        this.imagePreview3 = null;
+                        this.overlay3 = false;
+                        this.image4 = null;
+                        this.imagePreview4 = null;
+                        this.overlay4 = false;
+
                         this.alert = false;
                         this.modalAdd = false;
                         this.$refs.form.resetValidation();
@@ -1701,8 +1728,8 @@
             this.mediaPath2 = product.media_path2;
             this.mediaPath3 = product.media_path3;
             this.mediaPath4 = product.media_path4;
-            this.discount = product.discount;
-            if (Number(this.discount) > 0) {
+            this.discountEdit = product.discount;
+            if (Number(this.discountEdit) > 0) {
                 this.checkDiscount = true;
             }
             this.linkdemoEdit = product.link_demo;
@@ -1731,8 +1758,8 @@
             this.mediaPath2 = product.media_path2;
             this.mediaPath3 = product.media_path3;
             this.mediaPath4 = product.media_path4;
-            this.discount = product.discount;
-            if (Number(this.discount) > 0) {
+            this.discountEdit = product.discount;
+            if (Number(this.discountEdit) > 0) {
                 this.checkDiscount = true;
             }
             this.linkdemoEdit = product.link_demo;
@@ -1750,7 +1777,7 @@
             if (this.checkDiscount == false) {
                 var discount = 0;
             } else {
-                var discount = this.discount;
+                var discount = this.discountEdit;
             }
             axios.put(`<?= base_url() ?>api/product/update/${this.productIdEdit}`, {
                     category_id: this.idCategoryEdit,
@@ -1792,8 +1819,8 @@
                         this.imagePreview4 = null;
                         this.checkDiscount = false;
                         this.discount = 0;
-                        this.linkdemoEdit = "",
-                            this.getProducts();
+                        this.linkdemoEdit = "";
+                        this.getProducts();
                         this.modalEdit = false;
                         this.alert = false;
                         this.$refs.form.resetValidation();

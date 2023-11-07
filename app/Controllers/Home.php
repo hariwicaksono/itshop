@@ -21,7 +21,9 @@ class Home extends BaseController
 		return view('home', [
 			'title' => $this->setting->info['title_home'],
 			'app_name' => $this->setting->info['app_name'],
+			'company_name' => $this->setting->info['company_nama'],
 			'telepon' => $this->setting->info['company_telepon'],
+			'wa_text' => $this->setting->info['wa_text'],
 		]);
 	}
 
@@ -39,6 +41,7 @@ class Home extends BaseController
 			'productSold' => $sold,
 			'app_name' => $this->setting->info['app_name'],
 			'telepon' => $this->setting->info['company_telepon'],
+			'wa_text' => $this->setting->info['wa_text'],
 		]);
 	}
 

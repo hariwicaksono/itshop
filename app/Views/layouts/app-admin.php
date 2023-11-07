@@ -3,9 +3,13 @@
 use App\Libraries\Settings;
 
 $setting = new Settings();
+$appName = $setting->info['app_name'];
+$companyNama = $setting->info['company_nama'];
 $snackbarsPosition = $setting->info['snackbars_position'];
 $navbarColor = $setting->info['navbar_color'];
 $sidebarColor = $setting->info['sidebar_color'];
+$imgLogo = $setting->info['img_logo'];
+$imgNavbar = $setting->info['img_navbar'];
 ?>
 <!--
 PT ITSHOP BISNIS DIGITAL
@@ -21,10 +25,10 @@ Modified: 07-2023
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
-    <title><?= $title ?? ""; ?> - <?= env('appName'); ?></title>
+    <title><?= $title ?? ""; ?> | <?= env('appName'); ?></title>
     <meta name="theme-color" content="#FFFFFF" />
-    <link rel="apple-touch-icon" href="<?= base_url('images/logo.png') ?>">
-    <link rel="shortcut icon" href="<?= base_url('images/logo.png') ?>">
+    <link rel="apple-touch-icon" href="<?= base_url('images/') . $imgLogo; ?>">
+    <link rel="shortcut icon" href="<?= base_url('images/') . $imgLogo; ?>">
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
     <link href="<?= base_url('assets/css/materialdesignicons.min.css') ?>" rel="stylesheet">
     <link href="<?= base_url('assets/css/vuetify.min.css') ?>" rel="stylesheet">
@@ -38,7 +42,7 @@ Modified: 07-2023
     <!-- ========================= preloader start ========================= -->
     <div class="preloader">
         <div class="loader">
-            <div class="loader-logo"><img src="<?= base_url('images/logo.png') ?>" alt="Preloader" width="65" style="margin-top: 5px;"></div>
+            <div class="loader-logo"><img src="<?= base_url('images/') . $imgLogo; ?>" alt="Preloader" width="65" style="margin-top: 5px;"></div>
             <div class="spinner">
                 <div class="spinner-container">
                     <div class="spinner-rotator">
@@ -144,7 +148,7 @@ Modified: 07-2023
                             </v-list-item-content>
                         </v-list-item>
 
-                        <v-list-item  color="white"  link href="<?= base_url('admin/order'); ?>" <?php if ($uri->getSegment(2) == "order") { ?> <?php echo 'class="v-item--active v-list-item--active"'; ?> <?php } ?>>
+                        <v-list-item  color="white"  link href="<?= base_url('admin/orders'); ?>" <?php if ($uri->getSegment(2) == "orders") { ?> <?php echo 'class="v-item--active v-list-item--active"'; ?> <?php } ?>>
                             <v-list-item-icon>
                                 <v-icon>mdi-receipt-text</v-icon><v-badge color="error" dot overlap v-show="orderCounter > 0"></v-badge>
                             </v-list-item-icon>
@@ -153,7 +157,7 @@ Modified: 07-2023
                             </v-list-item-content>
                         </v-list-item>
 
-                        <v-list-item  color="white"  link href="<?= base_url('admin/product'); ?>" <?php if ($uri->getSegment(2) == "product") { ?> <?php echo 'class="v-item--active v-list-item--active"'; ?> <?php } ?>>
+                        <v-list-item  color="white"  link href="<?= base_url('admin/products'); ?>" <?php if ($uri->getSegment(2) == "products") { ?> <?php echo 'class="v-item--active v-list-item--active"'; ?> <?php } ?>>
                             <v-list-item-icon>
                                 <v-icon>mdi-package-variant-closed</v-icon>
                             </v-list-item-icon>
@@ -200,7 +204,7 @@ Modified: 07-2023
 
                         <v-divider></v-divider>
 
-                        <v-list-group color="white" v-for="(item, i) in exports" :key="item.title" v-model="item.active" :prepend-icon="item.action">
+                        <!-- <v-list-group color="white" v-for="(item, i) in exports" :key="item.title" v-model="item.active" :prepend-icon="item.action">
                             <template v-slot:activator>
                                 <v-list-item-content>
                                     <v-list-item-title v-text="item.title"></v-list-item-title>
@@ -215,8 +219,7 @@ Modified: 07-2023
                                     <v-list-item-title v-text="child.title"></v-list-item-title>
                                 </v-list-item-content>
                             </v-list-item>
-                        </v-list-group>
-
+                        </v-list-group> -->
 
                         <v-divider></v-divider>
 
@@ -253,7 +256,7 @@ Modified: 07-2023
                 <template v-slot:append>
                     <v-divider></v-divider>
                     <div class="pa-3 text-center text-caption white--text">
-                        <img src="<?= base_url('images/logo.png') ?>" alt="Logo" width="35">
+                        <img src="<?= base_url('images/') . $imgLogo; ?>" alt="Logo" width="35">
                     </div>
                 </template>
 

@@ -8,7 +8,7 @@
     <?php } ?>
     <v-row>
         <v-col lg="4" cols="sm" class="pb-2">
-            <v-card link href="<?= base_url('admin/order'); ?>" min-height="130px">
+            <v-card link href="<?= base_url('admin/orders'); ?>" min-height="130px">
                 <div class="pa-5">
                     <h2 class="text-h5 font-weight-medium mb-2"><?= lang('App.order'); ?>
                         <v-icon x-large class="green--text text--lighten-1 float-right">mdi-cart</v-icon>
@@ -18,7 +18,7 @@
             </v-card>
         </v-col>
         <v-col lg="4" cols="sm" class="pb-2">
-            <v-card link href="<?= base_url('admin/product'); ?>" min-height="130px">
+            <v-card link href="<?= base_url('admin/products'); ?>" min-height="130px">
                 <div class="pa-5">
                     <h2 class="text-h5 font-weight-medium mb-2"><?= lang('App.product'); ?>
                         <v-icon x-large class="primary--text text--lighten-1 float-right">mdi-package-variant-closed</v-icon>
@@ -28,7 +28,7 @@
             </v-card>
         </v-col>
         <v-col lg="4" cols="sm" class="pb-2">
-            <v-card link href="<?= base_url('admin/user'); ?>" min-height="130px">
+            <v-card link href="<?= base_url('admin/users'); ?>" min-height="130px">
                 <div class="pa-5">
                     <h2 class="text-h5 font-weight-medium mb-2">User
                         <v-icon x-large class="warning--text text--lighten-1 float-right">mdi-account-multiple</v-icon>

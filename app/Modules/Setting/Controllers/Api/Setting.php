@@ -65,8 +65,13 @@ class Setting extends BaseControllerApi
             $path = "images/";
             $moved = $image->move($path, $fileName);
             if ($moved) {
+                $image = \Config\Services::image()
+                    ->withFile($path . $fileName)
+                    ->resize(64, 64, true, 'height')
+                    ->save($path . 'res_' . $fileName );
+                    
                 $simpan = $this->model->update($id, [
-                    'setting_value' => $path . $fileName
+                    'setting_value' => $fileName
                 ]);
                 if ($simpan) {
                     return $this->respond(["status" => true, "message" => lang('App.imgSuccess'), "data" => [$path . $fileName]], 200);

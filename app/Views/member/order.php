@@ -54,15 +54,15 @@
                                         {{item.shipment}}<br />
                                         <strong><?= lang('App.payment'); ?></strong><br />
                                         {{item.payment_name}} / <em>{{item.status_payment}}</em> &nbsp;
-                                        <span v-if="item.payment == 2 && item.status == 0">
+                                        <span v-if="item.payment_id == 2 && item.status == 0">
                                             <v-btn text @click="modalAddOpen(item)" elevation="1">
                                                 <v-icon color="error">mdi-alert-octagon</v-icon> <?= lang('App.confirm') ?>
                                             </v-btn>
                                         </span>
-                                        <span v-else-if="item.payment == 1 && item.status == 2">
+                                        <span v-else-if="item.payment_id == 1 && item.status == 2">
                                             <v-icon color="success">mdi-check-circle</v-icon>
                                         </span>
-                                        <span v-else-if="item.payment == 1 && item.status == 3">
+                                        <span v-else-if="item.payment_id == 1 && item.status == 3">
                                             <v-icon color="error">mdi-alert-circle</v-icon>
                                         </span>
                                         <p class="text-subtitle-2 mb-0"><strong>Total <?= lang('App.order'); ?></strong><br />
@@ -125,7 +125,7 @@
                                         {{item.shipment}}<br />
                                         <strong><?= lang('App.payment'); ?></strong><br />
                                         {{item.payment_name}} / <em>{{item.status_payment}}</em> &nbsp;
-                                        <span v-if="item.payment == 2 && item.status == 0">
+                                        <span v-if="item.payment_id == 2 && item.status == 0">
                                             <v-btn text @click="modalAddOpen(item)" elevation="1">
                                                 <v-icon color="error">mdi-alert-octagon</v-icon> <?= lang('App.confirm') ?>
                                             </v-btn>

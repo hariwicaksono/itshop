@@ -11,7 +11,7 @@
             <v-card-text class="py-5">
                 <?= lang('App.orderSuccess'); ?>, Pesanan telah berhasil dikonfirmasi oleh pihak Payment Gateway.<br />Mohon tunggu pesanan dikirimkan.<br /><br />
                 Terima Kasih<br />
-                <?= $companyName . ' (' . COMPANY_NAME . ')'; ?>
+                <?= $companyName . ' (' . env('appCompany') . ')'; ?>
             </v-card-text>
             <v-card-actions>
                 <v-spacer></v-spacer>

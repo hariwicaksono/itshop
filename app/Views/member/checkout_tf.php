@@ -30,7 +30,7 @@ function Ribuan($angka)
                 <?php endforeach; ?>
                 <br />
                 Terima Kasih<br />
-                <?= $companyName . ' (' . COMPANY_NAME . ')'; ?>
+                <?= $companyName . ' (' . env('appCompany') . ')'; ?>
             </v-card-text>
             <v-card-actions>
                 <v-spacer></v-spacer>

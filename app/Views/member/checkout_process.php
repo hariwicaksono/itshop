@@ -10,11 +10,22 @@
             <v-card-text class="py-5">
                 <h3 class="font-weight-medium"><?= lang('App.yourOrder'); ?></h3>
                 <v-row class="my-1" v-for="item in carts" :key="item.cart_id">
-                    <v-col cols="2">
-                        <v-avatar size="80px" rounded><img v-bind:src="'<?= base_url(); ?>' + item.media_path" /></v-avatar>
-                    </v-col>
-                    <v-col cols="10">
-                        <h3>{{item.product_name}} - Qty: {{item.qty}} - <?= lang('app.price'); ?>: {{RibuanLocale(item.product_price)}}</h3>
+                    <v-col cols="12">
+                        <v-avatar size="80px" rounded class="float-left me-3">
+                            <v-img lazy-src="<?= base_url('images/no_image.jpg') ?>" :src="'<?= base_url(); ?>' + item.media_path" v-if="item.media_path != null"></v-img>
+                            <v-img lazy-src="<?= base_url('images/no_image.jpg') ?>" src="<?= base_url('images/no_image.jpg') ?>" v-else></v-img>
+                        </v-avatar>
+                        <h2 class="font-weight-regular"><strong>{{item.product_name}}</strong> | Qty: {{item.qty}}
+                            <br />
+                            <?= lang('app.price'); ?>: <span v-if="item.discount > 0">
+                                {{ RibuanLocale(item.product_price - item.discount) }}
+                            </span>
+                            <span v-else>{{ RibuanLocale(item.product_price) }}</span>
+
+                            <span v-show="item.discount > 0">
+                                <p class="text-body-2 mb-0"><span class="text-decoration-line-through">{{ RibuanLocale(item.product_price) }}</span> <v-chip color="red" label x-small dark class="px-1" title="<?= lang('App.discount'); ?>">{{item.discount_percent}}%</v-chip></p>
+                            </span>
+                        </h2>
                     </v-col>
                 </v-row>
                 <h4 class="float-end">Total {{RibuanLocale(total)}}</h4>

@@ -31,7 +31,7 @@
                     <td><i>{{item.setting_description}}</i></td>
                     <td>{{item.updated_at}}</td>
                     <td>
-                        <div v-if="item.setting_variable == 'app_background' || item.setting_variable == 'app_logo'">
+                        <div v-if="item.setting_group == 'image'">
                             <v-btn color="primary" @click="editItem(item)" icon>
                                 <v-icon>mdi-camera</v-icon>
                             </v-btn>
@@ -75,10 +75,10 @@
                             </v-select>
                         </div>
 
-                        <div v-else-if="variableEdit == 'background' || variableEdit == 'background_masjid' ">
-                            <img v-bind:src="'<?= base_url() ?>' + valueEdit" width="150" class="mb-2" />
-                            <v-file-input v-model="image" show-size label="Image Upload" id="file" class="mb-2" accept=".jpg, .jpeg, .png" prepend-icon="mdi-camera" @change="onFileChange" @click:clear="onFileClear" :loading="loading2" outlined dense></v-file-input>
-                            <v-img :src="imagePreview" max-width="100">
+                        <div v-else-if="variableEdit == 'img_logo' || variableEdit == 'img_logo_sm' || variableEdit == 'img_navbar'">
+                            <img v-bind:src="'<?= base_url() ?>' + valueEdit" width="200" class="mb-0" />
+                            <v-file-input v-model="image" show-size label="Image Upload" id="file" class="mb-2" accept=".jpg, .jpeg, .png" prepend-icon="mdi-camera" @change="onFileChange" @click:clear="onFileClear" :loading="loading2"></v-file-input>
+                            <v-img :src="imagePreview" max-width="150">
                                 <v-overlay v-model="overlay" absolute :opacity="0.1">
                                     <v-btn small class="ma-2" color="success" dark>
                                         OK
@@ -90,7 +90,14 @@
                             </v-img>
                         </div>
 
+                        <div v-else-if="variableEdit == 'company_telepon'">
+                            <v-text-field v-model="valueEdit" v-on:keyup="changeNumber" :error-messages="setting_valueError" outlined></v-text-field>
+                        </div>
 
+                        <div v-else-if="variableEdit == 'navbar_color' || variableEdit == 'sidebar_color'">
+                            <v-select v-model="valueEdit" :items="dataTheme" item-text="text" item-value="value" :error-messages="setting_valueError" outlined>
+                            </v-select>
+                        </div>
 
                         <div v-else>
                             <v-textarea v-model="valueEdit" :error-messages="setting_valueError" rows="3" outlined></v-textarea>
@@ -100,7 +107,7 @@
                 <v-divider></v-divider>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <div v-if="variableEdit == 'background'">
+                    <div v-if="groupEdit == 'image'">
                         <v-btn large @click="modalEditClose" elevation="0">
                             Tutup
                         </v-btn>
@@ -163,6 +170,8 @@
         }
     };
 
+    var errorKeys = []
+
     dataVue = {
         ...dataVue,
         modalEdit: false,
@@ -215,9 +224,68 @@
         kota: "",
         dataProvinsi: [],
         provinsi: "",
+        dataTheme: [{
+            text: 'Primary',
+            value: 'primary'
+        }, {
+            text: 'Secondary',
+            value: 'secondary'
+        }, {
+            text: 'Accent',
+            value: 'accent'
+        }, {
+            text: 'Success',
+            value: 'success'
+        }, {
+            text: 'Warning',
+            value: 'warning'
+        }, {
+            text: 'Error',
+            value: 'error'
+        }, {
+            text: 'Blue',
+            value: 'blue'
+        }, {
+            text: 'Green',
+            value: 'green'
+        }, {
+            text: 'Yellow',
+            value: 'yellow'
+        }, {
+            text: 'Red',
+            value: 'red'
+        }, {
+            text: 'Indigo',
+            value: 'indigo'
+        }, {
+            text: 'Pink',
+            value: 'pink'
+        }, {
+            text: 'Purple',
+            value: 'purple'
+        }, {
+            text: 'Orange',
+            value: 'orange'
+        }, {
+            text: 'Cyan',
+            value: 'cyan'
+        }, {
+            text: 'Teal',
+            value: 'teal'
+        }, {
+            text: 'Grey',
+            value: 'grey'
+        }, {
+            text: 'Dark',
+            value: 'dark'
+        }, {
+            text: 'White',
+            value: 'white'
+        }, {
+            text: 'Black',
+            value: 'black'
+        }, ],
     }
-
-    var errorKeys = []
 
     createdVue = function() {
         axios.defaults.headers['Authorization'] = 'Bearer ' + token;
@@ -245,6 +313,13 @@
 
     methodsVue = {
         ...methodsVue,
+        changeNumber() {
+            if (this.valueEdit.length > 1) {
+            } else {
+                this.valueEdit = '62';
+            } 
+        },
+
         onFileChange() {
             const reader = new FileReader()
             reader.readAsDataURL(this.image)
@@ -385,6 +460,7 @@
                 .catch(err => {
                     // handle error
                     console.log(err);
+                    this.loading2 = false;
                     var error = err.response
                     if (error.data.expired == true) {
                         this.snackbar = true;

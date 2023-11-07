@@ -11,6 +11,7 @@ use App\Modules\User\Models\UserModel;
 use App\Libraries\Settings;
 use App\Modules\Log\Models\LogModel;
 use App\Modules\Tracking\Models\TrackingModel;
+use Pusher\Pusher;
 use CodeIgniter\I18n\Time;
 
 class Order extends BaseControllerApi
@@ -24,9 +25,11 @@ class Order extends BaseControllerApi
     protected $tracking;
     protected $log;
     protected $setting;
+    protected $pusher;
 
     public function __construct()
     {
+        helper('text');
         $this->product = new ProductModel();
         $this->cart = new CartModel();
         $this->user = new UserModel();
@@ -34,6 +37,18 @@ class Order extends BaseControllerApi
         $this->tracking = new TrackingModel();
         $this->log = new LogModel();
         $this->setting = new Settings();
+
+        //Options Pusher
+        $options = array(
+            'cluster' => 'ap1',
+            'useTLS' => true
+        );
+        $this->pusher = new Pusher(
+            env('PUSHER_APP_KEY'),
+            env('PUSHER_APP_SECRET'),
+            env('PUSHER_APP_ID'),
+            $options
+        );
     }
 
     public function index()
@@ -128,8 +143,8 @@ class Order extends BaseControllerApi
                 'user_id' => $user_id,
                 'qty' => $total_product,
                 'total' => $grandtotal,
-                'payment' => $payment,
-                'shipment' => $shipment,
+                'payment_id' => $payment,
+                'shipment_id' => $shipment,
                 'note' => $note,
                 'status' => 0,
                 'status_payment' => 'pending',
@@ -201,6 +216,15 @@ class Order extends BaseControllerApi
                     'note' => $note,
                 ];
                 sendEmail("Pesanan Baru #$no_order Siap Dikirim", $email, view('App\Modules\Order\Views\email/order_new_tf', $dataEmail));
+            }
+
+            //Pusher
+            if (@fsockopen('www.google.com', 80)) {
+                if ((env('PUSHER_APP_KEY') != "") && (env('PUSHER_APP_SECRET') != "") && (env('PUSHER_APP_ID') != "")) {
+                    $push['message'] = lang('App.refreshSuccess');
+                    $push['event'] = 'new_order';
+                    $this->pusher->trigger('my-channel', 'my-event', $push);
+                }
             }
 
             $response = [
@@ -456,6 +480,173 @@ class Order extends BaseControllerApi
             $response = [
                 'status' => true,
                 'message' => lang('App.updSuccess'),
+                'data' => []
+            ];
+            return $this->respond($response, 200);
+        }
+    }
+
+    public function create1()
+    {
+        $rules = [
+            'user_id' => [
+                'rules'  => 'required',
+                'errors' => []
+            ],
+            'payment' => [
+                'rules'  => 'required',
+                'errors' => []
+            ],
+            'shipment' => [
+                'rules'  => 'required',
+                'errors' => []
+            ],
+            'total' => [
+                'rules'  => 'required',
+                'errors' => []
+            ],
+            'status' => [
+                'rules'  => 'required',
+                'errors' => []
+            ],
+            'status_payment' => [
+                'rules'  => 'required',
+                'errors' => []
+            ],
+        ];
+
+        $noOrder = date('ymd') . strtoupper(random_string('alnum', 7));
+
+        if ($this->request->getJSON()) {
+            $json = $this->request->getJSON();
+            $no_order = $noOrder;
+            $user_id = $json->user_id;
+            $total = $json->total;
+            $payment = $json->payment;
+            $shipment = $json->shipment;
+            $note = $json->note;
+            $status = $json->status;
+            $status_payment = $json->status_payment;
+        } else {
+            $no_order = $noOrder;
+            $user_id = $this->request->getPost('user_id');
+            $total = $this->request->getPost('total');
+            $payment = $this->request->getPost('payment');
+            $shipment = $this->request->getPost('shipment');
+            $note = $this->request->getPost('note');
+            $status = $this->request->getPost('status');
+            $status_payment = $this->request->getPost('status_payment');
+        }
+
+        if (!$this->validate($rules)) {
+            $response = [
+                'status' => false,
+                'message' => lang('App.isRequired'),
+                'data' => $this->validator->getErrors(),
+            ];
+            return $this->respond($response, 200);
+        } else {
+            $input = $this->request->getVar('data');
+
+            $total_product = count($input);
+
+            $dataOrder = [
+                'no_order' => strtoupper($no_order),
+                'user_id' => $user_id,
+                'qty' => $total_product,
+                'total' => $total,
+                'payment_id' => $payment,
+                'shipment_id' => $shipment,
+                'note' => $note,
+                'status' => $status,
+                'status_payment' => $status_payment,
+                'periode' => date('m-Y'),
+            ];
+            $this->model->save($dataOrder);
+            $order_id = $this->model->getInsertID();
+
+            $arrCart = array();
+            foreach ($input as $key => $value) {
+                $product_id = $value;
+                $product = $this->product->find($product_id);
+                $price = $product['product_price'];
+                $discount = $product['discount'];
+                $discountPersen = $product['discount_percent'];
+                $stock = $product['stock'];
+                $qty = 1;
+                if ($discount == 0) {
+                    $total = $price ;
+                } else {
+                    $total = $price-$discount;
+                } 
+
+                $cart = array(
+                    'product_id' => $product_id,
+                    'user_id' => $user_id,
+                    'price' => $price,
+                    'discount' => $discount,
+                    'discount_percent' => $discountPersen,
+                    'stock' => $stock,
+                    'qty' => $qty,
+                    'total' => $total,
+                    'order_id' => $order_id,
+                );
+                array_push($arrCart, $cart);
+            }
+            $dataCart = $arrCart;
+            $this->cart->insertBatch($dataCart);
+
+            $arrStock = array();
+            foreach ($input as $key => $value) {
+                $product_id = $value;
+                $product = $this->product->find($product_id);
+
+                $stock = array(
+                    'product_id' => $product_id,
+                    'stock' => $product['stock'] - $qty,
+                );
+                array_push($arrStock, $stock);
+            }
+            $dataStock = $arrStock;
+            $this->product->updateBatch($dataStock, 'product_id');
+
+            //Simpan data Tracking
+            if ($order_id) {
+                $arrTracking = [
+                    ["order_id" => $order_id, "tracking_information" => "Pesanan berhasil dibuat", "created_at" => Time::now(), "updated_at" => null],
+                    ["order_id" => $order_id, "tracking_information" => "Menunggu pembayaran dan konfirmasi", "created_at" => Time::now()->addMinutes(1), "updated_at" => null],
+                    ["order_id" => $order_id, "tracking_information" => "Transaksi telah selesai", "created_at" => Time::now()->addMinutes(2), "updated_at" => null]
+                ];
+                $this->tracking->insertBatch($arrTracking);
+
+                //Simpan data Log
+                $this->log->save(['keterangan' => session('first_name') . ' ' . session('last_name') . ' (' . session('email') . ') ' . strtolower(lang('App.do')) . ' Create Pesanan Baru ID: ' . $order_id]);
+            }
+
+            $response = [
+                'status' => true,
+                'message' => lang('App.orderSuccess'),
+                'data' => [],
+            ];
+            return $this->respond($response, 200);
+        }
+    }
+
+    public function pushNewOrder()
+    {
+        $data = $this->model->getNewOrder();
+
+        if (!empty($data)) {
+            $response = [
+                "status" => true,
+                "message" => lang('App.getSuccess'),
+                "data" => $data
+            ];
+            return $this->respond($response, 200);
+        } else {
+            $response = [
+                'status' => false,
+                'message' => lang('App.noData'),
                 'data' => []
             ];
             return $this->respond($response, 200);

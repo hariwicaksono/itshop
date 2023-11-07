@@ -6,6 +6,9 @@
         <!-- Table List -->
         <v-card outlined elevation="1">
             <v-card-title>
+                <v-btn color="primary" dark @click="modalAddOpen" large elevation="1">
+                    <v-icon>mdi-plus</v-icon> <?= lang('App.add') ?>
+                </v-btn>
                 <v-spacer></v-spacer>
                 <v-text-field v-model="search" v-on:keydown.enter="getUsers" @click:clear="getUsers" append-icon="mdi-magnify" label="<?= lang("App.search") ?>" single-line hide-details clearable>
                 </v-text-field>
@@ -30,11 +33,14 @@
                             <v-select v-model="item.role" name="role" :items="roles" item-text="label" item-value="value" label="Select" single-line @change="setRole(item)" :disabled="item.username == 'admin'"></v-select>
                         </td>
                         <td>
-                            <v-switch v-model="item.active" name="active" false-value="0" true-value="1" color="success" @click="setActive(item)"  :disabled="item.username == 'admin'"></v-switch>
+                            <v-switch v-model="item.active" name="active" false-value="0" true-value="1" color="success" @click="setActive(item)" :disabled="item.username == 'admin'"></v-switch>
                         </td>
                         <td>
                             <v-btn icon color="primary" class="mr-2" @click="editItem(item)" title="Edit" alt="Edit">
                                 <v-icon>mdi-pencil</v-icon>
+                            </v-btn>
+                            <v-btn color="grey darken-2" @click="changePassword(item)" class="mr-3" title="Password" alt="Password" icon>
+                                <v-icon>mdi-key-variant</v-icon>
                             </v-btn>
                             <v-btn icon color="error" @click="deleteItem(item)" title="Delete" alt="Delete" :disabled="item.username == 'admin'">
                                 <v-icon>mdi-delete</v-icon>
@@ -47,6 +53,48 @@
         <!-- End Table List -->
     </v-col>
 </v-row>
+
+<!-- Modal Add -->
+<template>
+    <v-row justify="center">
+        <v-dialog v-model="modalAdd" persistent max-width="700px">
+            <v-card>
+                <v-card-title><?= lang('App.add') ?> User
+                    <v-spacer></v-spacer>
+                    <v-btn icon @click="modalAddClose">
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                </v-card-title>
+                <v-divider></v-divider>
+                <v-card-text class="py-5">
+                    <v-form v-model="valid" ref="form">
+                        <v-text-field v-model="email" :rules="[rules.email]" label="E-mail" :error-messages="emailError" outlined></v-text-field>
+
+                        <v-text-field v-model="userName" label="Username" :error-messages="usernameError" outlined required></v-text-field>
+
+                        <v-text-field v-model="firstName" label="First Name *" :error-messages="first_nameError" outlined></v-text-field>
+
+                        <v-text-field v-model="lastName" label="Last Name *" :error-messages="last_nameError" outlined></v-text-field>
+
+                        <v-text-field v-model="phone" v-on:keyup="changeNumber" label="Telepon *" :error-messages="phoneError" outlined></v-text-field>
+
+                        <v-text-field v-model="password" :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'" :rules="[rules.min]" :type="show1 ? 'text' : 'password'" label="Password" hint="<?= lang('App.minChar') ?>" counter @click:append="show1 = !show1" :error-messages="passwordError" outlined></v-text-field>
+
+                        <v-text-field block v-model="verify" :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'" :rules="[passwordMatch]" :type="show1 ? 'text' : 'password'" label="Confirm Password" counter @click:append="show1 = !show1" outlined></v-text-field>
+                    </v-form>
+                </v-card-text>
+                <v-divider></v-divider>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn large color="primary" @click="saveUser" :loading="loading">
+                        <v-icon>mdi-content-save</v-icon> <?= lang('App.save') ?>
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+    </v-row>
+</template>
+<!-- End Modal Add -->
 
 <!-- Modal Edit -->
 <template>
@@ -67,6 +115,7 @@
                                 <li class="grey--text text--darken-3" v-for="item in notifMessage">{{item}}</li>
                             </ol>
                         </v-alert>
+
                         <v-text-field label="Email *" v-model="emailEdit" :error-messages="emailError" outlined></v-text-field>
 
                         <v-row>
@@ -126,11 +175,18 @@
     <v-row justify="center">
         <v-dialog v-model="modalDelete" persistent max-width="600px">
             <v-card class="pa-2">
-                <v-card-title class="text-h5"><?= lang('App.delConfirm') ?></v-card-title>
+                <v-card-title>
+                    <v-icon color="error" class="mr-2" x-large>mdi-alert-octagon</v-icon> <?= lang('App.confirm'); ?> <?= lang('App.delete'); ?>
+                </v-card-title>
+                <v-card-text>
+                    <div class="mt-3 py-4">
+                        <h2 class="font-weight-regular"><?= lang('App.delConfirm') ?></h2>
+                    </div>
+                </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="blue darken-1" text @click="modalDelete = false"><?= lang("App.no") ?></v-btn>
-                    <v-btn color="blue darken-1" dark @click="deleteUser" :loading="loading"><?= lang("App.yes") ?></v-btn>
+                    <v-btn large text @click="modalDelete = false"><?= lang("App.no") ?></v-btn>
+                    <v-btn large color="error" dark @click="deleteUser" :loading="loading"><?= lang("App.yes") ?></v-btn>
                     <v-spacer></v-spacer>
                 </v-card-actions>
             </v-card>
@@ -138,10 +194,57 @@
     </v-row>
 </template>
 <!-- End Modal Delete Product -->
+
+<!-- Modal Password -->
+<template>
+    <v-row justify="center">
+        <v-dialog v-model="modalPassword" persistent max-width="700px">
+            <v-card>
+                <v-card-title>Password {{emailEdit}}
+                    <v-spacer></v-spacer>
+                    <v-btn icon @click="changePassClose">
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                </v-card-title>
+                <v-divider></v-divider>
+                <v-card-text class="py-5">
+                    <v-form ref="form" v-model="valid">
+
+                        <v-text-field label="Email *" v-model="emailEdit" :rules="[rules.email]" outlined disabled></v-text-field>
+
+                        <v-text-field v-model="password" :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'" :rules="[rules.min]" :type="show1 ? 'text' : 'password'" label="Password Baru" hint="<?= lang('App.minChar') ?>" counter @click:append="show1 = !show1" :error-messages="passwordError" outlined></v-text-field>
+
+                        <v-text-field block v-model="verify" :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'" :rules="[passwordMatch]" :type="show1 ? 'text' : 'password'" label="Confirm Password" counter @click:append="show1 = !show1" :error-messages="verifyError" outlined></v-text-field>
+                    </v-form>
+                </v-card-text>
+                <v-divider></v-divider>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn large color="primary" @click="updatePassword" :loading="loading">
+                        <v-icon>mdi-content-save</v-icon> <?= lang('App.update') ?>
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+    </v-row>
+</template>
+<!-- End Modal -->
 <?php $this->endSection("content") ?>
 
 <?php $this->section("js") ?>
 <script>
+    function randomString(L) {
+        var s = '';
+        var randomchar = function() {
+            var n = Math.floor(Math.random() * 62);
+            if (n < 10) return n; //1-10
+            if (n < 36) return String.fromCharCode(n + 55); //A-Z
+            return String.fromCharCode(n + 61); //a-z
+        }
+        while (s.length < L) s += randomchar();
+        return s;
+    }
+
     const token = JSON.parse(localStorage.getItem('access_token'));
     const options = {
         headers: {
@@ -152,6 +255,9 @@
 
     // Deklarasi errorKeys
     var errorKeys = []
+
+    const randNumber = Math.floor(Math.random() * 10000);
+    const randPass = randomString(12);
 
     dataVue = {
         ...dataVue,
@@ -194,9 +300,9 @@
         modalAdd: false,
         modalEdit: false,
         modalDelete: false,
-        userName: "",
+        userName: 'user' + randNumber,
         usernameError: "",
-        email: "",
+        email: 'user' + randNumber + "@gmail.com",
         emailError: "",
         role: "",
         active: "",
@@ -227,14 +333,28 @@
         provinsi: "",
         provinsi_idError: "",
         kabupaten: "",
-        kabupaten_kota_idError: ""
-
+        kabupaten_kota_idError: "",
+        show1: false,
+        password: randPass,
+        passwordError: "",
+        verify: randPass,
+        verifyError: "",
+        modalPassword: false
     }
 
     createdVue = function() {
         this.getUsers();
         this.getProvinsi();
         this.getKab();
+    }
+
+    // Vue Computed
+    // Computed: Properti-properti terolah (computed) yang kemudian digabung kedalam Vue instance
+    computedVue = {
+        ...computedVue,
+        passwordMatch() {
+            return () => this.password === this.verify || "<?= lang('App.samePassword') ?>";
+        }
     }
 
     watchVue = {
@@ -262,6 +382,12 @@
 
     methodsVue = {
         ...methodsVue,
+        changeNumber() {
+            if (this.phone.length > 1) {} else {
+                this.phone = '62';
+            }
+        },
+
         // Server-side paginate and sort
         getDataFromApi() {
             this.loading = true
@@ -367,8 +493,12 @@
             this.notifType = "";
         },
         modalAddClose: function() {
-            this.userName = "";
-            this.email = "";
+            const newrandNumber = Math.floor(Math.random() * 10000);
+            const newrandPass = randomString(12);
+            this.userName = 'user' + newrandNumber;
+            this.email = 'user' + newrandNumber + "@gmail.com";
+            this.password = newrandPass;
+            this.verify = newrandPass;
             this.modalAdd = false;
             this.$refs.form.resetValidation();
         },
@@ -377,9 +507,12 @@
         saveUser: function() {
             this.loading = true;
             axios.post(`<?= base_url() ?>api/user/save`, {
-                    username: this.userName,
                     email: this.email,
-                    active: this.active,
+                    username: this.userName,
+                    password: this.password,
+                    first_name: this.firstName,
+                    last_name: this.lastName,
+                    phone: this.phone
                 }, options)
                 .then(res => {
                     // handle success
@@ -389,8 +522,6 @@
                         this.snackbar = true;
                         this.snackbarMessage = data.message;
                         this.getUsers();
-                        this.userName = "";
-                        this.email = "";
                         this.modalAdd = false;
                         this.$refs.form.resetValidation();
                     } else {
@@ -399,6 +530,16 @@
                         this.snackbar = true;
                         this.snackbarMessage = data.message;
                         this.modalAdd = true;
+                        errorKeys = Object.keys(data.data);
+                        errorKeys.map((el) => {
+                            this[`${el}Error`] = data.data[el];
+                        });
+                        if (errorKeys.length > 0) {
+                            setTimeout(() => this.notifType = "", 4000);
+                            setTimeout(() => errorKeys.map((el) => {
+                                this[`${el}Error`] = "";
+                            }), 4000);
+                        }
                         this.$refs.form.validate();
                     }
                 })
@@ -638,7 +779,65 @@
                 })
         },
 
+        // Change Password
+        changePassword: function(user) {
+            this.modalPassword = true;
+            this.userIdEdit = user.user_id;
+            this.userNameEdit = user.username;
+            this.emailEdit = user.email;
+            this.fullnameEdit = user.fullname;
+        },
+        changePassClose: function() {
+            this.modalPassword = false;
+            const newrandPass = randomString(12);
+            this.password = newrandPass;
+            this.verify = newrandPass;
+            this.$refs.form.resetValidation();
+        },
 
+        updatePassword() {
+            this.loading = true;
+            axios.post('<?= base_url() ?>api/user/changePassword', {
+                    email: this.emailEdit,
+                    password: this.password,
+                    verify: this.verify
+                }, options)
+                .then(res => {
+                    // handle success
+                    this.loading = false
+                    var data = res.data;
+                    if (data.status == true) {
+                        this.submitted = true;
+                        this.snackbar = true;
+                        this.snackbarMessage = data.message;
+                        this.password = "";
+                        this.verify = "";
+                        this.modalPassword = false;
+                        this.$refs.form.resetValidation();
+                    } else {
+                        this.snackbar = true;
+                        this.snackbarMessage = data.message;
+                        errorKeys = Object.keys(data.data);
+                        errorKeys.map((el) => {
+                            this[`${el}Error`] = data.data[el];
+                        });
+                        if (errorKeys.length > 0) {
+                            setTimeout(() => errorKeys.map((el) => {
+                                this[`${el}Error`] = "";
+                            }), 4000);
+                        }
+                        this.modalPassword = true;
+                        this.$refs.form.validate();
+                    }
+                })
+                .catch(err => {
+                    // handle error
+                    this.loading = false;
+                    this.snackbar = true;
+                    this.snackbarMessage = err;
+                    console.log(err);
+                })
+        },
     }
 </script>
 <?php $this->endSection("js") ?>

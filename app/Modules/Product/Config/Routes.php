@@ -5,7 +5,7 @@ if (!isset($routes)) {
 }
 
 $routes->group('admin', ['filter' => 'auth', 'namespace' => 'App\Modules\Product\Controllers'], function ($routes) {
-	$routes->get('product', 'Product::index');
+	$routes->get('products', 'Product::index');
 });
 
 $routes->group('openapi', ['namespace' => 'App\Modules\Product\Controllers\Api'], function ($routes) {
@@ -25,4 +25,5 @@ $routes->group('api', ['filter' => 'jwtauth', 'namespace' => 'App\Modules\Produc
 	$routes->put('product/setstock/(:segment)', 'Product::setStock/$1');
 	$routes->put('product/setprice/(:segment)', 'Product::setPrice/$1');
 	$routes->get('product/sold/best_seller', 'Product::bestSeller');
+	$routes->post('product/total', 'Product::total');
 });

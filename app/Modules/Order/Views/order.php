@@ -41,6 +41,8 @@
         <!-- Table List Order -->
         <v-card>
             <v-card-title>
+                <!-- Button Add New Order -->
+                <v-btn large color="primary" dark @click="modalAddOpen" elevation="1"><v-icon>mdi-plus</v-icon> <?= lang('App.add') ?></v-btn>
                 <v-spacer></v-spacer>
                 <v-text-field v-model="search" v-on:keydown.enter="getOrder" @click:clear="getOrder" append-icon="mdi-magnify" label="<?= lang('App.search') ?>" single-line hide-details>
                 </v-text-field>
@@ -54,7 +56,7 @@
                         <td>{{RibuanLocale(item.total)}}</td>
                         <td>
                             {{item.payment_name}}
-                            <a @click="showConfirmation(item)" v-show="item.payment == '2'"><?= lang('App.see'); ?></a>
+                            <a @click="showConfirmation(item)" v-show="item.payment_id == '2'"><?= lang('App.see'); ?></a>
                         </td>
                         <td>
                             <v-select v-model="item.status" name="status" :items="list_status" item-text="label" item-value="value" label="Select Status" single-line @change="setStatus(item)"></v-select>
@@ -86,6 +88,72 @@
         <!-- End Table List -->
     </v-col>
 </v-row>
+
+<!-- Modal -->
+<!-- Modal Save -->
+<template>
+    <v-row justify="center">
+        <v-dialog v-model="modalAdd" scrollable persistent width="900px">
+            <v-card>
+                <v-card-title>
+                    <?= lang('App.add') ?> Order (Manual)
+                    <v-spacer></v-spacer>
+                    <v-btn icon @click="modalAddClose">
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                </v-card-title>
+                <v-divider></v-divider>
+                <v-card-text class="py-5">
+                    <v-form ref="form" v-model="valid">
+                        <v-autocomplete v-model="idUser" :items="dataUser" :item-text="dataUser =>`${dataUser.first_name} ${dataUser.last_name} (${dataUser.phone})`" item-value="user_id" label="Customer" :error-messages="user_idError" :loading="loading2" outlined>
+                            <template v-slot:prepend-item>
+                                <v-subheader class="mt-n3 mb-n3">{{ dataUser.length }} customer found</v-subheader>
+                                <v-list-item ripple @click="modalAddUserOpen">
+                                    <v-icon>mdi-account-plus</v-icon> &nbsp;<?= lang('App.add'); ?> Customer
+                                </v-list-item>
+                            </template>
+                        </v-autocomplete>
+
+                        <v-select v-model="selectedProduct" label="<?= lang('App.product'); ?>" :items="dataProduct" :item-text="dataProduct =>`${dataProduct.product_name} - Rp${dataProduct.product_price - dataProduct.discount}`" item-value="product_id" @change="getProductTotal" multiple chips attach :loading="loading2" outlined></v-select>
+
+                        <v-row>
+                            <v-col cols="12" md="6">
+                                <v-select v-model="shipment" :items="dataShipment" item-text="shipment" item-value="shipment_id" label="<?= lang('App.shipment'); ?>" :error-messages="shipmentError" :loading="loading2" outlined></v-select>
+                            </v-col>
+                            <v-col cols="12" md="6">
+                                <v-select v-model="payment" :items="dataPayment" item-text="payment" item-value="payment_id" label="<?= lang('App.payment'); ?>" :error-messages="paymentError" :loading="loading2" outlined></v-select>
+                            </v-col>
+                        </v-row>
+
+                        <v-row class="mt-n5">
+                            <v-col cols="12" md="4">
+                                <v-text-field type="number" v-model="totalRp" label="Total (Rp)" :error-messages="totalError" :loading="loading3" outlined></v-text-field>
+                            </v-col>
+                            <v-col cols="12" md="4">
+                                <v-select v-model="status" :items="list_status" item-text="label" item-value="value" label="Status Pesanan" :error-messages="statusError" outlined>
+                                </v-select>
+                            </v-col>
+                            <v-col cols="12" md="4">
+                                <v-select v-model="statusPayment" :items="list_payment" item-text="label" item-value="value" label="Status Pembayaran" :error-messages="status_paymentError" outlined>
+                                </v-select>
+                            </v-col>
+                        </v-row>
+
+                        <v-textarea v-model="note" label="<?= lang('App.note') ?> Order" rows="2" :error-messages="noteError" outlined></v-textarea>
+                    </v-form>
+                </v-card-text>
+                <v-divider></v-divider>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn large color="primary" @click="saveOrder" :loading="loading4">
+                        <v-icon>mdi-content-save</v-icon> <?= lang('App.save') ?>
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+    </v-row>
+</template>
+<!-- End Modal Save -->
 
 <!-- Modal Item Order -->
 <template>
@@ -277,10 +345,64 @@
 </template>
 <!-- End Modal Tracking -->
 
+<!-- Modal Add -->
+<template>
+    <v-row justify="center">
+        <v-dialog v-model="modalAddUser" persistent max-width="700px">
+            <v-card>
+                <v-card-title><?= lang('App.add') ?> User
+                    <v-spacer></v-spacer>
+                    <v-btn icon @click="modalAddUserClose">
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                </v-card-title>
+                <v-divider></v-divider>
+                <v-card-text class="py-5">
+                    <v-form v-model="valid" ref="form">
+                        <v-text-field v-model="email" :rules="[rules.email]" label="E-mail" :error-messages="emailError" outlined></v-text-field>
+
+                        <v-text-field v-model="userName" label="Username" :error-messages="usernameError" outlined required></v-text-field>
+
+                        <v-text-field v-model="firstName" label="First Name *" :error-messages="first_nameError" outlined></v-text-field>
+
+                        <v-text-field v-model="lastName" label="Last Name *" :error-messages="last_nameError" outlined></v-text-field>
+
+                        <v-text-field v-model="phone" v-on:keyup="changeNumber" label="Telepon *" :error-messages="phoneError" outlined></v-text-field>
+
+                        <v-text-field v-model="password" :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'" :rules="[rules.min]" :type="show1 ? 'text' : 'password'" label="Password" hint="<?= lang('App.minChar') ?>" counter @click:append="show1 = !show1" :error-messages="passwordError" outlined></v-text-field>
+
+                        <v-text-field block v-model="verify" :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'" :rules="[passwordMatch]" :type="show1 ? 'text' : 'password'" label="Confirm Password" counter @click:append="show1 = !show1" outlined></v-text-field>
+                    </v-form>
+                </v-card-text>
+                <v-divider></v-divider>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn large color="primary" @click="saveUser" :loading="loading5">
+                        <v-icon>mdi-content-save</v-icon> <?= lang('App.save') ?>
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+    </v-row>
+</template>
+<!-- End Modal Add -->
+
 <?php $this->endSection("content") ?>
 
 <?php $this->section("js") ?>
 <script>
+    function randomString(L) {
+        var s = '';
+        var randomchar = function() {
+            var n = Math.floor(Math.random() * 62);
+            if (n < 10) return n; //1-10
+            if (n < 36) return String.fromCharCode(n + 55); //A-Z
+            return String.fromCharCode(n + 61); //a-z
+        }
+        while (s.length < L) s += randomchar();
+        return s;
+    }
+
     const token = JSON.parse(localStorage.getItem('access_token'));
     const options = {
         headers: {
@@ -291,6 +413,9 @@
 
     // Deklarasi errorKeys
     var errorKeys = []
+
+    const randNumber = Math.floor(Math.random() * 10000);
+    const randPass = randomString(12);
 
     dataVue = {
         ...dataVue,
@@ -306,13 +431,13 @@
             value: 'email'
         }, {
             text: 'Tanggal',
-            value: 'tgl_input'
+            value: 'created_at'
         }, {
             text: 'Total',
             value: 'total'
         }, {
             text: '<?= lang('App.payment'); ?>',
-            value: 'payment'
+            value: 'payment_name'
         }, {
             text: '<?= lang('App.status'); ?>',
             value: 'status'
@@ -365,11 +490,19 @@
         noOrder: "",
         idOrder: "",
         qty: "",
+        qtyError: "",
         total: "",
+        totalRp: "",
+        totalError: "",
         payment: "",
+        paymentError: "",
         shipment: "",
+        shipmentError: "",
         status: "",
+        statusError: "",
         statusPayment: "",
+        status_paymentError: "",
+        modalAdd: false,
         modalEdit: false,
         modalOrder: false,
         modalConfirm: false,
@@ -382,11 +515,48 @@
         dataPaymentConfirm: [],
         dataTracking: [],
         linkGdrive: "",
-        link_gdriveError: ""
+        link_gdriveError: "",
+
+        dataProduct: [],
+        product: [],
+        selectedProduct: [],
+        dataUser: [],
+        idUser: "",
+        user_idError: "",
+        dataPayment: [],
+        dataShipment: [],
+        note: "",
+        noteError: "",
+
+        modalAddUser: false,
+        userName: 'user' + randNumber,
+        usernameError: "",
+        email: 'user' + randNumber + "@gmail.com",
+        emailError: "",
+        firstName: "",
+        first_nameError: "",
+        lastName: "",
+        last_nameError: "",
+        phone: "",
+        phoneError: "",
+        show1: false,
+        password: randPass,
+        passwordError: "",
+        verify: randPass,
+        verifyError: "",
     }
 
     createdVue = function() {
         this.getOrder();
+    }
+
+    // Vue Computed
+    // Computed: Properti-properti terolah (computed) yang kemudian digabung kedalam Vue instance
+    computedVue = {
+        ...computedVue,
+        passwordMatch() {
+            return () => this.password === this.verify || "<?= lang('App.samePassword') ?>";
+        }
     }
 
     watchVue = {
@@ -403,7 +573,7 @@
                 // Call server-side paginate and sort
                 this.getDataFromApi();
             }
-        }
+        },
     }
 
     methodsVue = {
@@ -582,6 +752,213 @@
             }, 0)
             this.total = sum;
             return sum
+        },
+
+        modalAddOpen: function() {
+            this.modalAdd = true;
+            this.shipment = "1";
+            this.status = "2";
+            this.statusPayment = "settlement";
+            this.getUser();
+            this.getProduct();
+            this.getPayment();
+            this.getShipment();
+        },
+        modalAddClose: function() {
+            this.modalAdd = false;
+            this.$refs.form.resetValidation();
+        },
+
+        getUser: function() {
+            this.loading2 = true;
+            axios.get(`<?= base_url() ?>api/user?role=2`, options)
+                .then(res => {
+                    // handle success
+                    this.loading2 = false;
+                    var data = res.data;
+                    this.dataUser = data.data;
+                    this.loading = false;
+                })
+                .catch(err => {
+                    // handle error
+                    console.log(err);
+                    var error = err.response
+                    if (error.data.expired == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = error.data.message;
+                        setTimeout(() => window.location.href = error.data.data.url, 1000);
+                    }
+                })
+        },
+
+        // Get Product
+        getProduct: function() {
+            this.loading2 = true;
+            axios.get('<?= base_url() ?>api/product', options)
+                .then(res => {
+                    // handle success
+                    this.loading2 = false;
+                    var data = res.data;
+                    if (data.status == true) {
+                        //this.snackbar = true;
+                        //this.snackbarMessage = data.message;
+                        this.dataProduct = data.data;
+                    } else {
+                        this.snackbar = true;
+                        this.snackbarMessage = data.message;
+                        this.dataProduct = data.data;
+                    }
+                })
+                .catch(err => {
+                    // handle error
+                    console.log(err);
+                    var error = err.response
+                    if (error.data.expired == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = error.data.message;
+                        setTimeout(() => window.location.href = error.data.data.url, 1000);
+                    }
+                })
+        },
+
+        // Get Product
+        getProductTotal: function() {
+            this.loading3 = true;
+            axios.post(`<?= base_url() ?>api/product/total`, {
+                    data: this.selectedProduct
+                }, options)
+                .then(res => {
+                    // handle success
+                    this.loading3 = false;
+                    var data = res.data;
+                    if (data.status == true) {
+                        //this.snackbar = true;
+                        //this.snackbarMessage = data.message;
+                        this.totalRp = data.data;
+                    } else {
+                        this.snackbar = true;
+                        this.snackbarMessage = data.message;
+                    }
+                })
+                .catch(err => {
+                    // handle error
+                    console.log(err);
+                    var error = err.response
+                    if (error.data.expired == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = error.data.message;
+                        setTimeout(() => window.location.href = error.data.data.url, 1000);
+                    }
+                })
+        },
+
+        getPayment: function() {
+            this.loading2 = true;
+            axios.get(`<?= base_url() ?>api/payment`, options)
+                .then(res => {
+                    // handle success
+                    this.loading2 = false;
+                    var data = res.data;
+                    this.dataPayment = data.data;
+                })
+                .catch(err => {
+                    // handle error
+                    console.log(err);
+                    var error = err.response
+                    if (error.data.expired == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = error.data.message;
+                        setTimeout(() => window.location.href = error.data.data.url, 1000);
+                    }
+                })
+        },
+
+        getShipment: function() {
+            this.loading2 = true;
+            axios.get(`<?= base_url() ?>api/shipment`, options)
+                .then(res => {
+                    // handle success
+                    this.loading2 = false;
+                    var data = res.data;
+                    this.dataShipment = data.data;
+                })
+                .catch(err => {
+                    // handle error
+                    console.log(err);
+                    var error = err.response
+                    if (error.data.expired == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = error.data.message;
+                        setTimeout(() => window.location.href = error.data.data.url, 1000);
+                    }
+                })
+        },
+
+        // Save Order
+        saveOrder: function() {
+            this.loading4 = true;
+            axios.post(`<?= base_url() ?>api/order/save_manual`, {
+                    user_id: this.idUser,
+                    total: this.totalRp,
+                    username: this.userName,
+                    payment: this.payment,
+                    shipment: this.shipment,
+                    note: this.note,
+                    status: this.status,
+                    status_payment: this.statusPayment,
+                    data: this.selectedProduct
+                }, options)
+                .then(res => {
+                    // handle success
+                    this.loading4 = false;
+                    var data = res.data;
+                    if (data.status == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = data.message;
+                        this.idUser = "";
+                        this.shipment = "1";
+                        this.payment = "";
+                        this.totalRp = "";
+                        this.status = "2";
+                        this.statusPayment = "settlement";
+                        this.note = "";
+                        this.selectedProduct = [];
+
+                        if (this.startDate != '' && this.endDate != '') {
+                            this.getOrderFiltered();
+                        } else {
+                            this.getOrder();
+                        }
+                        this.modalAdd = false;
+                        this.$refs.form.resetValidation();
+                    } else {
+                        this.snackbar = true;
+                        this.snackbarMessage = data.message;
+                        this.modalAdd = true;
+                        errorKeys = Object.keys(data.data);
+                        errorKeys.map((el) => {
+                            this[`${el}Error`] = data.data[el];
+                        });
+                        if (errorKeys.length > 0) {
+                            setTimeout(() => this.notifType = "", 4000);
+                            setTimeout(() => errorKeys.map((el) => {
+                                this[`${el}Error`] = "";
+                            }), 4000);
+                        }
+                        this.$refs.form.validate();
+                    }
+                })
+                .catch(err => {
+                    // handle error
+                    console.log(err.response);
+                    this.loading4 = false;
+                    var error = err.response
+                    if (error.data.expired == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = error.data.message;
+                        setTimeout(() => window.location.href = error.data.data.url, 1000);
+                    }
+                })
         },
 
         //Show Order
@@ -826,6 +1203,81 @@
                     // handle error
                     console.log(err.response);
                     this.loading1 = false
+                    var error = err.response
+                    if (error.data.expired == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = error.data.message;
+                        setTimeout(() => window.location.href = error.data.data.url, 1000);
+                    }
+                })
+        },
+
+        changeNumber() {
+            if (this.phone.length > 1) {
+            } else {
+                this.phone = '62';
+            } 
+        },
+
+        modalAddUserOpen: function() {
+            this.modalAddUser = true;
+            this.notifType = "";
+        },
+        modalAddUserClose: function() {
+            const newrandNumber = Math.floor(Math.random() * 10000);
+            const newrandPass = randomString(12);
+            this.userName = 'user' + newrandNumber;
+            this.email = 'user' + newrandNumber + "@gmail.com";
+            this.password = newrandPass;
+            this.verify = newrandPass;
+            this.modalAddUser = false;
+            this.$refs.form.resetValidation();
+        },
+
+        // Save User
+        saveUser: function() {
+            this.loading5 = true;
+            axios.post(`<?= base_url() ?>api/user/save`, {
+                    email: this.email,
+                    username: this.userName,
+                    password: this.password,
+                    first_name: this.firstName,
+                    last_name: this.lastName,
+                    phone: this.phone
+                }, options)
+                .then(res => {
+                    // handle success
+                    this.loading5 = false
+                    var data = res.data;
+                    if (data.status == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = data.message;
+                        this.getUser();
+                        this.modalAddUser = false;
+                        this.$refs.form.resetValidation();
+                    } else {
+                        this.notifType = "error";
+                        this.notifMessage = data.message;
+                        this.snackbar = true;
+                        this.snackbarMessage = data.message;
+                        this.modalAddUser = true;
+                        errorKeys = Object.keys(data.data);
+                        errorKeys.map((el) => {
+                            this[`${el}Error`] = data.data[el];
+                        });
+                        if (errorKeys.length > 0) {
+                            setTimeout(() => this.notifType = "", 4000);
+                            setTimeout(() => errorKeys.map((el) => {
+                                this[`${el}Error`] = "";
+                            }), 4000);
+                        }
+                        this.$refs.form.validate();
+                    }
+                })
+                .catch(err => {
+                    // handle error
+                    console.log(err.response);
+                    this.loading5 = false;
                     var error = err.response
                     if (error.data.expired == true) {
                         this.snackbar = true;

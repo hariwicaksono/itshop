@@ -2,8 +2,11 @@
 <?php $this->section("content"); ?>
 
 <template>
-    <v-container class="mb-5">
-        <v-breadcrumbs :items="itemsBC"></v-breadcrumbs>
+    <v-container class="mt-3 mb-5">
+        <v-card outlined>
+            <v-breadcrumbs :items="itemsBC"></v-breadcrumbs>
+        </v-card>
+        <br />
         <v-row>
             <v-col cols="12" sm="4">
                 <a :href="'<?= base_url() ?>' + image" target="_blank" v-if="image != null">
@@ -58,10 +61,10 @@
 
                 <h4 class="mb-3 mt-7"><?= lang('App.category'); ?>:</h4>
                 <v-chip close close-icon="mdi-check-circle">{{category}}</v-chip>
-         
+
                 <h4 class="mb-3 mt-7">Link Demo:</h4>
                 <v-btn text outlined :href="linkDemo" link target="_blank" :disabled="linkDemo == null"><v-icon>mdi mdi-link</v-icon> Link Demo</v-btn>
-   
+
                 <h4 class="mb-3 mt-7">Pengiriman:</h4>
                 <p><v-icon>mdi-map-marker-outline</v-icon> Dikirim dari <strong>Purwokerto, Kab. Banyumas</strong></p>
                 <ul>
@@ -73,11 +76,11 @@
                     <v-card-title>Atur jumlah pesanan</v-card-title>
                     <v-card-text>
                         <v-text-field v-model="qty" type="number" single-line prepend-icon="mdi-minus" append-outer-icon="mdi-plus" @click:append-outer="increment(products)" @click:prepend="decrement(products)" min="1" :error-messages="qtyError"></v-text-field>
-                        <span class="text-subtitle-1 font-weight-regular">Stock: <strong class="black--text">{{stock}}</strong></span>
-                        <h2 class="mb-5 mt-2"><span class="text-subtitle-1 font-weight-regular">Subtotal:</span> <span class="black--text">{{RibuanLocale(subTotal)}}</span></h2>
+                        <span class="text-subtitle-1 font-weight-regular">Stock: <strong>{{stock}}</strong></span>
+                        <h2 class="mb-5 mt-2"><span class="text-subtitle-1 font-weight-regular">Subtotal:</span> <span>{{RibuanLocale(subTotal)}}</span></h2>
 
                         <v-btn large block color="success" @click="sendWhatsApp(products)" elevation="1" class="mb-3">
-                            <v-icon>mdi-whatsapp</v-icon> Chat WhatsApp
+                            <v-icon>mdi-whatsapp</v-icon> <span class="d-flex d-sm-none d-md-none d-lg-flex d-xl-flex">Chat</span> WhatsApp
                         </v-btn>
                         <v-btn large block color="primary" @click="saveCart(products)" elevation="1" class="mb-3">
                             <v-icon>mdi-cart-plus</v-icon> <?= lang('App.carts'); ?>
@@ -300,7 +303,7 @@
 
         // send WhatsApp (Wa.me)
         sendWhatsApp: function(item) {
-            let encoded = encodeURIComponent('Halo Kak Admin <?= $app_name; ?>, Saya mau order ' + item.category_name + ': ' + item.product_name);
+            let encoded = encodeURIComponent('<?= $wa_text; ?> ' + item.category_name + ': ' + item.product_name);
             setTimeout(() => window.location.href = `https://wa.me/<?= $telepon; ?>?text=${encoded}`, 100);
         },
     }

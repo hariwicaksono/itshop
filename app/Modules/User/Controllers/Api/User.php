@@ -12,7 +12,14 @@ class User extends BaseControllerApi
 
     public function index()
     {
-        $data = $this->model->findAll();
+        $input = $this->request->getVar();
+        $role = $input['role'] ?? "";
+        if ($role == "") {
+            $data = $this->model->findAll();
+        } else {
+            $data = $this->model->where('role', 2)->findAll();
+        }
+
         if (!empty($data)) {
             $response = [
                 "status" => true,
@@ -33,6 +40,81 @@ class User extends BaseControllerApi
     public function show($id = null)
     {
         return $this->respond(['status' => true, 'message' => lang('App.getSuccess'), 'data' => $this->model->findUser($id)], 200);
+    }
+
+    public function create()
+    {
+        $rules = [
+            'email' => [
+                'rules'  => 'required',
+                'errors' => []
+            ],
+            'username' => [
+                'rules'  => 'required',
+                'errors' => []
+            ],
+            'password' => [
+                'rules'  => 'required',
+                'errors' => []
+            ],
+            'first_name' => [
+                'rules'  => 'required',
+                'errors' => []
+            ],
+            'last_name' => [
+                'rules'  => 'required',
+                'errors' => []
+            ],
+            'phone' => [
+                'rules'  => 'required',
+                'errors' => []
+            ],
+        ];
+
+        if ($this->request->getJSON()) {
+            $json = $this->request->getJSON();
+            $data = [
+                'email' => $json->email,
+                'username' => $json->username,
+                'password' => $json->password,
+                'role' => 2,
+                'active' => 0,
+                'first_name' => $json->first_name,
+                'last_name' => $json->last_name,
+                'phone' => $json->phone,
+                'kodepos' => 0
+            ];
+        } else {
+            $data = [
+                'email' => $this->request->getPost('email'),
+                'username' => $this->request->getPost('username'),
+                'password' => $this->request->getPost('password'),
+                'role' => 2,
+                'active' => 0,
+                'first_name' => $this->request->getPost('first_name'),
+                'last_name' => $this->request->getPost('last_name'),
+                'phone' => $this->request->getPost('phone'),
+                'kodepos' => 0
+            ];
+        }
+
+        if (!$this->validate($rules)) {
+            $response = [
+                'status' => false,
+                'message' => lang('App.isRequired'),
+                'data' => $this->validator->getErrors(),
+            ];
+            return $this->respond($response, 200);
+        } else {
+            $this->model->save($data);
+
+            $response = [
+                'status' => true,
+                'message' => lang('App.saveSuccess'),
+                'data' => [],
+            ];
+            return $this->respond($response, 200);
+        }
     }
 
     public function update($id = NULL)
@@ -80,16 +162,13 @@ class User extends BaseControllerApi
             ];
             return $this->respond($response, 200);
         } else {
-
-            $simpan = $this->model->update($id, $data);
-            if ($simpan) {
-                $response = [
-                    'status' => true,
-                    'message' => lang('App.updSuccess'),
-                    'data' => [],
-                ];
-                return $this->respond($response, 200);
-            }
+            $this->model->update($id, $data);
+            $response = [
+                'status' => true,
+                'message' => lang('App.updSuccess'),
+                'data' => [],
+            ];
+            return $this->respond($response, 200);
         }
     }
 
@@ -188,6 +267,53 @@ class User extends BaseControllerApi
                 'data' => []
             ];
             return $this->respond($response, 200);
+        }
+    }
+
+    public function changePassword()
+    {
+        $rules = [
+            'email' => 'required',
+            'password' => 'required|min_length[8]|max_length[255]',
+            'verify' => 'required|matches[password]'
+        ];
+
+        $input = $this->getRequestInput();
+
+        if (!$this->validate($rules)) {
+            return $this->getResponse(
+                [
+                    'status' => false,
+                    'message' => 'Error',
+                    'data' => $this->validator->getErrors()
+                ],
+                200
+            );
+        }
+
+        $user = $this->model->where(['email' => $input['email']])->first();
+        $user_id = $user['user_id'];
+        $user_data = [
+            'password' => $input['password'],
+        ];
+        if ($this->model->update($user_id, $user_data)) {
+            return $this->getResponse(
+                [
+                    'status' => true,
+                    'message' => lang('App.passChanged'),
+                    'data' => []
+                ],
+                200
+            );
+        } else {
+            return $this->getResponse(
+                [
+                    'status' => false,
+                    'message' => lang('App.regFailed'),
+                    'data' => []
+                ],
+                200
+            );
         }
     }
 }

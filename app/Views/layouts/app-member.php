@@ -3,9 +3,13 @@
 use App\Libraries\Settings;
 
 $setting = new Settings();
+$appName = $setting->info['app_name'];
+$companyNama = $setting->info['company_nama'];
 $snackbarsPosition = $setting->info['snackbars_position'];
 $navbarColor = $setting->info['navbar_color'];
 $sidebarColor = $setting->info['sidebar_color'];
+$imgLogo = $setting->info['img_logo'];
+$imgNavbar = $setting->info['img_navbar'];
 ?>
 <!--
 PT ITSHOP BISNIS DIGITAL
@@ -21,10 +25,10 @@ Modified: 07-2023
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
-    <title>Member - <?= env('appName'); ?></title>
+    <title>Member | <?= $appName; ?></title>
     <meta name="theme-color" content="#FFFFFF" />
-    <link rel="apple-touch-icon" href="<?= base_url('images/logo.png') ?>">
-    <link rel="shortcut icon" href="<?= base_url('images/logo.png') ?>">
+    <link rel="apple-touch-icon" href="<?= base_url('images/') . $imgLogo; ?>">
+    <link rel="shortcut icon" href="<?= base_url('images/') . $imgLogo; ?>">
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
     <link href="<?= base_url('assets/css/materialdesignicons.min.css') ?>" rel="stylesheet">
     <link href="<?= base_url('assets/css/vuetify.min.css') ?>" rel="stylesheet">
@@ -35,7 +39,7 @@ Modified: 07-2023
     <!-- ========================= preloader start ========================= -->
     <div class="preloader">
         <div class="loader">
-            <div class="loader-logo"><img src="<?= base_url('images/logo.png') ?>" alt="Preloader" width="65" style="margin-top: 5px;"></div>
+            <div class="loader-logo"><img src="<?= base_url('images/') . $imgLogo; ?>" alt="Preloader" width="65" style="margin-top: 5px;"></div>
             <div class="spinner">
                 <div class="spinner-container">
                     <div class="spinner-rotator">
@@ -169,7 +173,7 @@ Modified: 07-2023
                 <template v-slot:append>
                     <v-divider></v-divider>
                     <div class="pa-3 text-center text-caption">
-                        <img src="<?= base_url('images/logo.png') ?>" alt="Logo" width="35">
+                        <img src="<?= base_url('images/') . $imgLogo; ?>" alt="Logo" width="35">
                     </div>
                 </template>
 

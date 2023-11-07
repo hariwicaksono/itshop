@@ -9,13 +9,13 @@
                     <td>
                         <v-list-item class="ma-n3 pa-n3" two-line>
                             <v-list-item-avatar size="80" rounded>
-                                <v-img :src="'<?= base_url() ?>' + item.media_path" v-if="item.media_path != null"></v-img>
-                                <v-img src="<?= base_url('images/no_image.jpg') ?>" v-else></v-img>
+                                <v-img lazy-src="<?= base_url('images/no_image.jpg') ?>" :src="'<?= base_url() ?>' + item.media_path" v-if="item.media_path != null"></v-img>
+                                <v-img lazy-src="<?= base_url('images/no_image.jpg') ?>" src="<?= base_url('images/no_image.jpg') ?>" v-else></v-img>
                             </v-list-item-avatar>
                             <v-list-item-content>
                                 <p class="text-subtitle-1">
-                                    <a link :href="'<?= base_url('source-code/'); ?>' + item.slug" class="font-weight-regular text-decoration-none" title="" alt="">{{ item.product_name }}</a>
-                                    <v-chip color="red" label x-small dark class="px-1" title="<?= lang('App.discount'); ?>"><?= lang('App.discount'); ?> {{item.discount_percent}}%</v-chip>
+                                    <a link :href="'<?= base_url(); ?>' + item.category_slug + '/' + item.slug" class="font-weight-regular text-decoration-none" title="" alt="">{{ item.product_name }}</a>
+                                    <v-chip color="red" label x-small dark class="px-1" title="<?= lang('App.discount'); ?>" v-show="item.discount > 0"><?= lang('App.discount'); ?> {{item.discount_percent}}%</v-chip>
                                 </p>
                                 <p class="mb-0">Code: {{item.product_code ?? "-"}}</p>
                             </v-list-item-content>
@@ -24,7 +24,7 @@
                     <td width="200">
                         <v-text-field v-model="item.qty" type="number" single-line prepend-icon="mdi-minus" append-outer-icon="mdi-plus" @click:append-outer="increment(item)" @click:prepend="decrement(item)" @input="setQuantity(item)" min="1" hide-details></v-text-field>
                     </td>
-                    <td width="200">{{RibuanLocale(item.total)}}</td>
+                    <td width="200" class="text-subtitle-1">{{RibuanLocale(item.total)}}</td>
                     <td>
                         <v-btn icon @click="removeItem(item)">
                             <v-icon color="red">

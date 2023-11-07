@@ -44,8 +44,8 @@ class OrderModel extends Model
     {
         $this->select("{$this->table}.*, py.payment_id, py.payment as payment_name, sh.shipment, u.username, u.email, u.phone");
         $this->join("users u", "u.user_id = {$this->table}.user_id");
-        $this->join("payment py", "py.payment_id = {$this->table}.payment");
-        $this->join("shipment sh", "sh.shipment_id = {$this->table}.shipment");
+        $this->join("payment py", "py.payment_id = {$this->table}.payment_id");
+        $this->join("shipment sh", "sh.shipment_id = {$this->table}.shipment_id");
         if ($start != "" && $end != "") :
             $this->where("DATE({$this->table}.created_at) BETWEEN '$start' AND '$end'", null, false);
         endif;
@@ -57,8 +57,8 @@ class OrderModel extends Model
     {
         $this->select("{$this->table}.*, py.payment_id, py.payment as payment_name, py.account, py.number, sh.shipment, u.username, u.email, u.phone");
         $this->join("users u", "u.user_id = {$this->table}.user_id");
-        $this->join("payment py", "py.payment_id = {$this->table}.payment");
-        $this->join("shipment sh", "sh.shipment_id = {$this->table}.shipment");
+        $this->join("payment py", "py.payment_id = {$this->table}.payment_id");
+        $this->join("shipment sh", "sh.shipment_id = {$this->table}.shipment_id");
         $this->where("{$this->table}.order_id", $id);
         $query = $this->findAll();
         return $query;
@@ -68,8 +68,8 @@ class OrderModel extends Model
     {
         $this->select("{$this->table}.*, py.payment_id, py.payment as payment_name, sh.shipment, u.username, u.email, u.phone");
         $this->join("users u", "u.user_id = {$this->table}.user_id");
-        $this->join("payment py", "py.payment_id = {$this->table}.payment");
-        $this->join("shipment sh", "sh.shipment_id = {$this->table}.shipment");
+        $this->join("payment py", "py.payment_id = {$this->table}.payment_id");
+        $this->join("shipment sh", "sh.shipment_id = {$this->table}.shipment_id");
         $this->where("{$this->table}.user_id", $userid);
         $this->orderBy("{$this->table}.created_at", "DESC");
         $query = $this->findAll();
@@ -80,8 +80,8 @@ class OrderModel extends Model
     {
         $this->select("{$this->table}.*, py.payment_id, py.payment as payment_name, sh.shipment, u.username, u.email, u.phone");
         $this->join("users u", "u.user_id = {$this->table}.user_id");
-        $this->join("payment py", "py.payment_id = {$this->table}.payment");
-        $this->join("shipment sh", "sh.shipment_id = {$this->table}.shipment");
+        $this->join("payment py", "py.payment_id = {$this->table}.payment_id");
+        $this->join("shipment sh", "sh.shipment_id = {$this->table}.shipment_id");
         $this->where("{$this->table}.user_id", $userid);
         $this->where("{$this->table}.status", $status);
         $this->orderBy("{$this->table}.created_at", "DESC");
@@ -93,8 +93,8 @@ class OrderModel extends Model
     {
         $this->select("{$this->table}.*, py.payment_id, py.payment as payment_name, py.account, py.number, sh.shipment, u.username, u.email, u.phone");
         $this->join("users u", "u.user_id = {$this->table}.user_id");
-        $this->join("payment py", "py.payment_id = {$this->table}.payment");
-        $this->join("shipment sh", "sh.shipment_id = {$this->table}.shipment");
+        $this->join("payment py", "py.payment_id = {$this->table}.payment_id");
+        $this->join("shipment sh", "sh.shipment_id = {$this->table}.shipment_id");
         $this->where("{$this->table}.order_id", $orderid);
         $this->where("{$this->table}.user_id", $userid);
         $query = $this->findAll();

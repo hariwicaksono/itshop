@@ -19,7 +19,6 @@ class Media extends BaseControllerApi
             $moved = $image->move($path, $fileName);
             if ($moved) {
                 $save = $this->model->save([
-                    'media_id' => strtotime(Time::now()),
                     'media_path' => $path . $fileName
                 ]);
                 if ($save) {

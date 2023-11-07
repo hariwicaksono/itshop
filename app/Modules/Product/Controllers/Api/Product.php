@@ -208,7 +208,7 @@ class Product extends BaseControllerApi
                 'link_demo' => $json->link_demo,
                 'stock' => $json->stock,
                 'stock_min' => $json->stock_min,
-                
+
             ];
         } else {
             $input = $this->request->getRawInput();
@@ -258,7 +258,7 @@ class Product extends BaseControllerApi
             return $this->respond($response, 200);
         }
     }
-    
+
     public function delete($id = null)
     {
         $hapus = $this->model->find($id);
@@ -303,7 +303,7 @@ class Product extends BaseControllerApi
                 "status" => true,
                 "message" => lang('App.getSuccess'),
                 "data" => $data,
-                "per_page" => $limit, 
+                "per_page" => $limit,
                 "total_page" => $this->model->countAllResults()
             ];
             return $this->respond($response, 200);
@@ -438,4 +438,27 @@ class Product extends BaseControllerApi
         }
     }
 
+    public function total()
+    {
+        $input = $this->request->getVar('data');
+
+        $total = 0;
+        foreach($input as $value){
+            $product_id = $value;
+            $product = $this->model->find($product_id);
+            $discount = $product['discount'];
+            if ($discount == 0) {
+                $total += $product['product_price'];
+            } else {
+                $total += $product['product_price']-$discount;
+            } 
+        }
+
+        $response = [
+            'status' => true,
+            'message' => lang('App.getSuccess'),
+            'data' => $total,
+        ];
+        return $this->respond($response, 200);
+    }
 }

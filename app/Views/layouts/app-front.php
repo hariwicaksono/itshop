@@ -13,6 +13,9 @@ $companyEmail1 = $setting->info['company_email1'];
 $companyEmail2 = $setting->info['company_email2'];
 $companyTelp = $setting->info['company_telepon'];
 $navbarColor = $setting->info['navbar_color'];
+$tawkToScript = $setting->info['tawkto_script'];
+$imgLogo = $setting->info['img_logo'];
+$imgNavbar = $setting->info['img_navbar'];
 ?>
 <!--
 PT ITSHOP BISNIS DIGITAL
@@ -32,15 +35,15 @@ Modified: 07-2023
         <title><?= $title; ?> | <?= $appName; ?></title>
         <meta name="description" content="<?= $appDesc; ?> | <?= $appName; ?> by <?= env('appCompany'); ?>">
     <?php } else if ($uri->getSegment(1) == "source-code") { ?>
-        <title>Source Code <?= $title; ?> | <?= $appName; ?></title>
-        <meta name="description" content="Source Code <?= $title; ?> | <?= $appName; ?> by <?= env('appCompany'); ?>">
+        <title>Jual <?= $title; ?> | <?= $appName; ?></title>
+        <meta name="description" content="Jual <?= $title; ?> | <?= $appName; ?> by <?= env('appCompany'); ?>">
     <?php } else { ?>
         <title><?= $title; ?> | <?= $appName; ?></title>
         <meta name="description" content="<?= $title; ?> | <?= $appName; ?> by <?= env('appCompany'); ?>">
     <?php } ?>
     <meta name="theme-color" content="#FFFFFF" />
-    <link rel="apple-touch-icon" href="<?= base_url('images/logo.png') ?>">
-    <link rel="shortcut icon" href="<?= base_url('images/logo.png') ?>">
+    <link rel="apple-touch-icon" href="<?= base_url('images/') . $imgLogo; ?>">
+    <link rel="shortcut icon" href="<?= base_url('images/') . $imgLogo;?>">
     <meta name="robots" content="index,follow">
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
     <link href="<?= base_url('assets/css/materialdesignicons.min.css') ?>" rel="stylesheet">
@@ -52,7 +55,7 @@ Modified: 07-2023
     <!-- ========================= preloader start ========================= -->
     <div class="preloader">
         <div class="loader">
-            <div class="loader-logo"><img src="<?= base_url('images/logo.png') ?>" alt="Preloader" width="64" style="margin-top: 5px;"></div>
+            <div class="loader-logo"><img src="<?= base_url('images/') . $imgLogo; ?>" alt="Preloader" width="64" style="margin-top: 5px;"></div>
             <div class="spinner">
                 <div class="spinner-container">
                     <div class="spinner-rotator">
@@ -73,8 +76,8 @@ Modified: 07-2023
             <v-app-bar app color="<?= $navbarColor; ?>" <?= ($navbarColor == 'white' ? 'light':'dark'); ?> elevation="2">
                 <v-toolbar-title class="text-h6 font-weight-medium" style="cursor: pointer;">
                     <a href="<?= base_url() ?>" class="text-decoration-none" title="<?= env('appName') ?>" alt="<?= env('appName') ?>">
-                        <v-img src="<?= base_url('assets/images/logo.png'); ?>" width="160" class="d-none d-sm-none d-md-flex d-lg-flex d-xl-flex"></v-img>
-                        <v-img src="<?= base_url('assets/images/logo-sm.png'); ?>" width="50" class="d-flex d-sm-flex d-md-none d-lg-none d-xl-none"></v-img>
+                        <v-img src="<?= base_url('images/') . $imgNavbar; ?>" width="160" class="d-none d-sm-none d-md-flex d-lg-flex d-xl-flex"></v-img>
+                        <v-img src="<?= base_url('images/') . $imgLogo; ?>" width="50" class="d-flex d-sm-flex d-md-none d-lg-none d-xl-none"></v-img>
                     </a>
                 </v-toolbar-title>
                 <v-spacer></v-spacer>
@@ -193,14 +196,16 @@ Modified: 07-2023
                 <?= $this->renderSection('content') ?>
             </v-main>
 
-            <v-footer light padless>
-                <v-card flat tile width="100%" class="grey lighten-3 flex py-3">
+            <v-divider></v-divider>
+            
+            <v-footer padless>
+                <v-card flat tile width="100%" class="flex py-3">
                     <v-card-text>
                         <v-container>
                             <v-row>
                                 <v-col>
                                     <h2 class="font-weight-medium subheading mb-3">Temukan Toko Online Official kami:</h2>
-                                    <v-list flat class="grey lighten-3 mb-3">
+                                    <v-list flat class="mb-3">
                                         <v-list-item-group>
                                             <v-list-item v-for="(item, i) in items" :key="i" link :href="item.link" target="_blank">
                                                 <v-list-item-icon>
@@ -212,15 +217,23 @@ Modified: 07-2023
                                             </v-list-item>
                                         </v-list-item-group>
                                     </v-list>
+                                    <!-- Social Media -->
+                                    <!-- <v-btn icon large link href="<?= $setting->info['link_facebook'];?>"><v-icon large color="primary" l>mdi-facebook</v-icon></v-btn>
+                                    <v-btn icon large link href="<?= $setting->info['link_instagram'];?>"><v-icon large color="pink" l>mdi-instagram</v-icon></v-btn>
+                                    <v-btn icon large link href="<?= $setting->info['link_youtube'];?>"><v-icon large color="red">mdi-youtube</v-icon></v-btn> -->
+                                    <!-- -->
                                 </v-col>
                                 <v-col>
                                     <h2 class="font-weight-medium subheading mb-3"><?= lang('App.aboutUs'); ?>:</h2>
-                                    <h2 class="grey--text text--darken-4"><?= env('appStore'); ?></h2>
-                                    <h4><?= env('appCompany'); ?></h4>
+                                    <h2><?= $appName; ?></h2>
+                                    <!-- <h3><?= $companyNama; ?></h3> -->
                                     <p><?= $companyAlamat; ?>, Indonesia</p>
                                     Email 1: <?= $companyEmail1; ?> <br />
                                     Email 2: <?= $companyEmail2; ?><br />
-                                    Telp/WA: <?= $companyTelp; ?><br />
+                                    Telp/WA: <?= $companyTelp; ?> <v-btn icon link href="https://wa.me/<?= $companyTelp;?>"><v-icon color="green">mdi-whatsapp</v-icon></v-btn><br />
+									<h3 class="font-weight-medium subheading mb-2 mt-3">Jam Kerja: </h3>
+                                    <p>Office: Senin - Jum'at: 09.00 - 16.00 WIB, Sabtu - Minggu: Libur<br />
+                                    Pengiriman: Buka 24 Jam</p>
                                     <h3 class="font-weight-medium subheading mb-2 mt-3"><?= lang('App.payment'); ?>: </h3>
                                     <p>Payment Gateway &amp; Transfer (Konfirmasi Manual)</p>
                                     <v-img src="<?= base_url('images/midtrans.png'); ?>" width="80" ratio="1" class="float-left mr-3"></v-img>
@@ -245,6 +258,12 @@ Modified: 07-2023
                     </v-btn>
                 </template>
             </v-snackbar>
+
+            <!-- Push Order terbaru -->
+            <v-snackbar v-model="snackbarNew" multi-line="true" timeout="10000" top right style="top: 80px;">
+                <span v-for="item in newOrderan"><v-icon color="red">mdi-fire</v-icon> <strong>{{item.first_name}} {{item.last_name}}</strong> telah memesan Produk: <strong>{{item.product_name}}</strong></span>
+            </v-snackbar>
+            <!-- -->
         </v-app>
     </div>
 
@@ -263,6 +282,15 @@ Modified: 07-2023
     <script>
         dayjs.locale('id');
         dayjs().locale('id').format();
+
+        // Pusher
+        // Enable pusher logging - don't include this in production
+        //Pusher.logToConsole = true;
+        var pusher = new Pusher('<?= env('PUSHER_APP_KEY'); ?>', {
+            cluster: 'ap1'
+        });
+        var channel = pusher.subscribe('my-channel');
+        // End Pusher
     </script>
 
     <script>
@@ -304,6 +332,14 @@ Modified: 07-2023
                     this.$vuetify.theme.dark.toString()
                 );
             }
+
+            // Pusher Client
+			// Disini fungsi auto refresh menggunakan Pusher saat admin melakukan data insert, update, delete
+			channel.bind('my-event', (data) => {
+				if (data.event == 'new_order') {
+                    this.pushNewOrder();
+				}
+			});
         }
         var updatedVue = function() {}
         var watchVue = {}
@@ -339,36 +375,36 @@ Modified: 07-2023
                     text: 'Toko Tokopedia',
                     icon: '<?= base_url('images/tokopedia-icon512.png'); ?>',
                     link: 'https://www.tokopedia.com/itshoppwt'
-                },
-                {
+                }, {
                     text: 'Toko Shopee',
                     icon: '<?= base_url('images/shopee-logo-31405.png'); ?>',
                     link: 'https://www.shopee.co.id/itshoppwt'
-                },
-                {
+                }, {
                     text: 'Toko Bukalapak',
                     icon: '<?= base_url('images/bukalapak-icon-png-6.png'); ?>',
                     link: 'https://www.bukalapak.com/itshoppwt'
-                },
-                {
+                }, {
                     text: 'Toko BliBli',
                     icon: '<?= base_url('images/blibli.png'); ?>',
                     link: 'https://www.blibli.com/merchant/IT-Shop-Purwokerto/ITS-70007'
                 },
             ],
             links: [{
+                    text: '<?= lang('App.aboutUs'); ?>',
+                    link: '<?= base_url('about'); ?>'
+                }, {
                     text: 'Syarat & Ketentuan',
                     link: '<?= base_url('terms'); ?>'
-                },
-                {
+                }, {
                     text: 'Kebijakan Privasi',
                     link: '<?= base_url('privacy'); ?>'
-                },
-                {
+                }, {
                     text: 'Legal',
                     link: '<?= base_url('legal'); ?>'
                 },
             ],
+            newOrderan: [],
+            snackbarNew: false,
         }
         var methodsVue = {
             toggleTheme() {
@@ -430,6 +466,20 @@ Modified: 07-2023
                         console.log(err.response);
                     })
             },
+
+            pushNewOrder() {
+                axios.get(`<?= base_url(); ?>openapi/order/push_neworder`)
+                    .then(res => {
+                        // handle success
+                        var data = res.data;
+                        this.newOrderan = data.data;
+                        this.snackbarNew = true;
+                    })
+                    .catch(err => {
+                        // handle error
+                        console.log(err.response);
+                    })
+            },
         }
         Vue.component('paginate', VuejsPaginate)
         var VueMasonryPlugin = window["vue-masonry-plugin"].VueMasonryPlugin;
@@ -454,19 +504,7 @@ Modified: 07-2023
         })
     </script>
     <!--Start of Tawk.to Script-->
-    <script type="text/javascript">
-        var Tawk_API = Tawk_API || {},
-            Tawk_LoadStart = new Date();
-        (function() {
-            var s1 = document.createElement("script"),
-                s0 = document.getElementsByTagName("script")[0];
-            s1.async = true;
-            s1.src = 'https://embed.tawk.to/642f992d31ebfa0fe7f6f669/1gtcusneh';
-            s1.charset = 'UTF-8';
-            s1.setAttribute('crossorigin', '*');
-            s0.parentNode.insertBefore(s1, s0);
-        })();
-    </script>
+    <?= $tawkToScript; ?>
     <!--End of Tawk.to Script-->
 </body>
 

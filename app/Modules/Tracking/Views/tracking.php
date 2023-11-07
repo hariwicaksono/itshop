@@ -19,7 +19,7 @@
                         <td>{{RibuanLocale(item.total)}}</td>
                         <td>
                             {{item.payment_name}}
-                            <a @click="showConfirmation(item)" v-show="item.payment == '2'"><?= lang('App.see'); ?></a>
+                            <a @click="showConfirmation(item)" v-show="item.payment_id == '2'"><?= lang('App.see'); ?></a>
                         </td>
                         <td>
                             <v-select v-model="item.status" name="status" :items="list_status" item-text="label" item-value="value" label="Select Status" single-line @change="setStatus(item)"></v-select>
@@ -170,13 +170,13 @@
             value: 'email'
         }, {
             text: 'Tanggal',
-            value: 'tgl_input'
+            value: 'created_at'
         }, {
             text: 'Total',
             value: 'total'
         }, {
             text: '<?= lang('App.payment'); ?>',
-            value: 'payment'
+            value: 'payment_name'
         }, {
             text: '<?= lang('App.status'); ?>',
             value: 'status'

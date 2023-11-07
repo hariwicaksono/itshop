@@ -13,7 +13,7 @@ return [
     'sales' => 'Penjualan',
     'save' => 'Simpan',
     'update' => 'Perbarui',
-    'delete' => 'Delete',
+    'delete' => 'Hapus',
     'search' => 'Cari',
     'yes' => 'Ya',
     'no' => 'Tidak',

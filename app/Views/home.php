@@ -8,9 +8,9 @@
                     <h1 class="text-h4 font-weight-thin mt-n15 mb-0">
                         <?= lang('App.welcome'); ?>
                     </h1>
-                    <?= env('appCompany'); ?>
+                    <?= $company_name; ?>
                     <h1 class="text-h3 font-weight-medium mb-3">
-                        <strong><?= env('appStore'); ?></strong>
+                        <strong><?= $app_name; ?></strong>
                     </h1>
                 </v-col>
             </v-row>
@@ -20,20 +20,20 @@
 
 <template>
     <v-container>
-        <h1 class="mb-3 font-weight-medium"><?= lang('App.product') ?></h1>
+        <h1 class="mb-3"><?= lang('App.product') ?></h1>
 
         <v-row>
             <v-col cols="12" md="3">
-                <v-card>
+                <v-card class="mb-3">
                     <v-card-text>
                         <div class="mb-3">
-                            <p class="mb-0">Urutkan Produk:</p>
-                            <v-select v-model="orderBy" :items="dataSort" label="Urutan" @change="getProducts"></v-select>
+                            <h3 class="mb-0">Urutkan Produk:</h3>
+                            <v-select v-model="orderBy" :items="dataSort" label="" @change="getProducts"></v-select>
                         </div>
 
                         <div class="mb-3">
-                            <p class="mb-0">Filter <?= lang('App.category'); ?>:</p>
-                            <v-select v-model="selectedCategory" label="<?= lang('App.category'); ?>" :items="dataCategory" item-text="category_name" item-value="category_id" multiple chips attach hide-details>
+                            <h3 class="mb-3">Filter <?= lang('App.category'); ?>:</h3>
+                            <v-select v-model="selectedCategory" label="Data <?= lang('App.category'); ?>" :items="dataCategory" item-text="category_name" item-value="category_id" multiple chips attach hide-details>
                                 <template v-slot:prepend-item>
                                     <v-list-item ripple @mousedown.prevent @click="toggle">
                                         <v-list-item-action>
@@ -54,16 +54,16 @@
 
                         <br />
 
-                        Show: &nbsp;
-                        <v-btn @click="limitPage8" small elevation="0" :color="activeColor1">8</v-btn>
-                        <v-btn @click="limitPage32" small elevation="0" :color="activeColor2">32</v-btn>
-                        <v-btn @click="limitPage64" small elevation="0" :color="activeColor3">64</v-btn>
+                        <h3 class="mb-3">Show:</h3>
+                        <v-btn @click="limitPage8" elevation="0" :color="activeColor1">8</v-btn>
+                        <v-btn @click="limitPage32" elevation="0" :color="activeColor2">32</v-btn>
+                        <v-btn @click="limitPage64" elevation="0" :color="activeColor3">64</v-btn>
                     </v-card-text>
                 </v-card>
             </v-col>
             <v-col cols="12" md="9">
                 <v-row v-if="show == true">
-                    <v-col v-for="n in 4" :key="n" cols="12" md="3">
+                    <v-col v-for="n in 3" :key="n" cols="12" md="4">
                         <v-card outlined elevation="1">
                             <v-skeleton-loader class="mx-auto" max-width="300" type="card"></v-skeleton-loader>
                         </v-card>
@@ -73,12 +73,12 @@
                 <v-row v-masonry transition-duration="0.3s" item-selector=".item" class="masonry-container" v-if="show == false">
                     <v-col v-masonry-tile class="item" v-for="item in products" :key="item.product_id" cols="12" sm="4">
                         <v-card min-height="400">
-                            <v-img v-bind:src="'<?= base_url(); ?>' + item.media_path" aspect-ratio="1" v-if="item.media_path != null"></v-img>
-                            <v-img src="<?= base_url('images/no_image.jpg') ?>" v-else></v-img>
+                            <v-img lazy-src="<?= base_url('images/no_image.jpg') ?>" :src="'<?= base_url(); ?>' + item.media_path" aspect-ratio="1" v-if="item.media_path != null"></v-img>
+                            <v-img lazy-src="<?= base_url('images/no_image.jpg') ?>" src="<?= base_url('images/no_image.jpg') ?>" v-else></v-img>
                             <v-card-title class="subtitle-1 font-weight-medium">
                                 <a link :href="'<?= base_url(); ?>' + item.category_slug + '/' + item.slug" class="text-decoration-none" title="" alt="">{{ item.product_name }}</a>
                             </v-card-title>
-                            <v-card-subtitle class="text-h6 grey--text text--darken-4 font-weight-bold">
+                            <v-card-subtitle class="text-h6 font-weight-bold">
                                 <span v-if="item.discount > 0">
                                     {{ RibuanLocale(item.product_price - item.discount) }}
                                 </span>
@@ -90,11 +90,11 @@
                             </v-card-subtitle>
                             <v-card-actions>
                                 <v-btn color="success" @click="sendWhatsApp(item)" elevation="1">
-                                    <v-icon>mdi-whatsapp</v-icon> Chat WhatsApp
+                                    <v-icon>mdi-whatsapp</v-icon> Chat <span class="d-flex d-sm-none d-md-none d-lg-flex d-xl-flex">WhatsApp</span>
                                 </v-btn>
                                 <v-spacer></v-spacer>
                                 <v-btn color="primary" @click="saveCart(item)" elevation="1" :disabled="item.stock == 0">
-                                    <v-icon>mdi-cart</v-icon> <?= lang('App.buy'); ?>
+                                    <v-icon>mdi-cart</v-icon> <span class="d-flex d-sm-none d-md-none d-lg-flex d-xl-flex"><?= lang('App.buy'); ?></span>
                                 </v-btn>
                             </v-card-actions>
                         </v-card>
@@ -102,9 +102,9 @@
                 </v-row>
 
                 <div class="text-center" v-show="products == '' && show == false">
-                    <v-icon color="warning" size="256">mdi-filter-remove-outline</v-icon>
-                    <h1>No records found</h1>
-                    <h2 class="font-weight-regular">No data found with current filters. Please make a different selection.</h2>
+                    <h1 class="font-weight-medium mb-3">No Products Found</h1>
+                    <v-icon color="yellow darken-3" size="256">mdi-package-variant-remove</v-icon>
+                    <h2 class="font-weight-regular mt-5">Sorry! The product you were looking for is unavailable.<br />Please try again later.</h2>
                 </div>
 
                 <br /><br />
@@ -385,7 +385,7 @@
 
         // send WhatsApp (Wa.me)
         sendWhatsApp: function(item) {
-            let encoded = encodeURIComponent('Halo Kak Admin <?= $app_name; ?>, Saya mau order ' + item.category_name + ': ' + item.product_name);
+            let encoded = encodeURIComponent('<?= $wa_text; ?> ' + item.category_name + ': ' + item.product_name);
             setTimeout(() => window.location.href = `https://wa.me/<?= $telepon; ?>?text=${encoded}`, 100);
         },
     }
