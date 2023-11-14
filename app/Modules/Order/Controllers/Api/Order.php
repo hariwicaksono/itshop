@@ -623,6 +623,15 @@ class Order extends BaseControllerApi
                 $this->log->save(['keterangan' => session('first_name') . ' ' . session('last_name') . ' (' . session('email') . ') ' . strtolower(lang('App.do')) . ' Create Pesanan Baru ID: ' . $order_id]);
             }
 
+            //Pusher
+            if (@fsockopen('www.google.com', 80)) {
+                if ((env('PUSHER_APP_KEY') != "") && (env('PUSHER_APP_SECRET') != "") && (env('PUSHER_APP_ID') != "")) {
+                    $push['message'] = lang('App.refreshSuccess');
+                    $push['event'] = 'new_order';
+                    $this->pusher->trigger('my-channel', 'my-event', $push);
+                }
+            }
+
             $response = [
                 'status' => true,
                 'message' => lang('App.orderSuccess'),

@@ -32,6 +32,7 @@ return [
     'sold' => 'Sold',
     'loadingWait' => 'Loading... Please wait',
     'do' => 'Do',
+    'refreshSuccess' => 'Refresh Successful',
 
     //Signin
     'signIn' => 'Sign in',

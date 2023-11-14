@@ -135,4 +135,16 @@ class OrderModel extends Model
         $query = $this->where('user_id', $userid)->where('status', 0)->orWhere('status', 1)->countAllResults();
         return $query;
     }
+	
+	public function getNewOrder()
+    {
+        $this->select("{$this->table}.*, p.product_name, u.first_name, u.last_name");
+        $this->join("users u", "u.user_id = {$this->table}.user_id");
+        $this->join("carts c", "c.order_id = {$this->table}.order_id");
+        $this->join("products p", "p.product_id = c.product_id");
+        $this->where("{$this->table}.created_at >=", '(NOW() + INTERVAL -3 DAY)', false);
+        $this->orderBy("{$this->table}.created_at", 'DESC');
+        $query = $this->findAll();
+        return $query;
+    }
 }

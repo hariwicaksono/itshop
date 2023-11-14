@@ -32,6 +32,7 @@ return [
     'sold' => 'Terjual',
     'loadingWait' => 'Sedang memuat... Harap tunggu',
     'do' => 'Melakukan',
+    'refreshSuccess' => 'Refresh berhasil',
 
     //Signin
     'signIn' => 'Masuk',

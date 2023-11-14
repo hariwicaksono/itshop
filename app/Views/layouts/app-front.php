@@ -43,7 +43,7 @@ Modified: 07-2023
     <?php } ?>
     <meta name="theme-color" content="#FFFFFF" />
     <link rel="apple-touch-icon" href="<?= base_url('images/') . $imgLogo; ?>">
-    <link rel="shortcut icon" href="<?= base_url('images/') . $imgLogo;?>">
+    <link rel="shortcut icon" href="<?= base_url('images/') . $imgLogo; ?>">
     <meta name="robots" content="index,follow">
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
     <link href="<?= base_url('assets/css/materialdesignicons.min.css') ?>" rel="stylesheet">
@@ -73,7 +73,7 @@ Modified: 07-2023
     <!-- preloader end -->
     <div id="app">
         <v-app>
-            <v-app-bar app color="<?= $navbarColor; ?>" <?= ($navbarColor == 'white' ? 'light':'dark'); ?> elevation="2">
+            <v-app-bar app color="<?= $navbarColor; ?>" <?= ($navbarColor == 'white' ? 'light' : 'dark'); ?> elevation="2">
                 <v-toolbar-title class="text-h6 font-weight-medium" style="cursor: pointer;">
                     <a href="<?= base_url() ?>" class="text-decoration-none" title="<?= env('appName') ?>" alt="<?= env('appName') ?>">
                         <v-img src="<?= base_url('images/') . $imgNavbar; ?>" width="160" class="d-none d-sm-none d-md-flex d-lg-flex d-xl-flex"></v-img>
@@ -197,7 +197,7 @@ Modified: 07-2023
             </v-main>
 
             <v-divider></v-divider>
-            
+
             <v-footer padless>
                 <v-card flat tile width="100%" class="flex py-3">
                     <v-card-text>
@@ -218,9 +218,9 @@ Modified: 07-2023
                                         </v-list-item-group>
                                     </v-list>
                                     <!-- Social Media -->
-                                    <!-- <v-btn icon large link href="<?= $setting->info['link_facebook'];?>"><v-icon large color="primary" l>mdi-facebook</v-icon></v-btn>
-                                    <v-btn icon large link href="<?= $setting->info['link_instagram'];?>"><v-icon large color="pink" l>mdi-instagram</v-icon></v-btn>
-                                    <v-btn icon large link href="<?= $setting->info['link_youtube'];?>"><v-icon large color="red">mdi-youtube</v-icon></v-btn> -->
+                                    <!-- <v-btn icon large link href="<?= $setting->info['link_facebook']; ?>"><v-icon large color="primary" l>mdi-facebook</v-icon></v-btn>
+                                    <v-btn icon large link href="<?= $setting->info['link_instagram']; ?>"><v-icon large color="pink" l>mdi-instagram</v-icon></v-btn>
+                                    <v-btn icon large link href="<?= $setting->info['link_youtube']; ?>"><v-icon large color="red">mdi-youtube</v-icon></v-btn> -->
                                     <!-- -->
                                 </v-col>
                                 <v-col>
@@ -230,10 +230,10 @@ Modified: 07-2023
                                     <p><?= $companyAlamat; ?>, Indonesia</p>
                                     Email 1: <?= $companyEmail1; ?> <br />
                                     Email 2: <?= $companyEmail2; ?><br />
-                                    Telp/WA: <?= $companyTelp; ?> <v-btn icon link href="https://wa.me/<?= $companyTelp;?>"><v-icon color="green">mdi-whatsapp</v-icon></v-btn><br />
-									<h3 class="font-weight-medium subheading mb-2 mt-3">Jam Kerja: </h3>
+                                    Telp/WA: <?= $companyTelp; ?> <v-btn icon link href="https://wa.me/<?= $companyTelp; ?>"><v-icon color="green">mdi-whatsapp</v-icon></v-btn><br />
+                                    <h3 class="font-weight-medium subheading mb-2 mt-3">Jam Kerja: </h3>
                                     <p>Office: Senin - Jum'at: 09.00 - 16.00 WIB, Sabtu - Minggu: Libur<br />
-                                    Pengiriman: Buka 24 Jam</p>
+                                        Pengiriman: Buka 24 Jam</p>
                                     <h3 class="font-weight-medium subheading mb-2 mt-3"><?= lang('App.payment'); ?>: </h3>
                                     <p>Payment Gateway &amp; Transfer (Konfirmasi Manual)</p>
                                     <v-img src="<?= base_url('images/midtrans.png'); ?>" width="80" ratio="1" class="float-left mr-3"></v-img>
@@ -250,7 +250,7 @@ Modified: 07-2023
                 </v-card>
             </v-footer>
 
-            <v-snackbar v-model="snackbar" :timeout="timeout" <?= $snackbarsPosition; ?> <?php if ($snackbarsPosition == 'top') { ?> style="top: 30px;" <?php } else { ?> style="bottom: 40px;" <?php } ?>>
+            <v-snackbar v-model="snackbar" :timeout="timeout" <?= $snackbarsPosition; ?> <?php if ($snackbarsPosition == 'top') { ?> style="top: 70px;" <?php } else { ?> style="bottom: 40px;" <?php } ?>>
                 <span v-if="snackbar">{{snackbarMessage}}</span>
                 <template v-slot:action="{ attrs }">
                     <v-btn text v-bind="attrs" @click="snackbar = false">
@@ -260,8 +260,16 @@ Modified: 07-2023
             </v-snackbar>
 
             <!-- Push Order terbaru -->
-            <v-snackbar v-model="snackbarNew" multi-line="true" timeout="10000" top right style="top: 80px;">
-                <span v-for="item in newOrderan"><v-icon color="red">mdi-fire</v-icon> <strong>{{item.first_name}} {{item.last_name}}</strong> telah memesan Produk: <strong>{{item.product_name}}</strong></span>
+            <v-snackbar v-model="snackbarNew" timeout="5000" bottom left max-width="350" style="bottom: 30px;" v-for="i in [currentNumber]" :key="i" v-show="dataOrderan != ''">
+                <div v-if="newOrderan">
+                    <v-icon color="red">mdi-fire</v-icon> {{dayjs(newOrderan.created_at).fromNow()}}<br />
+                    <strong>{{newOrderan.first_name}} {{newOrderan.last_name}}</strong> telah memesan Produk:<br /><strong>{{newOrderan.product_name}}</strong>
+                </div>
+                <template v-slot:action="{ attrs }">
+                    <v-btn small icon v-bind="attrs" @click="snackbarNew = false">
+                        <v-icon small>mdi-close</v-icon>
+                    </v-btn>
+                </template>
             </v-snackbar>
             <!-- -->
         </v-app>
@@ -278,10 +286,12 @@ Modified: 07-2023
     <script src="<?= base_url('assets/js/pusher.min.js') ?>"></script>
     <script src="<?= base_url('assets/js/dayjs.min.js') ?>"></script>
     <script src="<?= base_url('assets/js/dayjs-locale-id.js') ?>"></script>
+    <script src="<?= base_url('assets/js/dayjs-relativeTime.js') ?>"></script>
 
     <script>
         dayjs.locale('id');
         dayjs().locale('id').format();
+        dayjs.extend(window.dayjs_plugin_relativeTime);
 
         // Pusher
         // Enable pusher logging - don't include this in production
@@ -294,6 +304,15 @@ Modified: 07-2023
     </script>
 
     <script>
+        const setIntervalX = (fn, delay, times) => {
+            if (!times) return
+
+            setTimeout(() => {
+                fn()
+                setIntervalX(fn, delay, times - 1)
+            }, delay)
+        }
+
         var computedVue = {
             mini: {
                 get() {
@@ -305,14 +324,20 @@ Modified: 07-2023
             },
             themeText() {
                 return this.$vuetify.theme.dark ? '<?= lang("App.dark") ?>' : '<?= lang("App.light") ?>'
+            },
+            newOrderan() {
+                return this.dataOrderan[Math.abs(this.currentNumber) % this.dataOrderan.length];
             }
         }
         var createdVue = function() {
             axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+           
         }
         var mountedVue = function() {
             this.getCartCount();
             this.getOrderCount();
+            setTimeout(() => this.pushNewOrder(), 4000);
+            setTimeout(() => this.startNotification(), 5000);
             const theme = localStorage.getItem("dark_theme");
             if (theme) {
                 if (theme === "true") {
@@ -334,12 +359,16 @@ Modified: 07-2023
             }
 
             // Pusher Client
-			// Disini fungsi auto refresh menggunakan Pusher saat admin melakukan data insert, update, delete
-			channel.bind('my-event', (data) => {
-				if (data.event == 'new_order') {
-                    this.pushNewOrder();
-				}
-			});
+            // Disini fungsi auto refresh menggunakan Pusher saat admin melakukan data insert, update, delete
+            channel.bind('my-event', (data) => {
+                if (data.event == 'new_order') {
+                    //this.snackbar = true;
+                    //this.snackbarMessage = data.message;
+                    this.stopNotification();
+                    setTimeout(() => this.pushNewOrder(), 1000);
+                    setTimeout(() => this.startNotification(), 2000);
+                }
+            });
         }
         var updatedVue = function() {}
         var watchVue = {}
@@ -372,39 +401,39 @@ Modified: 07-2023
                 zero: v => v > 0 || "<?= lang('App.isZero'); ?>"
             },
             items: [{
-                    text: 'Toko Tokopedia',
-                    icon: '<?= base_url('images/tokopedia-icon512.png'); ?>',
-                    link: 'https://www.tokopedia.com/itshoppwt'
-                }, {
-                    text: 'Toko Shopee',
-                    icon: '<?= base_url('images/shopee-logo-31405.png'); ?>',
-                    link: 'https://www.shopee.co.id/itshoppwt'
-                }, {
-                    text: 'Toko Bukalapak',
-                    icon: '<?= base_url('images/bukalapak-icon-png-6.png'); ?>',
-                    link: 'https://www.bukalapak.com/itshoppwt'
-                }, {
-                    text: 'Toko BliBli',
-                    icon: '<?= base_url('images/blibli.png'); ?>',
-                    link: 'https://www.blibli.com/merchant/IT-Shop-Purwokerto/ITS-70007'
-                },
-            ],
+                text: 'Toko Tokopedia',
+                icon: '<?= base_url('images/tokopedia-icon512.png'); ?>',
+                link: 'https://www.tokopedia.com/itshoppwt'
+            }, {
+                text: 'Toko Shopee',
+                icon: '<?= base_url('images/shopee-logo-31405.png'); ?>',
+                link: 'https://www.shopee.co.id/itshoppwt'
+            }, {
+                text: 'Toko Bukalapak',
+                icon: '<?= base_url('images/bukalapak-icon-png-6.png'); ?>',
+                link: 'https://www.bukalapak.com/itshoppwt'
+            }, {
+                text: 'Toko BliBli',
+                icon: '<?= base_url('images/blibli.png'); ?>',
+                link: 'https://www.blibli.com/merchant/IT-Shop-Purwokerto/ITS-70007'
+            }, ],
             links: [{
-                    text: '<?= lang('App.aboutUs'); ?>',
-                    link: '<?= base_url('about'); ?>'
-                }, {
-                    text: 'Syarat & Ketentuan',
-                    link: '<?= base_url('terms'); ?>'
-                }, {
-                    text: 'Kebijakan Privasi',
-                    link: '<?= base_url('privacy'); ?>'
-                }, {
-                    text: 'Legal',
-                    link: '<?= base_url('legal'); ?>'
-                },
-            ],
-            newOrderan: [],
+                text: '<?= lang('App.aboutUs'); ?>',
+                link: '<?= base_url('about'); ?>'
+            }, {
+                text: 'Syarat & Ketentuan',
+                link: '<?= base_url('terms'); ?>'
+            }, {
+                text: 'Kebijakan Privasi',
+                link: '<?= base_url('privacy'); ?>'
+            }, {
+                text: 'Legal',
+                link: '<?= base_url('legal'); ?>'
+            }, ],
+            dataOrderan: [],
             snackbarNew: false,
+            currentNumber: 0,
+            timer: null
         }
         var methodsVue = {
             toggleTheme() {
@@ -472,14 +501,33 @@ Modified: 07-2023
                     .then(res => {
                         // handle success
                         var data = res.data;
-                        this.newOrderan = data.data;
-                        this.snackbarNew = true;
+                        this.dataOrderan = data.data;
                     })
                     .catch(err => {
                         // handle error
                         console.log(err.response);
                     })
             },
+            startNotification: function() {
+                //setIntervalX(() => this.nextNewOrder(), 6000, 5);
+                //setInterval(this.nextNewOrder, 6000);
+                this.snackbarNew = true;
+                this.timer = setInterval(this.nextNewOrder, 6000);
+            },
+            stopNotification: function() {
+                clearTimeout(this.timer);
+                this.timer = null;
+                this.snackbarNew = false;
+                this.currentNumber = 0;
+            },
+            nextNewOrder: function() {
+                this.currentNumber += 1;
+                this.snackbarNew = true;
+            },
+            prevNewOrder: function() {
+                this.currentNumber -= 1;
+                this.snackbarNew = true;
+            }
         }
         Vue.component('paginate', VuejsPaginate)
         var VueMasonryPlugin = window["vue-masonry-plugin"].VueMasonryPlugin;

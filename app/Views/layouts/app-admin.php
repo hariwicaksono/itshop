@@ -319,7 +319,7 @@ Modified: 07-2023
                 </v-container>
             </v-main>
 
-            <v-snackbar v-model="snackbar" :timeout="timeout" <?= $snackbarsPosition; ?> <?php if ($snackbarsPosition == 'top') { ?> style="top: 30px;" <?php } else { ?> style="bottom: 40px;" <?php } ?>>
+            <v-snackbar v-model="snackbar" :timeout="timeout" <?= $snackbarsPosition; ?> <?php if ($snackbarsPosition == 'top') { ?> style="top: 70px;" <?php } else { ?> style="bottom: 40px;" <?php } ?>>
                 <span v-if="snackbar">{{snackbarMessage}}</span>
                 <template v-slot:action="{ attrs }">
                     <v-btn text v-bind="attrs" @click="snackbar = false">
@@ -342,10 +342,12 @@ Modified: 07-2023
     <script src="<?= base_url('assets/js/main.js') ?>" type="text/javascript"></script>
     <script src="<?= base_url('assets/js/dayjs.min.js') ?>"></script>
     <script src="<?= base_url('assets/js/dayjs-locale-id.js') ?>"></script>
+    <script src="<?= base_url('assets/js/dayjs-relativeTime.js') ?>"></script>
 
     <script>
         dayjs.locale('id');
         dayjs().locale('id').format();
+        dayjs.extend(window.dayjs_plugin_relativeTime);
     </script>
 
     <script>
