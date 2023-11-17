@@ -4,16 +4,19 @@ namespace App\Controllers;
 
 use App\Modules\Product\Models\ProductModel;
 use App\Libraries\Settings;
+use App\Modules\Page\Models\PageModel;
 
 class Home extends BaseController
 {
 	protected $product;
 	protected $setting;
+	protected $page;
 
 	function __construct()
 	{
 		$this->product = new ProductModel();
 		$this->setting = new Settings();
+		$this->page = new PageModel();
 	}
 
 	public function index()
@@ -50,6 +53,17 @@ class Home extends BaseController
 		$lang = $this->request->uri->getSegments()[1];
 		$this->session->set("lang", $lang);
 		return redirect()->back()->with('success', 'Language successfully changed to ' . $lang);
+	}
+
+	public function sitemap()
+	{
+		$this->response->setHeader('Content-Type', 'text/xml;charset=UTF-8'); 
+		return view('sitemap', [
+			'title' => 'Sitemap',
+			'pages' => $this->page->orderBy('page_id', 'DESC')->findAll(),
+			'products' => $this->product->getProduct(),
+			
+		]);
 	}
 
 	//--------------------------------------------------------------------

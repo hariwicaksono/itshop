@@ -8,6 +8,7 @@ use App\Modules\Category\Models\CategoryModel;
  */
 $routes->get('/', 'Home::index');
 $routes->get('/lang/{locale}', 'Home::setLanguage');
+$routes->get('sitemap.xml', 'Home::sitemap');
 
 //Routes Detail Produk tampil sesuai Nama Category
 $catModel = new CategoryModel();
