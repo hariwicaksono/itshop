@@ -115,6 +115,21 @@ class ProductModel extends Model
         $builder->limit("5");
         $query = $builder->get()->getResultArray();
         return $query;
-        
+    }
+
+    public function searchData($keyword = false)
+    {
+        $this->select("{$this->table}.*, m.media_path, m1.media_path as media_path1,  m2.media_path as media_path2, m3.media_path as media_path3,  m4.media_path as media_path4, c.category_name, c.category_slug");
+        $this->join("media m", "m.media_id = {$this->table}.product_image", "left");
+        $this->join("media m1", "m1.media_id = {$this->table}.product_image1", "left");
+        $this->join("media m2", "m2.media_id = {$this->table}.product_image2", "left");
+        $this->join("media m3", "m3.media_id = {$this->table}.product_image3", "left");
+        $this->join("media m4", "m4.media_id = {$this->table}.product_image4", "left");
+        $this->join("category c", "c.category_id = {$this->table}.category_id");
+        $this->groupStart();
+        $this->like("{$this->table}.product_name", $keyword);
+        $this->orLike("{$this->table}.product_code", $keyword);
+        $this->groupEnd();
+        return $this->findAll();
     }
 }

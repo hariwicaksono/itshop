@@ -2,6 +2,10 @@
 // Memanggil library
 use App\Libraries\Settings;
 
+$request = \Config\Services::request();
+$agent = $request->getUserAgent();
+$isMobile = $agent->getMobile();
+
 $uri = new \CodeIgniter\HTTP\URI(current_url());
 $setting = new Settings();
 $appName = $setting->info['app_name'];
@@ -81,12 +85,18 @@ Modified: 07-2023
                     </a>
                 </v-toolbar-title>
                 <v-spacer></v-spacer>
-                <v-btn icon class="mr-3" href="<?= base_url('cart') ?>" elevation="0">
+                <?php if ($isMobile == true) { ?>
+                    <?= $this->include('App\Views\partials/searchMobile'); ?>
+                <?php } else { ?>
+                    <?= $this->include('App\Views\partials/search'); ?>
+                <?php } ?>
+                <v-spacer></v-spacer>
+                <v-btn icon class="mr-1" href="<?= base_url('cart') ?>" elevation="0">
                     <v-badge :content="cartCounter" :value="cartCounter" color="red" overlap>
                         <v-icon>mdi-cart</v-icon>
                     </v-badge>
                 </v-btn>
-                <v-btn icon class="mr-3" href="<?= base_url('member/order-list') ?>" elevation="0">
+                <v-btn icon class="mr-1" href="<?= base_url('member/order-list') ?>" elevation="0">
                     <v-badge :content="orderCounter" :value="orderCounter" color="error" overlap>
                         <v-icon>
                             mdi-bell
@@ -94,15 +104,15 @@ Modified: 07-2023
                     </v-badge>
                 </v-btn>
                 <?php if (empty(session()->get('username'))) : ?>
-                    <v-btn text class="mr-3" href="<?= base_url('login') ?>" elevation="0">
-                        <v-icon>mdi-login-variant</v-icon> Login
+                    <v-btn text class="mr-1" href="<?= base_url('login') ?>" elevation="0">
+                        <v-icon>mdi-login-variant</v-icon> <span class="d-none d-sm-flex d-md-flex d-lg-flex d-xl-flex">Login</span>
                     </v-btn>
                 <?php endif; ?>
 
                 <?php if (!empty(session()->get('username'))) : ?>
                     <v-menu offset-y>
                         <template v-slot:activator="{ on, attrs }">
-                            <v-btn text class="mr-3" v-bind="attrs" v-on="on">
+                            <v-btn text class="mr-1" v-bind="attrs" v-on="on">
                                 <v-icon>mdi-account-circle</v-icon>&nbsp;<span class="d-none d-sm-flex d-md-flex d-lg-flex d-xl-flex"><?= session()->get('email') ?></span> <v-icon>mdi-chevron-down</v-icon>
                             </v-btn>
                         </template>
@@ -249,6 +259,8 @@ Modified: 07-2023
                     </v-card-text>
                 </v-card>
             </v-footer>
+
+            <?= $this->renderSection('dialog') ?>
 
             <v-snackbar v-model="snackbar" :timeout="timeout" <?= $snackbarsPosition; ?> <?php if ($snackbarsPosition == 'top') { ?> style="top: 70px;" <?php } else { ?> style="bottom: 40px;" <?php } ?>>
                 <span v-if="snackbar">{{snackbarMessage}}</span>

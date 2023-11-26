@@ -33,6 +33,7 @@ return [
     'loadingWait' => 'Sedang memuat... Harap tunggu',
     'do' => 'Melakukan',
     'refreshSuccess' => 'Refresh berhasil',
+    'searchResult' => 'Menampilkan Hasil Pencarian',
 
     //Signin
     'signIn' => 'Masuk',

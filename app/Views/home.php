@@ -21,7 +21,9 @@
 <template>
     <v-container>
         <h1 class="mb-3"><?= lang('App.product') ?></h1>
-
+        <!-- Tampil Hasil Pencarian -->
+        <h2 class="text-h5 font-weight-regular mb-5" v-show="result == true"><?= lang('App.searchResult'); ?>: "{{search}}" &nbsp;<v-btn small @click="clearSearch" title="Clear" alt="Clear"><v-icon small color="error">mdi-eraser</v-icon> Clear</v-btn></h2>
+        
         <v-row>
             <v-col cols="12" md="3">
                 <v-card class="mb-3">

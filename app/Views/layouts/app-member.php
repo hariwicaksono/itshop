@@ -61,12 +61,12 @@ Modified: 07-2023
                 <v-app-bar-nav-icon @click.stop="sidebarMenu = !sidebarMenu"></v-app-bar-nav-icon>
                 <v-toolbar-title></v-toolbar-title>
                 <v-spacer></v-spacer>
-                <v-btn icon class="mr-3" href="<?= base_url('cart') ?>" elevation="0">
+                <v-btn icon class="mr-2" href="<?= base_url('cart') ?>" elevation="0">
                     <v-badge :content="cartCounter" :value="cartCounter" color="red" overlap>
                         <v-icon>mdi-cart</v-icon>
                     </v-badge>
                 </v-btn>
-                <v-btn icon class="mr-3" href="<?= base_url('member/order-list') ?>" elevation="0">
+                <v-btn icon class="mr-2" href="<?= base_url('member/order-list') ?>" elevation="0">
                     <v-badge :content="orderCounter" :value="orderCounter" color="error" overlap>
                         <v-icon>
                             mdi-bell
@@ -76,7 +76,7 @@ Modified: 07-2023
                 <?php if (!empty(session()->get('username'))) : ?>
                     <v-menu offset-y>
                         <template v-slot:activator="{ on, attrs }">
-                            <v-btn text class="mr-3" v-bind="attrs" v-on="on">
+                            <v-btn text class="mr-2" v-bind="attrs" v-on="on">
                                 <v-icon>mdi-account-circle</v-icon>&nbsp;<span class="d-none d-sm-flex d-md-flex d-lg-flex d-xl-flex"><?= session()->get('email') ?></span> <v-icon>mdi-chevron-down</v-icon>
                             </v-btn>
                         </template>

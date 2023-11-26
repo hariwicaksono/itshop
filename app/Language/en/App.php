@@ -33,6 +33,7 @@ return [
     'loadingWait' => 'Loading... Please wait',
     'do' => 'Do',
     'refreshSuccess' => 'Refresh Successful',
+    'searchResult' => 'Displays Search Results',
 
     //Signin
     'signIn' => 'Sign in',

@@ -26,12 +26,6 @@ $datetime1 = new DateTime(date('Y-m-d H:i:s'));
         <changefreq>daily</changefreq>
         <priority>0.5</priority>
     </url>
-    <url>
-        <loc><?= base_url('cart'); ?></loc>
-        <lastmod><?= $datetime1->format(DATE_ATOM); ?></lastmod>
-        <changefreq>daily</changefreq>
-        <priority>0.5</priority>
-    </url>
     <?php foreach ($pages as $item) {
         $datetime = new DateTime($item['created_at']); ?>
         <url>
