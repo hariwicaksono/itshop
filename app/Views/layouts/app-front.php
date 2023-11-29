@@ -272,7 +272,7 @@ Modified: 07-2023
             </v-snackbar>
 
             <!-- Push Order terbaru -->
-            <v-snackbar v-model="snackbarNew" timeout="5000" bottom left max-width="350" style="bottom: 30px;" v-for="i in [currentNumber]" :key="i" v-show="dataOrderan != ''">
+            <v-snackbar v-model="snackbarNew" timeout="10000" bottom left max-width="350" style="bottom: 30px;" v-for="i in [currentNumber]" :key="i" v-show="dataOrderan != ''">
                 <div v-if="newOrderan">
                     <v-icon color="red">mdi-fire</v-icon> {{dayjs(newOrderan.created_at).fromNow()}}<br />
                     <strong>{{newOrderan.first_name}} {{newOrderan.last_name}}</strong> telah memesan Produk:<br /><strong>{{newOrderan.product_name}}</strong>
@@ -524,7 +524,7 @@ Modified: 07-2023
                 //setIntervalX(() => this.nextNewOrder(), 6000, 5);
                 //setInterval(this.nextNewOrder, 6000);
                 this.snackbarNew = true;
-                this.timer = setInterval(this.nextNewOrder, 6000);
+                this.timer = setInterval(this.nextNewOrder, 11000);
             },
             stopNotification: function() {
                 clearTimeout(this.timer);
