@@ -23,7 +23,7 @@
         <h1 class="mb-3"><?= lang('App.product') ?></h1>
         <!-- Tampil Hasil Pencarian -->
         <h2 class="text-h5 font-weight-regular mb-5" v-show="result == true"><?= lang('App.searchResult'); ?>: "{{search}}" &nbsp;<v-btn small @click="clearSearch" title="Clear" alt="Clear"><v-icon small color="error">mdi-eraser</v-icon> Clear</v-btn></h2>
-        
+
         <v-row>
             <v-col cols="12" md="3">
                 <v-card class="mb-3">
@@ -65,7 +65,7 @@
             </v-col>
             <v-col cols="12" md="9">
                 <v-row v-if="show == true">
-                    <v-col v-for="n in 3" :key="n" cols="12" md="4">
+                    <v-col v-for="n in 8" :key="n" cols="12" md="4">
                         <v-card outlined elevation="1">
                             <v-skeleton-loader class="mx-auto" max-width="300" type="card"></v-skeleton-loader>
                         </v-card>
@@ -75,8 +75,30 @@
                 <v-row v-masonry transition-duration="0.3s" item-selector=".item" class="masonry-container" v-if="show == false">
                     <v-col v-masonry-tile class="item" v-for="item in products" :key="item.product_id" cols="12" sm="4">
                         <v-card min-height="400">
-                            <v-img lazy-src="<?= base_url('images/no_image.jpg') ?>" :src="'<?= base_url(); ?>' + item.media_path" aspect-ratio="1" v-if="item.media_path != null"></v-img>
-                            <v-img lazy-src="<?= base_url('images/no_image.jpg') ?>" src="<?= base_url('images/no_image.jpg') ?>" v-else></v-img>
+                            <v-img lazy-src="<?= base_url('images/no_image.jpg') ?>" :src="'<?= base_url(); ?>' + item.media_path" aspect-ratio="1" v-if="item.media_path != null">
+                                <v-overlay absolute="true" v-if="item.active == '0'">
+                                    <v-chip>
+                                        <v-icon small>mdi-alert-circle-outline</v-icon> <?= lang('App.notAvailable'); ?>
+                                    </v-chip>
+                                </v-overlay>
+                                <v-overlay absolute="true" v-else-if="item.stock == '0'">
+                                    <v-chip>
+                                        <v-icon small>mdi-alert-circle-outline</v-icon> <?= lang('App.outofStock'); ?>
+                                    </v-chip>
+                                </v-overlay>
+                            </v-img>
+                            <v-img lazy-src="<?= base_url('images/no_image.jpg') ?>" src="<?= base_url('images/no_image.jpg') ?>" v-else>
+                                <v-overlay absolute="true" v-if="item.active == '0'">
+                                    <v-chip>
+                                        <v-icon small>mdi-alert-circle-outline</v-icon> <?= lang('App.notAvailable'); ?>
+                                    </v-chip>
+                                </v-overlay>
+                                <v-overlay absolute="true" v-else-if="item.stock == '0'">
+                                    <v-chip>
+                                        <v-icon small>mdi-alert-circle-outline</v-icon> <?= lang('App.outofStock'); ?>
+                                    </v-chip>
+                                </v-overlay>
+                            </v-img>
                             <v-card-title class="subtitle-1 font-weight-medium">
                                 <a link :href="'<?= base_url(); ?>' + item.category_slug + '/' + item.slug" class="text-decoration-none" title="" alt="">{{ item.product_name }}</a>
                             </v-card-title>
@@ -91,11 +113,11 @@
                                 </span>
                             </v-card-subtitle>
                             <v-card-actions>
-                                <v-btn color="success" @click="sendWhatsApp(item)" elevation="1">
+                                <v-btn color="success" @click="sendWhatsApp(item)" elevation="1" :disabled="item.stock == 0 || item.active == 0">
                                     <v-icon>mdi-whatsapp</v-icon> Chat <span class="d-flex d-sm-none d-md-none d-lg-flex d-xl-flex">WhatsApp</span>
                                 </v-btn>
                                 <v-spacer></v-spacer>
-                                <v-btn color="primary" @click="saveCart(item)" elevation="1" :disabled="item.stock == 0">
+                                <v-btn color="primary" @click="saveCart(item)" elevation="1" :disabled="item.stock == 0 || item.active == 0">
                                     <v-icon>mdi-cart</v-icon> <span class="d-flex d-sm-none d-md-none d-lg-flex d-xl-flex"><?= lang('App.buy'); ?></span>
                                 </v-btn>
                             </v-card-actions>
@@ -115,6 +137,41 @@
                 </paginate>
             </v-col>
         </v-row>
+
+        <v-divider class="mb-4"></v-divider>
+
+        <h1 class="mb-3"><?= lang('App.article'); ?></h1>
+        <v-select v-model="orderByArticles" :items="dataSortArticles" label="Urutkan <?= lang('App.article'); ?>" @change="getArticles" style="width: 50% !important;" hide-details></v-select>
+        <div v-if="loading2 == true">
+            <v-skeleton-loader type="list-item-avatar-three-line" class="mb-3"></v-skeleton-loader>
+            <v-divider></v-divider>
+            <v-skeleton-loader type="list-item-avatar-three-line" class="mb-3"></v-skeleton-loader>
+            <v-divider></v-divider>
+        </div>
+        <v-list two-line v-else>
+            <template v-for="(item, index) in articles">
+                <v-list-item>
+                    <v-list-item-avatar size="150" rounded>
+                        <v-img lazy-src="<?= base_url('images/no-image.png') ?>" :src="'<?= base_url(); ?>' + item.media_path" aspect-ratio="1" v-if="item.media_path != null"></v-img>
+                        <v-img lazy-src="<?= base_url('images/no-image.png') ?>" src="<?= base_url('images/no-image.png') ?>" v-else></v-img>
+                    </v-list-item-avatar>
+
+                    <v-list-item-content>
+                        <h5 class="text-h5 font-weight-medium"><a :href="'<?= base_url(); ?>' + item.category_slug + '/' + item.year + '/' + item.month + '/' + item.slug">{{item.article_title}}</a></h5>
+                        <h6 class="text-h6 mb-2 font-weight-light">{{item.article_headline}}</h6>
+                        <p><span class="font-weight-medium text--primary">{{dayjs(item.created_at).fromNow()}}</span> &mdash; <v-icon small>mdi-tag</v-icon> {{item.category_name}} &mdash; <v-icon small>mdi-account</v-icon> {{item.first_name}} {{item.last_name}} <v-icon small color="primary" v-show="item.role == '1'" title="Official Account" alt="Official Account">mdi-check-decagram</v-icon></p>
+                    </v-list-item-content>
+                </v-list-item>
+                <v-divider></v-divider>
+            </template>
+        </v-list>
+        <div class="text-center" v-show="articles == '' && loading2 == false">
+            <h1 class="font-weight-medium mb-3">No Articles Found</h1>
+            <v-icon color="yellow darken-3" size="100">mdi-file-document-remove</v-icon>
+            <h2 class="font-weight-regular mt-5">Sorry! The articles you were looking for is unavailable.<br />Please try again later.</h2>
+        </div>
+        <paginate class="mb-5" :page-count="pageCount1" :no-li-surround="true" :container-class="'v-pagination theme--light'" :page-link-class="'v-pagination__item v-btn'" :active-class="'v-pagination__item--active primary'" :disabled-class="'v-pagination__navigation--disabled'" :prev-link-class="'v-pagination__navigation'" :next-link-class="'v-pagination__navigation'" :prev-text="'<small>Prev</small>'" :next-text="'<small>Next</small>'" :click-handler="pagingArticles">
+        </paginate>
     </v-container>
     <br />
 </template>
@@ -165,6 +222,7 @@
         dialog: false,
         products: [],
         pageCount: 0,
+        pageCount1: 0,
         currentPage: 1,
         limitPage: 8,
         activeColor1: "primary",
@@ -187,6 +245,16 @@
         messageNoData: "",
         dataCategory: [],
         selectedCategory: [],
+
+        articles: [],
+        dataSortArticles: [{
+            text: 'Terbaru',
+            value: 'created_new'
+        }, {
+            text: 'Terlama',
+            value: 'created_old'
+        }, ],
+        orderByArticles: "created_new",
     }
 
     // Vue Created
@@ -194,6 +262,7 @@
     createdVue = function() {
         this.getProducts();
         this.getCategory();
+        this.getArticles();
     }
 
     // Vue Computed
@@ -310,6 +379,7 @@
                     console.log(err.response);
                 })
         },
+
         // Save Cart
         saveCart: function(item) {
             this.loading = true;
@@ -389,6 +459,55 @@
         sendWhatsApp: function(item) {
             let encoded = encodeURIComponent('<?= $wa_text; ?> ' + item.category_name + ': ' + item.product_name);
             setTimeout(() => window.location.href = `https://wa.me/<?= $telepon; ?>?text=${encoded}`, 100);
+        },
+
+        // Get Articles
+        getArticles: function() {
+            this.loading2 = true;
+            axios.get(`<?= base_url(); ?>openapi/articles/all?page=${this.currentPage}&limit=${this.limitPage}&sort_by=${this.orderByArticles}`, options)
+                .then(res => {
+                    // handle success
+                    this.loading2 = false;
+                    var data = res.data;
+                    if (data.status == true) {
+                        this.articles = data.data;
+                        this.pageCount1 = Math.ceil(data.total_page / data.per_page);
+                    } else {
+                        this.snackbar = true;
+                        this.snackbarMessage = data.message;
+                        this.articles = data.data;
+                    }
+                })
+                .catch(err => {
+                    // handle error
+                    console.log(err);
+                    this.loading2 = false;
+                    var error = err.response
+                    if (error.data.expired == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = error.data.message;
+                        setTimeout(() => window.location.href = error.data.data.url, 1000);
+                    }
+                })
+        },
+        pagingArticles: function(pageNumber) {
+            this.loading2 = true;
+            axios.get(`<?= base_url() ?>openapi/articles/all?page=${pageNumber}&limit=${this.limitPage}&sort_by=${this.orderByArticles}`)
+                .then((res) => {
+                    var data = res.data;
+                    if (data.status == true) {
+                        this.articles = data.data;
+                        this.pageCount1 = Math.ceil(data.total_page / data.per_page);
+                        this.loading2 = false;
+                    } else {
+                        this.articles = data.data;
+                        this.loading2 = false;
+                    }
+                })
+                .catch(err => {
+                    // handle error
+                    console.log(err.response);
+                })
         },
     }
 </script>

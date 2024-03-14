@@ -1,7 +1,9 @@
 <?php
 // Memanggil library
 use App\Libraries\Settings;
+use App\Libraries\Language;
 
+$language = new Language();
 $setting = new Settings();
 $appName = $setting->info['app_name'];
 $companyNama = $setting->info['company_nama'];
@@ -25,8 +27,8 @@ Modified: 07-2023
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
-    <title><?= $title ?? ""; ?> | <?= env('appName'); ?></title>
-    <meta name="theme-color" content="#FFFFFF" />
+    <title><?= $title ?? ""; ?> - <?= env('appName'); ?></title>
+    <meta name="theme-color" content="#1976D2" />
     <link rel="apple-touch-icon" href="<?= base_url('images/') . $imgLogo; ?>">
     <link rel="shortcut icon" href="<?= base_url('images/') . $imgLogo; ?>">
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
@@ -36,6 +38,11 @@ Modified: 07-2023
     <link href="<?= base_url('assets/css/quill.core.css') ?>" rel="stylesheet">
     <link href="<?= base_url('assets/css/quill.snow.css') ?>" rel="stylesheet">
     <link href="<?= base_url('assets/css/quill.bubble.css') ?>" rel="stylesheet">
+    <style>
+        .ql-tooltip {
+            left: 25px !important;
+        }
+    </style>
 </head>
 
 <body>
@@ -60,8 +67,7 @@ Modified: 07-2023
     <!-- preloader end -->
     <div id="app">
         <v-app>
-
-            <v-app-bar app color="<?= $navbarColor; ?>" <?= ($navbarColor == 'white' ? 'light':'dark'); ?>>
+            <v-app-bar app color="<?= $navbarColor; ?>" <?= ($navbarColor == 'white' ? 'light' : 'dark'); ?>>
                 <v-app-bar-nav-icon @click.stop="sidebarMenu = !sidebarMenu"></v-app-bar-nav-icon>
                 <v-toolbar-title></v-toolbar-title>
                 <v-spacer></v-spacer>
@@ -121,7 +127,7 @@ Modified: 07-2023
                 </v-btn>
             </v-app-bar>
 
-            <v-navigation-drawer color="<?= $sidebarColor; ?>" <?= ($sidebarColor == 'white' ? 'light':'dark'); ?> class="elevation-3" v-model="sidebarMenu" app floating :permanent="sidebarMenu" :mini-variant.sync="mini" v-if="!isMobile">
+            <v-navigation-drawer color="<?= $sidebarColor; ?>" <?= ($sidebarColor == 'white' ? 'light' : 'dark'); ?> class="elevation-3" v-model="sidebarMenu" app floating :permanent="sidebarMenu" :mini-variant.sync="mini" v-if="!isMobile">
                 <v-list dark dense elevation="1">
                     <v-list-item>
                         <v-list-item-action>
@@ -139,7 +145,7 @@ Modified: 07-2023
                     <?php $uri = new \CodeIgniter\HTTP\URI(current_url()); ?>
 
                     <?php if (session()->get('role') == 1) : ?>
-                        <v-list-item  color="white" link href="<?= base_url('admin'); ?>" <?php if ($uri->getSegment(2) == "") { ?> <?php echo 'class="v-item--active v-list-item--active"'; ?> <?php } ?>>
+                        <v-list-item color="white" link href="<?= base_url('admin'); ?>" <?php if ($uri->getSegment(2) == "") { ?> <?php echo 'class="v-item--active v-list-item--active"'; ?> <?php } ?>>
                             <v-list-item-icon>
                                 <v-icon>mdi-home</v-icon>
                             </v-list-item-icon>
@@ -148,7 +154,7 @@ Modified: 07-2023
                             </v-list-item-content>
                         </v-list-item>
 
-                        <v-list-item  color="white"  link href="<?= base_url('admin/orders'); ?>" <?php if ($uri->getSegment(2) == "orders") { ?> <?php echo 'class="v-item--active v-list-item--active"'; ?> <?php } ?>>
+                        <v-list-item color="white" link href="<?= base_url('admin/orders'); ?>" <?php if ($uri->getSegment(2) == "orders") { ?> <?php echo 'class="v-item--active v-list-item--active"'; ?> <?php } ?>>
                             <v-list-item-icon>
                                 <v-icon>mdi-receipt-text</v-icon><v-badge color="error" dot overlap v-show="orderCounter > 0"></v-badge>
                             </v-list-item-icon>
@@ -157,7 +163,7 @@ Modified: 07-2023
                             </v-list-item-content>
                         </v-list-item>
 
-                        <v-list-item  color="white"  link href="<?= base_url('admin/products'); ?>" <?php if ($uri->getSegment(2) == "products") { ?> <?php echo 'class="v-item--active v-list-item--active"'; ?> <?php } ?>>
+                        <v-list-item color="white" link href="<?= base_url('admin/products'); ?>" <?php if ($uri->getSegment(2) == "products") { ?> <?php echo 'class="v-item--active v-list-item--active"'; ?> <?php } ?>>
                             <v-list-item-icon>
                                 <v-icon>mdi-package-variant-closed</v-icon>
                             </v-list-item-icon>
@@ -425,6 +431,9 @@ Modified: 07-2023
             loading5: false,
             loading6: false,
             loading7: false,
+            loading8: false,
+            loading9: false,
+            loading10: false,
             valid: true,
             notifMessage: '',
             notifType: '',
@@ -472,14 +481,19 @@ Modified: 07-2023
                 },
             },
             pages: [{
-                title: 'Pages',
+                title: 'Pages & Articles',
                 action: 'mdi-file-document',
-                active: <?php if ($uri->getSegment(2) == "pages") { ?><?php echo 'true'; ?><?php } else { ?><?php echo 'false'; ?><?php } ?>,
+                active: <?php if ($uri->getSegment(2) == "pages" || $uri->getSegment(2) == "articles") { ?><?php echo 'true'; ?><?php } else { ?><?php echo 'false'; ?><?php } ?>,
                 items: [{
                     title: 'Pages',
-                    icon: 'mdi-file-document',
+                    icon: 'mdi-text-box-multiple',
                     url: '<?= base_url('admin/pages'); ?>',
                     active: <?php if ($uri->getSegment(2) == "pages") { ?><?php echo 'true'; ?><?php } else { ?><?php echo 'false'; ?><?php } ?>,
+                }, {
+                    title: 'Articles',
+                    icon: 'mdi-file-document-multiple',
+                    url: '<?= base_url('admin/articles'); ?>',
+                    active: <?php if ($uri->getSegment(2) == "articles") { ?><?php echo 'true'; ?><?php } else { ?><?php echo 'false'; ?><?php } ?>,
                 }, ],
 
             }, ],
@@ -593,6 +607,14 @@ Modified: 07-2023
                             setTimeout(() => window.location.href = error.data.data.url, 1000);
                         }
                     })
+            },
+
+            formatNumber(number) {
+                const formattedNumber = new Intl.NumberFormat('<?= $language->siteLang; ?>', {
+                    notation: 'compact',
+                    compactDisplay: 'short',
+                }).format(number);
+                return formattedNumber;
             },
         }
         Vue.component('paginate', VuejsPaginate)

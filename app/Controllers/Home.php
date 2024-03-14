@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Modules\Product\Models\ProductModel;
 use App\Libraries\Settings;
+use App\Modules\Article\Models\ArticleModel;
 use App\Modules\Page\Models\PageModel;
 
 class Home extends BaseController
@@ -11,12 +12,18 @@ class Home extends BaseController
 	protected $product;
 	protected $setting;
 	protected $page;
+	protected $article;
 
 	function __construct()
 	{
+		if (!session()->get('lang')) :
+			session()->set('lang', env('app.defaultLocale'));
+		endif;
+		
 		$this->product = new ProductModel();
 		$this->setting = new Settings();
 		$this->page = new PageModel();
+		$this->article = new ArticleModel();
 	}
 
 	public function index()
@@ -57,12 +64,12 @@ class Home extends BaseController
 
 	public function sitemap()
 	{
-		$this->response->setHeader('Content-Type', 'text/xml;charset=UTF-8'); 
+		$this->response->setHeader('Content-Type', 'text/xml;charset=UTF-8');
 		return view('sitemap', [
 			'title' => 'Sitemap',
 			'pages' => $this->page->orderBy('page_id', 'DESC')->findAll(),
 			'products' => $this->product->getProduct(),
-			
+			'articles' => $this->article->getArticles()
 		]);
 	}
 

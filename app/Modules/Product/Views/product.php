@@ -254,7 +254,7 @@
                                 <p class="text-caption">Pastikan deskripsi barang memuat spesifikasi, ukuran, bahan, masa berlaku, dan lainnya. Semakin detail, semakin berguna bagi pembeli, cantumkan min. 260 karakter agar pembeli semakin mudah mengerti dan menemukan barang anda</p>
                             </v-col>
                             <v-col cols="12" sm="9">
-                                <quill-editor v-model="productDescription" ref="quillEditor" :options="editorOption" :error-messages="product_descriptionError" style="min-height:200px !important;"></vue-quill-editor>
+                                <quill-editor v-model="productDescription" ref="quillEditor" :options="editorOption" :error-messages="product_descriptionError" style="min-height:200px !important;"></quill-editor>
                                     <!-- <v-textarea v-model="productDescription" counter maxlength="3000" :error-messages="product_descriptionError" rows="10" outlined full-width single-line></v-textarea> -->
                             </v-col>
                         </v-row>
@@ -393,7 +393,7 @@
                             <p class="text-caption">Pastikan deskripsi barang memuat spesifikasi, ukuran, bahan, masa berlaku, dan lainnya. Semakin detail, semakin berguna bagi pembeli, cantumkan min. 260 karakter agar pembeli semakin mudah mengerti dan menemukan barang anda</p>
                         </v-col>
                         <v-col cols="12" sm="9">
-                            <quill-editor v-model="productDescriptionEdit" ref="quillEditor" :options="editorOption" :error-messages="product_descriptionError"></vue-quill-editor>
+                            <quill-editor v-model="productDescriptionEdit" ref="quillEditor" :options="editorOption" :error-messages="product_descriptionError"></quill-editor>
                         </v-col>
                     </v-row>
                     <v-row>
@@ -702,7 +702,7 @@
                                 <p class="text-caption">Pastikan deskripsi barang memuat spesifikasi, ukuran, bahan, masa berlaku, dan lainnya. Semakin detail, semakin berguna bagi pembeli, cantumkan min. 260 karakter agar pembeli semakin mudah mengerti dan menemukan barang anda</p>
                             </v-col>
                             <v-col cols="12" sm="9">
-                                <quill-editor v-model="productDescriptionEdit" ref="quillEditor" :options="editorOption" :error-messages="product_descriptionError"></vue-quill-editor>
+                                <quill-editor v-model="productDescriptionEdit" ref="quillEditor" :options="editorOption" :error-messages="product_descriptionError"></quill-editor>
                                     <!-- <v-textarea v-model="productDescriptionEdit" counter maxlength="3000" rows="10" :error-messages="product_descriptionError" outlined full-width single-line></v-textarea> -->
                             </v-col>
                         </v-row>

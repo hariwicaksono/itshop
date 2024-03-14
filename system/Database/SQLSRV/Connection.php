@@ -357,15 +357,15 @@ class Connection extends BaseConnection
         for ($i = 0, $c = count($query); $i < $c; $i++) {
             $retVal[$i] = new stdClass();
 
-            $retVal[$i]->name    = $query[$i]->COLUMN_NAME;
-            $retVal[$i]->type    = $query[$i]->DATA_TYPE;
-            $retVal[$i]->default = $query[$i]->COLUMN_DEFAULT;
+            $retVal[$i]->name = $query[$i]->COLUMN_NAME;
+            $retVal[$i]->type = $query[$i]->DATA_TYPE;
 
             $retVal[$i]->max_length = $query[$i]->CHARACTER_MAXIMUM_LENGTH > 0
                 ? $query[$i]->CHARACTER_MAXIMUM_LENGTH
                 : $query[$i]->NUMERIC_PRECISION;
 
             $retVal[$i]->nullable = $query[$i]->IS_NULLABLE !== 'NO';
+            $retVal[$i]->default  = $query[$i]->COLUMN_DEFAULT;
         }
 
         return $retVal;
@@ -444,7 +444,7 @@ class Connection extends BaseConnection
      */
     public function setDatabase(?string $databaseName = null)
     {
-        if (empty($databaseName)) {
+        if ($databaseName === null || $databaseName === '') {
             $databaseName = $this->database;
         }
 
@@ -538,7 +538,7 @@ class Connection extends BaseConnection
             return $this->dataCache['version'];
         }
 
-        if (! $this->connID || empty($info = sqlsrv_server_info($this->connID))) {
+        if (! $this->connID || ($info = sqlsrv_server_info($this->connID)) === []) {
             $this->initialize();
         }
 

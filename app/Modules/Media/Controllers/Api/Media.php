@@ -37,6 +37,33 @@ class Media extends BaseControllerApi
         }
     }
 
+    public function create2()
+    {
+        $image = $this->request->getFile('articleImage');
+        $fileName = $image->getRandomName();
+        if ($image !== "") {
+            $path = "images/articles/";
+            $moved = $image->move($path, $fileName);
+            if ($moved) {
+                $save = $this->model->save([
+                    'media_path' => $path . $fileName
+                ]);
+                if ($save) {
+                    return $this->respond(["status" => true, "message" => lang('App.imgSuccess'), "data" => $this->model->getInsertID()], 200);
+                } else {
+                    return $this->respond(["status" => false, "message" => lang('App.imgFailed'), "data" => []], 200);
+                }
+            }
+        } else {
+            $response = [
+                'status' => false,
+                'message' => lang('App.uploadFailed'),
+                'data' => []
+            ];
+            return $this->respond($response, 200);
+        }
+    }
+
     public function delete($id = null)
     {
         $hapus = $this->model->find($id);

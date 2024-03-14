@@ -75,8 +75,7 @@ class Autoloader
     /**
      * Stores files as a list.
      *
-     * @var string[]
-     * @phpstan-var list<string>
+     * @var list<string>
      */
     protected $files = [];
 
@@ -84,8 +83,7 @@ class Autoloader
      * Stores helper list.
      * Always load the URL helper, it should be used in most apps.
      *
-     * @var string[]
-     * @phpstan-var list<string>
+     * @var list<string>
      */
     protected $helpers = ['url'];
 
@@ -119,7 +117,7 @@ class Autoloader
             $this->files = $config->files;
         }
 
-        if (isset($config->helpers)) { // @phpstan-ignore-line
+        if (isset($config->helpers)) {
             $this->helpers = [...$this->helpers, ...$config->helpers];
         }
 
@@ -185,8 +183,7 @@ class Autoloader
     /**
      * Registers namespaces with the autoloader.
      *
-     * @param array<string, array<int, string>|string>|string $namespace
-     * @phpstan-param array<string, list<string>|string>|string $namespace
+     * @param array<string, list<string>|string>|string $namespace
      *
      * @return $this
      */
@@ -283,11 +280,13 @@ class Autoloader
         }
 
         foreach ($this->prefixes as $namespace => $directories) {
-            foreach ($directories as $directory) {
-                $directory = rtrim($directory, '\\/');
+            if (strpos($class, $namespace) === 0) {
+                $relativeClassPath = str_replace('\\', DIRECTORY_SEPARATOR, substr($class, strlen($namespace)));
 
-                if (strpos($class, $namespace) === 0) {
-                    $filePath = $directory . str_replace('\\', DIRECTORY_SEPARATOR, substr($class, strlen($namespace))) . '.php';
+                foreach ($directories as $directory) {
+                    $directory = rtrim($directory, '\\/');
+
+                    $filePath = $directory . $relativeClassPath . '.php';
                     $filename = $this->includeFile($filePath);
 
                     if ($filename) {

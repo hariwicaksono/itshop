@@ -288,7 +288,7 @@ if (! function_exists('form_dropdown')) {
         }
 
         // If no selected state was submitted we will attempt to set it automatically
-        if (empty($selected)) {
+        if ($selected === []) {
             if (is_array($data)) {
                 if (isset($data['name'], $_POST[$data['name']])) {
                     $selected = [$_POST[$data['name']]];
@@ -312,7 +312,7 @@ if (! function_exists('form_dropdown')) {
             $key = (string) $key;
 
             if (is_array($val)) {
-                if (empty($val)) {
+                if ($val === []) {
                     continue;
                 }
 
@@ -656,13 +656,7 @@ if (! function_exists('set_radio')) {
 
         $postInput = $request->getPost($field);
 
-        if ($oldInput !== null) {
-            $input = $oldInput;
-        } elseif ($postInput !== null) {
-            $input = $postInput;
-        } else {
-            $input = $default;
-        }
+        $input = $oldInput ?? $postInput ?? $default;
 
         if (is_array($input)) {
             // Note: in_array('', array(0)) returns TRUE, do not use it
@@ -784,7 +778,7 @@ if (! function_exists('parse_form_attributes')) {
                     unset($attributes[$key]);
                 }
             }
-            if (! empty($attributes)) {
+            if ($attributes !== []) {
                 $default = array_merge($default, $attributes);
             }
         }

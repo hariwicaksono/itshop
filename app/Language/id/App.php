@@ -29,11 +29,16 @@ return [
     'todayTrx' => 'Transaksi Hari ini',
     'transaction' => 'Transaksi',
     'aboutUs' => 'Tentang Kami',
+	'contactUs' => 'Kontak Kami',
     'sold' => 'Terjual',
     'loadingWait' => 'Sedang memuat... Harap tunggu',
     'do' => 'Melakukan',
     'refreshSuccess' => 'Refresh berhasil',
     'searchResult' => 'Menampilkan Hasil Pencarian',
+    'notAvailable' => 'Tidak Tersedia',
+    'outofStock' => 'Stok Habis',
+    'article' => 'Artikel',
+    'writtenBy' => 'Ditulis oleh',
 
     //Signin
     'signIn' => 'Masuk',

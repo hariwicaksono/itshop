@@ -110,11 +110,18 @@
     <v-row justify="center">
         <v-dialog v-model="modalDelete" persistent max-width="600px">
             <v-card class="pa-2">
-                <v-card-title class="text-h5"><?= lang('App.delConfirm') ?></v-card-title>
+                <v-card-title>
+                    <v-icon color="error" class="mr-2" x-large>mdi-alert-octagon</v-icon> <?= lang('App.confirm'); ?> <?= lang('App.delete'); ?>
+                </v-card-title>
+                <v-card-text>
+                    <div class="mt-3 py-4">
+                        <h2 class="font-weight-regular"><?= lang('App.delConfirm') ?></h2>
+                    </div>
+                </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="blue darken-1" text @click="modalDelete = false"><?= lang('App.no') ?></v-btn>
-                    <v-btn color="blue darken-1" dark @click="deletePayment" :loading="loading"><?= lang('App.yes') ?></v-btn>
+                    <v-btn large text @click="modalDelete = false"><?= lang("App.no") ?></v-btn>
+                    <v-btn large color="error" dark @click="deletePayment" :loading="loading"><?= lang("App.yes") ?></v-btn>
                     <v-spacer></v-spacer>
                 </v-card-actions>
             </v-card>

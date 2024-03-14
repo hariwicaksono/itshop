@@ -44,4 +44,13 @@ $datetime1 = new DateTime(date('Y-m-d H:i:s'));
             <priority>0.5</priority>
         </url>
     <?php } ?>
+    <?php foreach ($articles as $item) {
+        $datetime = new DateTime($item['created_at']); ?>
+        <url>
+            <loc><?= base_url() . $item['category_slug'] . '/' . $item['year'] . '/' . $item['month'] . '/' . $item['slug']; ?></loc>
+            <lastmod><?= $datetime->format(DATE_ATOM); ?></lastmod>
+            <changefreq>daily</changefreq>
+            <priority>0.5</priority>
+        </url>
+    <?php } ?>
 </urlset>

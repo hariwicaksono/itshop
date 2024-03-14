@@ -1,7 +1,9 @@
 <?php
 // Memanggil library
 use App\Libraries\Settings;
+use App\Libraries\Language;
 
+$language = new Language();
 $request = \Config\Services::request();
 $agent = $request->getUserAgent();
 $isMobile = $agent->getMobile();
@@ -36,19 +38,20 @@ Modified: 07-2023
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
     <?php if ($uri->getSegment(1) == "") { ?>
-        <title><?= $title; ?> | <?= $appName; ?></title>
-        <meta name="description" content="<?= $appDesc; ?> | <?= $appName; ?> by <?= env('appCompany'); ?>">
+        <title><?= $title; ?> - <?= $appName; ?></title>
+        <meta name="description" content="<?= $appDesc; ?> - <?= $appName; ?> by <?= env('appCompany'); ?>">
     <?php } else if ($uri->getSegment(1) == "source-code") { ?>
-        <title>Jual <?= $title; ?> | <?= $appName; ?></title>
-        <meta name="description" content="Jual <?= $title; ?> | <?= $appName; ?> by <?= env('appCompany'); ?>">
+        <title>Jual <?= $title; ?> - <?= $appName; ?></title>
+        <meta name="description" content="Jual <?= $title; ?> - <?= $appName; ?> by <?= env('appCompany'); ?>">
     <?php } else { ?>
-        <title><?= $title; ?> | <?= $appName; ?></title>
-        <meta name="description" content="<?= $title; ?> | <?= $appName; ?> by <?= env('appCompany'); ?>">
+        <title><?= $title; ?> - <?= $appName; ?></title>
+        <meta name="description" content="<?= $title; ?> - <?= $appName; ?> by <?= env('appCompany'); ?>">
     <?php } ?>
-    <meta name="theme-color" content="#FFFFFF" />
+    <meta name="theme-color" content="#1976D2" />
     <link rel="apple-touch-icon" href="<?= base_url('images/') . $imgLogo; ?>">
     <link rel="shortcut icon" href="<?= base_url('images/') . $imgLogo; ?>">
     <meta name="robots" content="index,follow">
+    <link rel="canonical" href="<?= current_url(); ?>" />
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
     <link href="<?= base_url('assets/css/materialdesignicons.min.css') ?>" rel="stylesheet">
     <link href="<?= base_url('assets/css/vuetify.min.css') ?>" rel="stylesheet">
@@ -238,9 +241,10 @@ Modified: 07-2023
                                     <h2><?= $appName; ?></h2>
                                     <!-- <h3><?= $companyNama; ?></h3> -->
                                     <p><?= $companyAlamat; ?>, Indonesia</p>
-                                    Email 1: <?= $companyEmail1; ?> <br />
-                                    Email 2: <?= $companyEmail2; ?><br />
-                                    Telp/WA: <?= $companyTelp; ?> <v-btn icon link href="https://wa.me/<?= $companyTelp; ?>"><v-icon color="green">mdi-whatsapp</v-icon></v-btn><br />
+                                    <h3 class="font-weight-medium subheading mb-2 mt-3"><?= lang('App.contactUs'); ?>: </h3>
+                                    <p>Email 1: <?= $companyEmail1; ?> <br />
+                                    Email 2: <?= $companyEmail2; ?></p>
+                                    Telp/WA: <v-btn small rounded link elevation="0" href="https://wa.me/<?= $companyTelp;?>"><v-icon small color="green">mdi-whatsapp</v-icon> Message us</v-btn><br />
                                     <h3 class="font-weight-medium subheading mb-2 mt-3">Jam Kerja: </h3>
                                     <p>Office: Senin - Jum'at: 09.00 - 16.00 WIB, Sabtu - Minggu: Libur<br />
                                         Pengiriman: Buka 24 Jam</p>
@@ -539,7 +543,15 @@ Modified: 07-2023
             prevNewOrder: function() {
                 this.currentNumber -= 1;
                 this.snackbarNew = true;
-            }
+            },
+
+            formatNumber(number) {
+                const formattedNumber = new Intl.NumberFormat('<?= $language->siteLang; ?>', {
+                    notation: 'compact',
+                    compactDisplay: 'short',
+                }).format(number);
+                return formattedNumber;
+            },
         }
         Vue.component('paginate', VuejsPaginate)
         var VueMasonryPlugin = window["vue-masonry-plugin"].VueMasonryPlugin;

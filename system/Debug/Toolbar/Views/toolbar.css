@@ -288,6 +288,9 @@
   padding-left: 1em;
   text-align: right;
 }
+#debug-bar > .debug-bar-dblock {
+  display: block;
+}
 
 .debug-view.show-view {
   border: 1px solid;
@@ -532,9 +535,6 @@
   #debug-bar .timeline .timer {
     background-color: #DD8615;
   }
-  #debug-bar .timeline .timeline-parent-open td {
-    color: #252525;
-  }
   .debug-view.show-view {
     border-color: #DD8615;
   }
@@ -646,9 +646,6 @@
 }
 #toolbarContainer.dark #debug-bar .timeline .timer {
   background-color: #DD8615;
-}
-#toolbarContainer.dark #debug-bar .timeline .timeline-parent-open td {
-  color: #252525;
 }
 #toolbarContainer.dark .debug-view.show-view {
   border-color: #DD8615;
@@ -809,4 +806,48 @@
 
 .debug-bar-noverflow {
   overflow: hidden;
+}
+
+.debug-bar-dtableRow {
+  display: table-row;
+}
+
+.debug-bar-dinlineBlock {
+  display: inline-block;
+}
+
+.debug-bar-pointer {
+  cursor: pointer;
+}
+
+.debug-bar-mleft4 {
+  margin-left: 4px;
+}
+
+.debug-bar-level-0 {
+  --level: 0;
+}
+
+.debug-bar-level-1 {
+  --level: 1;
+}
+
+.debug-bar-level-2 {
+  --level: 2;
+}
+
+.debug-bar-level-3 {
+  --level: 3;
+}
+
+.debug-bar-level-4 {
+  --level: 4;
+}
+
+.debug-bar-level-5 {
+  --level: 5;
+}
+
+.debug-bar-level-6 {
+  --level: 6;
 }

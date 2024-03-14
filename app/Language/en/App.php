@@ -29,11 +29,16 @@ return [
     'todayTrx' => "Today's Transaction",
     'transaction' => 'Transaction',
     'aboutUs' => 'About Us',
+	'contactUs' => 'Contact Us',
     'sold' => 'Sold',
     'loadingWait' => 'Loading... Please wait',
     'do' => 'Do',
     'refreshSuccess' => 'Refresh Successful',
     'searchResult' => 'Displays Search Results',
+    'notAvailable' => 'Not Available',
+    'outofStock' => 'Out of Stock',
+    'article' => 'Article',
+    'writtenBy' => 'Written by',
 
     //Signin
     'signIn' => 'Sign in',

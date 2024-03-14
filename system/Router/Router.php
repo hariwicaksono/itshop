@@ -15,6 +15,7 @@ use Closure;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\HTTP\Exceptions\RedirectException;
 use CodeIgniter\HTTP\Request;
+use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\Router\Exceptions\RouterException;
 use Config\App;
 use Config\Feature;
@@ -44,7 +45,7 @@ class Router implements RouterInterface
     /**
      * The name of the controller class.
      *
-     * @var Closure|string
+     * @var (Closure(mixed...): (ResponseInterface|string|void))|string
      */
     protected $controller;
 
@@ -163,7 +164,7 @@ class Router implements RouterInterface
      *
      * @param string|null $uri URI path relative to baseURL
      *
-     * @return Closure|string Controller classname or Closure
+     * @return (Closure(mixed...): (ResponseInterface|string|void))|string Controller classname or Closure
      *
      * @throws PageNotFoundException
      * @throws RedirectException
@@ -237,7 +238,7 @@ class Router implements RouterInterface
     /**
      * Returns the name of the matched controller.
      *
-     * @return Closure|string Controller classname or Closure
+     * @return (Closure(mixed...): (ResponseInterface|string|void))|string Controller classname or Closure
      */
     public function controllerName()
     {
@@ -589,7 +590,7 @@ class Router implements RouterInterface
      */
     public function setDirectory(?string $dir = null, bool $append = false, bool $validate = true)
     {
-        if (empty($dir)) {
+        if ($dir === null || $dir === '') {
             $this->directory = null;
         }
 
@@ -623,7 +624,7 @@ class Router implements RouterInterface
     protected function setRequest(array $segments = [])
     {
         // If we don't have any segments - use the default controller;
-        if (empty($segments)) {
+        if ($segments === []) {
             return;
         }
 

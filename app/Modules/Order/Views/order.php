@@ -348,7 +348,7 @@
 <!-- Modal Add -->
 <template>
     <v-row justify="center">
-        <v-dialog v-model="modalAddUser" persistent max-width="700px">
+        <v-dialog v-model="modalAddUser" scrollable persistent max-width="700px">
             <v-card>
                 <v-card-title><?= lang('App.add') ?> User
                     <v-spacer></v-spacer>
@@ -1222,14 +1222,14 @@
         modalAddUserOpen: function() {
             this.modalAddUser = true;
             this.notifType = "";
-        },
-        modalAddUserClose: function() {
             const newrandNumber = Math.floor(Math.random() * 10000);
             const newrandPass = randomString(12);
             this.userName = 'user' + newrandNumber;
             this.email = 'user' + newrandNumber + "@gmail.com";
             this.password = newrandPass;
             this.verify = newrandPass;
+        },
+        modalAddUserClose: function() {
             this.modalAddUser = false;
             this.$refs.form.resetValidation();
         },
@@ -1252,6 +1252,9 @@
                     if (data.status == true) {
                         this.snackbar = true;
                         this.snackbarMessage = data.message;
+                        this.firstName = "";
+                        this.lastName = "";
+                        this.phone = "";
                         this.getUser();
                         this.modalAddUser = false;
                         this.$refs.form.resetValidation();

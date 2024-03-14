@@ -51,12 +51,12 @@ class ProductModel extends Model
         $this->join("media m4", "m4.media_id = {$this->table}.product_image4", "left");
         $this->join("category c", "c.category_id = {$this->table}.category_id");
         if ($where != '') :
-            $this->where("{$this->table}.category_id", $where);
-            $multiple = explode(",", $where);
+            $this->whereIn("{$this->table}.category_id", [$where]);
+        /*  $multiple = explode(",", $where);
             if (count($multiple) > 1) {
                 $this->where("{$this->table}.category_id", $multiple[0]);
                 $this->orWhere("{$this->table}.category_id", $multiple[1]);
-            }
+            } */
         endif;
         if ($orderBy == 'created_old') {
             $this->orderBy("{$this->table}.created_at", "ASC");

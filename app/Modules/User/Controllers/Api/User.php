@@ -149,6 +149,7 @@ class User extends BaseControllerApi
                 'provinsi_id' => $json->provinsi_id,
                 'kabupaten_kota_id' => $json->kabupaten_kota_id,
                 'kodepos' => $json->kodepos,
+                'biography' => $json->biography
             ];
         } else {
             $data = $this->request->getRawInput();

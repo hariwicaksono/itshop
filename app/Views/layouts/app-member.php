@@ -1,7 +1,9 @@
 <?php
 // Memanggil library
 use App\Libraries\Settings;
+use App\Libraries\Language;
 
+$language = new Language();
 $setting = new Settings();
 $appName = $setting->info['app_name'];
 $companyNama = $setting->info['company_nama'];
@@ -10,6 +12,7 @@ $navbarColor = $setting->info['navbar_color'];
 $sidebarColor = $setting->info['sidebar_color'];
 $imgLogo = $setting->info['img_logo'];
 $imgNavbar = $setting->info['img_navbar'];
+$tawkToScript = $setting->info['tawkto_script'];
 ?>
 <!--
 PT ITSHOP BISNIS DIGITAL
@@ -25,8 +28,8 @@ Modified: 07-2023
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
-    <title>Member | <?= $appName; ?></title>
-    <meta name="theme-color" content="#FFFFFF" />
+    <title>Member - <?= $appName; ?></title>
+    <meta name="theme-color" content="#1976D2" />
     <link rel="apple-touch-icon" href="<?= base_url('images/') . $imgLogo; ?>">
     <link rel="shortcut icon" href="<?= base_url('images/') . $imgLogo; ?>">
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
@@ -423,6 +426,14 @@ Modified: 07-2023
                         }
                     })
             },
+
+            formatNumber(number) {
+                const formattedNumber = new Intl.NumberFormat('<?= $language->siteLang; ?>', {
+                    notation: 'compact',
+                    compactDisplay: 'short',
+                }).format(number);
+                return formattedNumber;
+            },
         }
         Vue.component('paginate', VuejsPaginate)
     </script>
@@ -441,19 +452,7 @@ Modified: 07-2023
         })
     </script>
     <!--Start of Tawk.to Script-->
-    <script type="text/javascript">
-        var Tawk_API = Tawk_API || {},
-            Tawk_LoadStart = new Date();
-        (function() {
-            var s1 = document.createElement("script"),
-                s0 = document.getElementsByTagName("script")[0];
-            s1.async = true;
-            s1.src = 'https://embed.tawk.to/642f992d31ebfa0fe7f6f669/1gtcusneh';
-            s1.charset = 'UTF-8';
-            s1.setAttribute('crossorigin', '*');
-            s0.parentNode.insertBefore(s1, s0);
-        })();
-    </script>
+    <?= $tawkToScript; ?>
     <!--End of Tawk.to Script-->
 </body>
 

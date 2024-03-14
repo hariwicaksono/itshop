@@ -10,9 +10,31 @@
         <v-row>
             <v-col cols="12" sm="4">
                 <a :href="'<?= base_url() ?>' + image" target="_blank" v-if="image != null">
-                    <v-img v-model="image" :src="'<?= base_url() ?>' + image" aspect-ratio="1" class="mb-4" title="Cover" alt="Cover"></v-img>
+                    <v-img v-model="image" :src="'<?= base_url() ?>' + image" aspect-ratio="1" class="mb-4" title="Cover" alt="Cover">
+                        <v-overlay absolute="true" v-if="products.active == '0'">
+                            <v-chip>
+                                <v-icon small>mdi-alert-circle-outline</v-icon> <?= lang('App.notAvailable'); ?>
+                            </v-chip>
+                        </v-overlay>
+                        <v-overlay absolute="true" v-else-if="products.stock == '0'">
+                            <v-chip>
+                                <v-icon small>mdi-alert-circle-outline</v-icon> <?= lang('App.outofStock'); ?>
+                            </v-chip>
+                        </v-overlay>
+                    </v-img>
                 </a>
-                <v-img src="<?= base_url('images/no_image.jpg') ?>" v-else></v-img>
+                <v-img src="<?= base_url('images/no_image.jpg') ?>" v-else>
+                    <v-overlay absolute="true" v-if="products.active == '0'">
+                        <v-chip>
+                            <v-icon small>mdi-alert-circle-outline</v-icon> <?= lang('App.notAvailable'); ?>
+                        </v-chip>
+                    </v-overlay>
+                    <v-overlay absolute="true" v-else-if="products.stock == '0'">
+                        <v-chip>
+                            <v-icon small>mdi-alert-circle-outline</v-icon> <?= lang('App.outofStock'); ?>
+                        </v-chip>
+                    </v-overlay>
+                </v-img>
 
                 <v-row>
                     <v-col>
@@ -79,10 +101,10 @@
                         <span class="text-subtitle-1 font-weight-regular">Stock: <strong>{{stock}}</strong></span>
                         <h2 class="mb-5 mt-2"><span class="text-subtitle-1 font-weight-regular">Subtotal:</span> <span>{{RibuanLocale(subTotal)}}</span></h2>
 
-                        <v-btn large block color="success" @click="sendWhatsApp(products)" elevation="1" class="mb-3">
+                        <v-btn large block color="success" @click="sendWhatsApp(products)" elevation="1" class="mb-3" :disabled="products.stock == 0 || products.active == 0">
                             <v-icon>mdi-whatsapp</v-icon> <span class="d-flex d-sm-none d-md-none d-lg-flex d-xl-flex">Chat</span> WhatsApp
                         </v-btn>
-                        <v-btn large block color="primary" @click="saveCart(products)" elevation="1" class="mb-3">
+                        <v-btn large block color="primary" @click="saveCart(products)" elevation="1" class="mb-3" :disabled="products.stock == 0 || products.active == 0">
                             <v-icon>mdi-cart-plus</v-icon> <?= lang('App.carts'); ?>
                         </v-btn>
                         <v-btn large block color="primary" outlined link href="<?= base_url('cart'); ?>" elevation="1">

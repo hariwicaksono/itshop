@@ -17,8 +17,8 @@
             <v-data-table :headers="dataTable" :items="data" :options.sync="options" :server-items-length="totalData" :items-per-page="10" :loading="loading">
                 <template v-slot:item="{ item }">
                     <tr>
-                        <td>{{item.email}}</td>
-                        <td>{{item.username}}</td>
+                        <td width="300"><strong>{{item.first_name}} {{item.last_name}}</strong><br /><em>{{item.biography}}</em></td>
+                        <td>{{item.email}}<br /><em>{{item.username}}</em></td>
                         <td>{{item.phone}}</td>
                         <td>
                             {{item.alamat}}
@@ -29,13 +29,13 @@
                                 <span v-if="items.provinsi_id == item.provinsi_id">{{items.provinsi_nama}}</span>
                             </div>
                         </td>
-                        <td>
+                        <td width="200">
                             <v-select v-model="item.role" name="role" :items="roles" item-text="label" item-value="value" label="Select" single-line @change="setRole(item)" :disabled="item.username == 'admin'"></v-select>
                         </td>
                         <td>
                             <v-switch v-model="item.active" name="active" false-value="0" true-value="1" color="success" @click="setActive(item)" :disabled="item.username == 'admin'"></v-switch>
                         </td>
-                        <td>
+                        <td width="200">
                             <v-btn icon color="primary" class="mr-2" @click="editItem(item)" title="Edit" alt="Edit">
                                 <v-icon>mdi-pencil</v-icon>
                             </v-btn>
@@ -57,7 +57,7 @@
 <!-- Modal Add -->
 <template>
     <v-row justify="center">
-        <v-dialog v-model="modalAdd" persistent max-width="700px">
+        <v-dialog v-model="modalAdd" persistent scrollable max-width="700px">
             <v-card>
                 <v-card-title><?= lang('App.add') ?> User
                     <v-spacer></v-spacer>
@@ -127,7 +127,7 @@
                             </v-col>
                         </v-row>
 
-                        <v-row>
+                        <v-row class="mt-n4">
                             <v-col>
                                 <v-text-field label="First Name *" v-model="firstNameEdit" :error-messages="first_nameError" outlined></v-text-field>
                             </v-col>
@@ -135,6 +135,8 @@
                                 <v-text-field label="Last Name *" v-model="lastNameEdit" :error-messages="last_nameError" outlined></v-text-field>
                             </v-col>
                         </v-row>
+
+                        <v-textarea v-model="biography" label="Biography" :error-messages="biographyError" rows="2" counter :rules="[rules.length(255)]" outlined></v-textarea>
 
                         <v-text-field label="Alamat" v-model="alamatEdit" :error-messages="alamatError" outlined></v-text-field>
 
@@ -168,9 +170,9 @@
         </v-dialog>
     </v-row>
 </template>
-<!-- End Modal Edit Product -->
+<!-- End Modal Edit -->
 
-<!-- Modal Delete Product -->
+<!-- Modal Delete -->
 <template>
     <v-row justify="center">
         <v-dialog v-model="modalDelete" persistent max-width="600px">
@@ -193,7 +195,7 @@
         </v-dialog>
     </v-row>
 </template>
-<!-- End Modal Delete Product -->
+<!-- End Modal Delete -->
 
 <!-- Modal Password -->
 <template>
@@ -264,11 +266,11 @@
         group: null,
         search: "",
         dataTable: [{
+            text: 'Name',
+            value: 'first_name'
+        }, {
             text: 'Email',
             value: 'email'
-        }, {
-            text: 'Username',
-            value: 'username'
         }, {
             text: 'Telepon',
             value: 'phone'
@@ -339,7 +341,9 @@
         passwordError: "",
         verify: randPass,
         verifyError: "",
-        modalPassword: false
+        modalPassword: false,
+        biography: "",
+        biographyError: ""
     }
 
     createdVue = function() {
@@ -491,14 +495,14 @@
         modalAddOpen: function() {
             this.modalAdd = true;
             this.notifType = "";
-        },
-        modalAddClose: function() {
             const newrandNumber = Math.floor(Math.random() * 10000);
             const newrandPass = randomString(12);
             this.userName = 'user' + newrandNumber;
             this.email = 'user' + newrandNumber + "@gmail.com";
             this.password = newrandPass;
             this.verify = newrandPass;
+        },
+        modalAddClose: function() {
             this.modalAdd = false;
             this.$refs.form.resetValidation();
         },
@@ -571,6 +575,7 @@
             this.kodeposEdit = user.kodepos;
             this.select_kabupaten = user.kabupaten_kota_id;
             this.select_provinsi = user.provinsi_id;
+            this.biography = user.biography;
         },
         modalEditClose: function() {
             this.modalEdit = false;
@@ -589,7 +594,8 @@
                     alamat: this.alamatEdit,
                     provinsi_id: this.select_provinsi,
                     kabupaten_kota_id: this.select_kabupaten,
-                    kodepos: this.kodeposEdit
+                    kodepos: this.kodeposEdit,
+                    biography: this.biography
                 }, options)
                 .then(res => {
                     // handle success

@@ -49,6 +49,7 @@ class OrderModel extends Model
         if ($start != "" && $end != "") :
             $this->where("DATE({$this->table}.created_at) BETWEEN '$start' AND '$end'", null, false);
         endif;
+        $this->orderBy("{$this->table}.created_at", 'DESC');
         $query = $this->findAll();
         return $query;
     }
