@@ -51,8 +51,9 @@ class Article extends BaseControllerApi
         $input = $this->request->getVar();
         $page = $input['page'];
         $limit = $input['limit'];
+        $where = $input['category'] ?? "";
         $orderBy = $input['sort_by'];
-        $data = $this->model->getAllArticles($page, $limit, $orderBy);
+        $data = $this->model->getAllArticles($page, $limit, $where, $orderBy);
         if (!empty($data)) {
             $response = [
                 "status" => true,

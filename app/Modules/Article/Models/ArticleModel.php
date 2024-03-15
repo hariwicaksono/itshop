@@ -50,7 +50,7 @@ class ArticleModel extends Model
         return $this->findAll();
     }
 
-    public function getAllArticles($page = false, $limit = false, $orderBy = false)
+    public function getAllArticles($page = false, $limit = false,  $where = false, $orderBy = false)
     {
         $offset = ($page - 1) * $limit;
         $this->select("{$this->table}.*, m.media_path, u.first_name, u.last_name, u.role, u.biography, c.category_name, c.category_slug");
@@ -58,6 +58,15 @@ class ArticleModel extends Model
         $this->join("users u", "u.user_id = {$this->table}.user_id");
         $this->join("category c", "c.category_id = {$this->table}.category_id");
         $this->where("{$this->table}.active", 1);
+        if ($where != '') :
+            $groups = explode(",", $where);
+            $this->whereIn("{$this->table}.category_id", $groups);
+        /*  $multiple = explode(",", $where);
+            if (count($multiple) > 1) {
+                $this->where("{$this->table}.category_id", $multiple[0]);
+                $this->orWhere("{$this->table}.category_id", $multiple[1]);
+            } */
+        endif;
         if ($orderBy == 'created_old') {
             $this->orderBy("{$this->table}.created_at", "ASC");
         } else {

@@ -239,7 +239,7 @@ Modified: 07-2023
                                 <v-col>
                                     <h2 class="font-weight-medium subheading mb-3"><?= lang('App.aboutUs'); ?>:</h2>
                                     <h2><?= $appName; ?></h2>
-                                    <!-- <h3><?= $companyNama; ?></h3> -->
+                                    <h3 class="font-weight-regular"><?= $companyNama; ?></h3>
                                     <p><?= $companyAlamat; ?>, Indonesia</p>
                                     <h3 class="font-weight-medium subheading mb-2 mt-3"><?= lang('App.contactUs'); ?>: </h3>
                                     <p>Email 1: <?= $companyEmail1; ?> <br />

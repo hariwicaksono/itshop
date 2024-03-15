@@ -141,7 +141,14 @@
         <v-divider class="mb-4"></v-divider>
 
         <h1 class="mb-3"><?= lang('App.article'); ?></h1>
-        <v-select v-model="orderByArticles" :items="dataSortArticles" label="Urutkan <?= lang('App.article'); ?>" @change="getArticles" style="width: 50% !important;" hide-details></v-select>
+        <v-row>
+            <v-col cols="12" sm="6">
+                <v-select v-model="categoryArticles" label="Filter <?= lang('App.category'); ?>" :items="dataCategory" item-text="category_name" item-value="category_id" @change="getArticles" multiple attach hide-details></v-select>
+            </v-col>
+            <v-col cols="12" sm="6">
+                <v-select v-model="orderByArticles" :items="dataSortArticles" label="Urutkan <?= lang('App.article'); ?>" @change="getArticles" hide-details></v-select>
+            </v-col>
+        </v-row>
         <div v-if="loading2 == true">
             <v-skeleton-loader type="list-item-avatar-three-line" class="mb-3"></v-skeleton-loader>
             <v-divider></v-divider>
@@ -255,6 +262,7 @@
             value: 'created_old'
         }, ],
         orderByArticles: "created_new",
+        categoryArticles: [],
     }
 
     // Vue Created
@@ -464,7 +472,7 @@
         // Get Articles
         getArticles: function() {
             this.loading2 = true;
-            axios.get(`<?= base_url(); ?>openapi/articles/all?page=${this.currentPage}&limit=${this.limitPage}&sort_by=${this.orderByArticles}`, options)
+            axios.get(`<?= base_url(); ?>openapi/articles/all?page=${this.currentPage}&limit=${this.limitPage}&category=${this.categoryArticles}&sort_by=${this.orderByArticles}`, options)
                 .then(res => {
                     // handle success
                     this.loading2 = false;

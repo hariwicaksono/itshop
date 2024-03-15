@@ -51,7 +51,8 @@ class ProductModel extends Model
         $this->join("media m4", "m4.media_id = {$this->table}.product_image4", "left");
         $this->join("category c", "c.category_id = {$this->table}.category_id");
         if ($where != '') :
-            $this->whereIn("{$this->table}.category_id", [$where]);
+            $groups = explode(",", $where);
+            $this->whereIn("{$this->table}.category_id", $groups);
         /*  $multiple = explode(",", $where);
             if (count($multiple) > 1) {
                 $this->where("{$this->table}.category_id", $multiple[0]);
