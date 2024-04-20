@@ -26,7 +26,7 @@ class Home extends BaseController
 		$this->article = new ArticleModel();
 	}
 
-	public function index()
+	public function index(): string
 	{
 		return view('home', [
 			'title' => $this->setting->info['title_home'],
