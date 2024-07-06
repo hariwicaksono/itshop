@@ -251,7 +251,8 @@ Modified: 07-2023
                                     <h3 class="font-weight-medium subheading mb-2 mt-3"><?= lang('App.payment'); ?>: </h3>
                                     <p>Payment Gateway &amp; Transfer (Konfirmasi Manual)</p>
                                     <v-img src="<?= base_url('images/midtrans.png'); ?>" width="80" ratio="1" class="float-left mr-3"></v-img>
-                                    <v-img src="<?= base_url('images/bri.jpg'); ?>" width="80" ratio="1"></v-img>
+                                    <v-img src="<?= base_url('images/bri.jpg'); ?>" width="100" ratio="1" class="float-left mr-3"></v-img>
+                                    <v-img src="<?= base_url('images/bca.png'); ?>" width="80" ratio="1"></v-img>
                                     <br />
                                     <v-btn small v-for="link in links" :key="link" text rounded class="my-2" link :href="link.link">
                                         {{ link.text }}
@@ -432,6 +433,10 @@ Modified: 07-2023
                 text: 'Toko BliBli',
                 icon: '<?= base_url('images/blibli.png'); ?>',
                 link: 'https://www.blibli.com/merchant/IT-Shop-Purwokerto/ITS-70007'
+            }, {
+                text: 'Toko Lazada',
+                icon: '<?= base_url('images/lazada.png'); ?>',
+                link: 'https://www.lazada.co.id/shop/varia-it-shop'
             }, ],
             links: [{
                 text: '<?= lang('App.aboutUs'); ?>',

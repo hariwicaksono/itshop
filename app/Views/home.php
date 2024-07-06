@@ -5,11 +5,11 @@
         <v-parallax src="<?= base_url() ?>/images/Banner-2023-2.jpg" dark class="rounded-lg" height="350">
             <v-row align="center" justify="center">
                 <v-col class="text-center" cols="12">
-                    <h1 class="text-h4 font-weight-thin mt-n15 mb-0">
+                    <h1 class="text-h5 font-weight-thin mt-n15 mb-0">
                         <?= lang('App.welcome'); ?>
                     </h1>
                     <?= $company_name; ?>
-                    <h1 class="text-h3 font-weight-medium mb-3">
+                    <h1 class="text-h4 font-weight-medium mb-3">
                         <strong><?= $app_name; ?></strong>
                     </h1>
                 </v-col>
