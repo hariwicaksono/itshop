@@ -56,6 +56,7 @@ Modified: 07-2023
     <link href="<?= base_url('assets/css/materialdesignicons.min.css') ?>" rel="stylesheet">
     <link href="<?= base_url('assets/css/vuetify.min.css') ?>" rel="stylesheet">
     <link href="<?= base_url('assets/css/styles.css') ?>" rel="stylesheet">
+    <?= $this->renderSection('opengraph') ?>
 </head>
 
 <body>

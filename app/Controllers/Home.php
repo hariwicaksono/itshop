@@ -52,6 +52,7 @@ class Home extends BaseController
 			'app_name' => $this->setting->info['app_name'],
 			'telepon' => $this->setting->info['company_telepon'],
 			'wa_text' => $this->setting->info['wa_text'],
+			'product' => $product
 		]);
 	}
 

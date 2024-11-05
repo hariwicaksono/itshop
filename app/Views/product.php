@@ -1,4 +1,21 @@
+<?php
+// Memanggil library
+use App\Libraries\Settings;
+
+$setting = new Settings();
+$appName = $setting->info['app_name'];
+$imgLogo = $setting->info['img_logo'];
+?>
 <?php $this->extend("layouts/app-front"); ?>
+<?php $this->section("opengraph"); ?>
+<meta property="og:title" content="Jual <?= $title; ?>" />
+<meta property="og:description" content="Jual <?= $title; ?> - <?= $appName; ?>" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="<?= current_url(); ?>" />
+<meta property="og:image" content="<?= base_url() ?><?= $product['media_path']; ?>" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:logo" content="<?= base_url('images/') . $imgLogo; ?>" />
+<?php $this->endSection("opengraph") ?>
 <?php $this->section("content"); ?>
 
 <template>
