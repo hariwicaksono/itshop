@@ -61,7 +61,7 @@ Modified: 07-2023
 
 <body>
     <!-- ========================= preloader start ========================= -->
-    <div class="preloader">
+    <div class="preloader" :value="overlay">
         <div class="loader">
             <div class="loader-logo"><img src="<?= base_url('images/') . $imgLogo; ?>" alt="Preloader" width="64" style="margin-top: 5px;"></div>
             <div class="spinner">
@@ -244,8 +244,8 @@ Modified: 07-2023
                                     <p><?= $companyAlamat; ?>, Indonesia</p>
                                     <h3 class="font-weight-medium subheading mb-2 mt-3"><?= lang('App.contactUs'); ?>: </h3>
                                     <p>Email 1: <?= $companyEmail1; ?> <br />
-                                    Email 2: <?= $companyEmail2; ?></p>
-                                    Telp/WA: <v-btn small rounded link elevation="0" href="https://wa.me/<?= $companyTelp;?>"><v-icon small color="green">mdi-whatsapp</v-icon> Message us</v-btn><br />
+                                        Email 2: <?= $companyEmail2; ?></p>
+                                    Telp/WA: <v-btn small rounded link elevation="0" href="https://wa.me/<?= $companyTelp; ?>"><v-icon small color="green">mdi-whatsapp</v-icon> Message us</v-btn><br />
                                     <h3 class="font-weight-medium subheading mb-2 mt-3">Jam Kerja: </h3>
                                     <p>Office: Senin - Jum'at: 09.00 - 16.00 WIB, Sabtu - Minggu: Libur<br />
                                         Pengiriman: Buka 24 Jam</p>
@@ -293,12 +293,12 @@ Modified: 07-2023
         </v-app>
     </div>
 
+    <script src="<?= base_url('assets/js/preloader.js') ?>" type="text/javascript"></script>
     <script src="<?= base_url('assets/js/vue.min.js') ?>" type="text/javascript"></script>
     <script src="<?= base_url('assets/js/vuetify.min.js') ?>" type="text/javascript"></script>
     <script src="<?= base_url('assets/js/vuetify-image-input.min.js') ?>" type="text/javascript"></script>
     <script src="<?= base_url('assets/js/axios.min.js') ?>" type="text/javascript"></script>
     <script src="<?= base_url('assets/js/vuejs-paginate.min.js') ?>" type="text/javascript"></script>
-    <script src="<?= base_url('assets/js/main.js') ?>" type="text/javascript"></script>
     <script src="<?= base_url('assets/js/vue-masonry-plugin-window.js') ?>"></script>
     <script src="<?= base_url('assets/js/vue-carousel.min.js') ?>" type="text/javascript"></script>
     <script src="<?= base_url('assets/js/pusher.min.js') ?>"></script>
@@ -349,7 +349,7 @@ Modified: 07-2023
         }
         var createdVue = function() {
             axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-           
+
         }
         var mountedVue = function() {
             this.getCartCount();
@@ -391,6 +391,7 @@ Modified: 07-2023
         var updatedVue = function() {}
         var watchVue = {}
         var dataVue = {
+            overlay: true,
             sidebarMenu: true,
             rightMenu: false,
             toggleMini: false,

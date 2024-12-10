@@ -336,6 +336,7 @@ Modified: 07-2023
         </v-app>
     </div>
 
+    <script src="<?= base_url('assets/js/preloader.js') ?>" type="text/javascript"></script>
     <script src="<?= base_url('assets/js/vue.min.js') ?>" type="text/javascript"></script>
     <script src="<?= base_url('assets/js/vuetify.min.js') ?>" type="text/javascript"></script>
     <script src="<?= base_url('assets/js/vuetify-image-input.min.js') ?>" type="text/javascript"></script>
@@ -345,7 +346,6 @@ Modified: 07-2023
     <script src="<?= base_url('assets/js/vue-chartjs.min.js') ?>" type="text/javascript"></script>
     <script src="<?= base_url('assets/js/quill.min.js') ?>" type="text/javascript"></script>
     <script src="<?= base_url('assets/js/vue-quill-editor.js') ?>" type="text/javascript"></script>
-    <script src="<?= base_url('assets/js/main.js') ?>" type="text/javascript"></script>
     <script src="<?= base_url('assets/js/dayjs.min.js') ?>"></script>
     <script src="<?= base_url('assets/js/dayjs-locale-id.js') ?>"></script>
     <script src="<?= base_url('assets/js/dayjs-relativeTime.js') ?>"></script>
