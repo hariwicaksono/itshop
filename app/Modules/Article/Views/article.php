@@ -24,6 +24,7 @@
                     </td>
                     <td>{{item.category_name}}</td>
                     <td>{{item.updated_at}}</td>
+                    <td>{{RibuanNoRp(item.views)}}</td>
                     <td><v-switch v-model="item.active" value="active" false-value="0" true-value="1" color="success" @click="setActive(item)" title="" alt=""></v-switch></td>
                     <td>
                         <v-btn color="primary" @click="editItem(item)" icon class="mr-2" title="Edit" alt="Edit">
@@ -370,6 +371,9 @@
         }, {
             text: 'Date',
             value: 'updated_at'
+        }, {
+            text: 'View',
+            value: 'views'
         }, {
             text: 'Active',
             value: 'active'

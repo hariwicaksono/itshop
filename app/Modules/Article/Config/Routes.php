@@ -6,7 +6,7 @@ if(!isset($routes))
 }
 
 $routes->group('', ['namespace' => 'App\Modules\Article\Controllers'], function($routes){
-	$routes->get('article/(:segment)/(:segment)/(:segment)', 'Article::article/$1');
+	$routes->get('(:segment)/(:segment)/(:segment)/(:segment)', 'Article::article/$1');
 });
 
 $routes->group('admin', ['filter' => 'auth', 'namespace' => 'App\Modules\Article\Controllers'], function($routes){

@@ -419,7 +419,7 @@ Modified: 07-2023
         var dataVue = {
             sidebarMenu: true,
             rightMenu: false,
-            toggleMini: false,
+            toggleMini: true,
             dark: false,
             group: null,
             search: '',
@@ -573,20 +573,15 @@ Modified: 07-2023
             },
             // Format Ribuan Rupiah versi 2
             Ribuan(key) {
-                // versi 1
-                /* var number_string = key.toString(),
-                    sisa = number_string.length % 3,
-                    rupiah = number_string.substr(0, sisa),
-                    ribuan = number_string.substr(sisa).match(/\d{3}/g);
-
-                if (ribuan) {
-                    separator = sisa ? '.' : '';
-                    rupiah += separator + ribuan.join('.');
-                } */
-
                 const format = key.toString().split('').reverse().join('');
                 const convert = format.match(/\d{1,3}/g);
                 const rupiah = 'Rp' + convert.join('.').split('').reverse().join('');
+                return rupiah;
+            },
+            RibuanNoRp(key) {
+                const format = key.toString().split('').reverse().join('');
+                const convert = format.match(/\d{1,3}/g);
+                const rupiah = convert.join('.').split('').reverse().join('');
                 return rupiah;
             },
 

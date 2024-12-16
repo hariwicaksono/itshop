@@ -24,6 +24,7 @@ class Home extends BaseController
 		$this->setting = new Settings();
 		$this->page = new PageModel();
 		$this->article = new ArticleModel();
+		helper('cookie');
 	}
 
 	public function index(): string
@@ -45,6 +46,21 @@ class Home extends BaseController
 		$productName = $product['product_name'];
 		$sold = $this->product->countProductSold($idProduct, 2);
 		//var_dump($sold);die;
+
+		//set cookie for today
+        $awal  = new \DateTime(date('Y-m-d 23:59:59'));
+        $akhir = new \DateTime(); // Waktu sekarang
+        $diff  = $awal->diff($akhir);
+        $jam = $diff->h;
+        $detik = $jam * 3600;
+        $time = time() + $detik;
+        if (!get_cookie("itshop_product_view_id_" . $find['product_id'])) {
+            setcookie("itshop_product_view_id_" . $find['product_id'], true, $time, "/", null, null, true);
+			$this->product->update($find['product_id'], [
+				"views" => $find['views'] + 1
+			]);
+        }
+
 		return view('product', [
 			'title' => $productName,
 			'product_id' => $idProduct,

@@ -7,7 +7,7 @@
         </v-card>
         <v-row>
             <v-col cols="12" sm="9">
-                <div class="mt-3" v-if="loading == true">
+                <div class="mt-5" v-if="loading == true">
                     <v-skeleton-loader type="heading" class="mb-4"></v-skeleton-loader>
                     <v-skeleton-loader type="list-item-avatar-two-line" class="mb-3"></v-skeleton-loader>
                     <v-skeleton-loader type="image, image" class="mb-3"></v-skeleton-loader>
@@ -17,14 +17,14 @@
                     <v-skeleton-loader type="paragraph" class="mb-3"></v-skeleton-loader>
                     <v-skeleton-loader type="paragraph" class="mb-3"></v-skeleton-loader>
                 </div>
-                <div class="mt-3" v-else>
-                    <h1 class="text-h4 font-weight-bold mb-4">{{dataArticle.article_title}}</h1>
+                <div class="mt-5" v-else>
+                    <h1 class="text-h4 font-weight-medium text-capitalize mb-4">{{dataArticle.article_title}}</h1>
                     <v-list-item class="ma-n3 pa-n3" two-line>
                         <v-list-item-avatar size="60" rounded>
                             <v-img lazy-src="<?= base_url('assets/images/default.png') ?>" src="<?= base_url('assets/images/default.png') ?>"></v-img>
                         </v-list-item-avatar>
                         <v-list-item-content>
-                            <p class="text-subtitle-1 primary--text font-weight-medium">{{dataArticle.first_name}} {{dataArticle.last_name}} <v-icon color="primary" v-show="dataArticle.role == '1'" title="Official Account" alt="Official Account">mdi-check-decagram</v-icon></p>
+                            <p class="text-subtitle-1 primary--text font-weight-medium">{{dataArticle.first_name}} {{dataArticle.last_name}} <v-icon small color="primary" v-show="dataArticle.role == '1'" title="Official Account" alt="Official Account">mdi-check-decagram</v-icon></p>
                             <p class="mb-0">{{dayjs(dataArticle.created_at).fromNow()}} / <em>{{dayjs(dataArticle.created_at).format('DD MMMM YYYY HH:mm')}}</em> &nbsp;&mdash;&nbsp; <v-icon small>mdi-tag</v-icon> {{dataArticle.category_name}} &nbsp;&mdash;&nbsp; <v-icon small>mdi-eye</v-icon> {{formatNumber(dataArticle.views)}}</p>
                         </v-list-item-content>
                     </v-list-item>

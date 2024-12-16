@@ -100,7 +100,7 @@
                                 </v-overlay>
                             </v-img>
                             <v-card-title class="subtitle-1 font-weight-medium">
-                                <a link :href="'<?= base_url(); ?>' + item.category_slug + '/' + item.slug" class="text-decoration-none" title="" alt="">{{ item.product_name }}</a>
+                                <a link :href="'<?= base_url(); ?>' + item.category_slug + '/' + item.slug" class="text-decoration-none" :title="item.product_name" :alt="item.product_name">{{ item.product_name }}</a>
                             </v-card-title>
                             <v-card-subtitle class="text-h6 font-weight-bold">
                                 <span v-if="item.discount > 0">
@@ -164,9 +164,15 @@
                     </v-list-item-avatar>
 
                     <v-list-item-content>
-                        <h5 class="text-h5 font-weight-medium"><a :href="'<?= base_url(); ?>' + item.category_slug + '/' + item.year + '/' + item.month + '/' + item.slug">{{item.article_title}}</a></h5>
-                        <h6 class="text-h6 mb-2 font-weight-light">{{item.article_headline}}</h6>
-                        <p><span class="font-weight-medium text--primary">{{dayjs(item.created_at).fromNow()}}</span> &mdash; <v-icon small>mdi-tag</v-icon> {{item.category_name}} &mdash; <v-icon small>mdi-account</v-icon> {{item.first_name}} {{item.last_name}} <v-icon small color="primary" v-show="item.role == '1'" title="Official Account" alt="Official Account">mdi-check-decagram</v-icon></p>
+                        <v-list-item-title>
+                            <a class="text-h4 text-capitalize text-decoration-none" :href="'<?= base_url(); ?>' + item.category_slug + '/' + item.year + '/' + item.month + '/' + item.slug">{{item.article_title}}</a>
+                        </v-list-item-title>
+                        <v-list-item-subtitle>
+                            <h6 class="text-h6 mb-2 font-weight-light">{{item.article_headline}}</h6>
+                        </v-list-item-subtitle>
+                        <v-list-item-subtitle>
+                            <p>{{dayjs(item.created_at).fromNow()}} &mdash; <v-icon small>mdi-tag</v-icon> {{item.category_name}} &mdash; <v-icon small>mdi-account</v-icon> {{item.first_name}} {{item.last_name}} <v-icon small color="primary" v-show="item.role == '1'" title="Official Account" alt="Official Account">mdi-check-decagram</v-icon></p>
+                        </v-list-item-subtitle>
                     </v-list-item-content>
                 </v-list-item>
                 <v-divider></v-divider>
