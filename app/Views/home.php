@@ -415,6 +415,7 @@
                     } else {
                         this.snackbar = true;
                         this.snackbarMessage = data.message;
+                        setTimeout(() => window.location.href = data.data.url, 1000);
                     }
                 })
                 .catch(err => {

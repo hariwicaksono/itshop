@@ -44,6 +44,7 @@ class Cart extends BaseControllerApi
             $json = $this->request->getJSON();
             $product_id = $json->product_id;
             $qty = $json->qty;
+            $user_id = $json->user_id;
 
             $data = $this->product->where(['product_id' => $product_id])->first();
             $price = $data['product_price'];
@@ -57,7 +58,7 @@ class Cart extends BaseControllerApi
             $total = $subTotal * $qty;
             $data = [
                 'product_id' => $product_id,
-                'user_id' => $json->user_id,
+                'user_id' => $user_id,
                 'price' => $json->price,
                 'discount' => $discount,
                 'discount_percent' => $discountPercent,
@@ -68,6 +69,7 @@ class Cart extends BaseControllerApi
         } else {
             $product_id = $this->request->getPost('product_id');
             $qty = $this->request->getPost('qty');
+            $user_id = $this->request->getPost('user_id');
 
             $data = $this->product->where(['product_id' => $product_id])->first();
             $price = $data['product_price'];
@@ -81,7 +83,7 @@ class Cart extends BaseControllerApi
             $total = $subTotal * $qty;
             $data = [
                 'product_id' => $product_id,
-                'user_id' => $this->request->getPost('user_id'),
+                'user_id' => $user_id,
                 'price' => $this->request->getPost('price'),
                 'discount' => $discount,
                 'discount_percent' => $discountPercent,
@@ -90,6 +92,15 @@ class Cart extends BaseControllerApi
                 'total' => $total,
             ];
         }
+
+        if (empty($user_id)) :
+            $response = [
+                'status' => false,
+                'message' => lang('App.pleaseLogin'),
+                'data' => ["url" => base_url('/login')],
+            ];
+            return $this->respond($response, 200);
+        endif;
 
         if (!$this->validate($rules)) {
             $response = [
