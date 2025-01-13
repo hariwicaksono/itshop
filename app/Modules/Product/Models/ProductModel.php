@@ -112,7 +112,7 @@ class ProductModel extends Model
         $builder->join("orders o", "o.order_id = n.order_id");
         $builder->where("o.status", 2);
         $builder->groupBy("n.product_id");
-        $builder->orderBy("n.qty", "DESC");
+        $builder->orderBy("qty", "DESC");
         $builder->limit("5");
         $query = $builder->get()->getResultArray();
         return $query;

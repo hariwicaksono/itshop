@@ -29,7 +29,7 @@ class Article extends BaseController
 	public function article()
 	{
 		$uri = new \CodeIgniter\HTTP\URI(current_url());
-		$slug = $uri->getSegment(4);
+		$slug = $uri->getSegment(3);
 		$article = $this->article->showarticle($slug);
 		if (session()->get('lang') == 'id') {
 			$articleTitle = $article['article_title'];

@@ -71,7 +71,7 @@ Modified: 07-2023
                 <v-app-bar-nav-icon @click.stop="sidebarMenu = !sidebarMenu"></v-app-bar-nav-icon>
                 <v-toolbar-title></v-toolbar-title>
                 <v-spacer></v-spacer>
-                <v-btn icon class="mr-2" href="<?= base_url('admin/order') ?>" elevation="0">
+                <v-btn icon class="mr-2" href="<?= base_url('admin/orders') ?>" elevation="0">
                     <v-badge :content="orderCounter" :value="orderCounter" color="error" overlap>
                         <v-icon>
                             mdi-bell

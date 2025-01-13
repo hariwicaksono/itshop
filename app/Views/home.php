@@ -165,7 +165,7 @@
 
                     <v-list-item-content>
                         <v-list-item-title>
-                            <a class="text-h4 text-capitalize text-decoration-none" :href="'<?= base_url(); ?>' + item.category_slug + '/' + item.year + '/' + item.month + '/' + item.slug">{{item.article_title}}</a>
+                            <a class="text-h4 text-capitalize text-decoration-none" :href="'<?= base_url('read/'); ?>' + item.category_slug + '/' + item.slug">{{item.article_title}}</a>
                         </v-list-item-title>
                         <v-list-item-subtitle>
                             <h6 class="text-h6 mb-2 font-weight-light">{{item.article_headline}}</h6>

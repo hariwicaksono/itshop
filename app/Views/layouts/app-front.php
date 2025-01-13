@@ -100,7 +100,14 @@ Modified: 07-2023
                         <v-icon>mdi-cart</v-icon>
                     </v-badge>
                 </v-btn>
-                <v-btn icon class="mr-1" href="<?= base_url('member/order-list') ?>" elevation="0">
+                <?php
+                if (session()->get('role') == 1) {
+                    $url = base_url('admin/orders');
+                } else {
+                    $url = base_url('member/orders');
+                }
+                ?>
+                <v-btn icon class="mr-1" href="<?= $url; ?>" elevation="0">
                     <v-badge :content="orderCounter" :value="orderCounter" color="error" overlap>
                         <v-icon>
                             mdi-bell
