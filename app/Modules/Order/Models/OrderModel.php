@@ -143,7 +143,7 @@ class OrderModel extends Model
         $this->join("users u", "u.user_id = {$this->table}.user_id");
         $this->join("carts c", "c.order_id = {$this->table}.order_id");
         $this->join("products p", "p.product_id = c.product_id");
-        $this->where("{$this->table}.created_at >=", '(NOW() + INTERVAL -3 DAY)', false);
+        $this->where("{$this->table}.created_at >=", '(NOW() + INTERVAL -7 DAY)', false);
         $this->orderBy("{$this->table}.created_at", 'DESC');
         $query = $this->findAll();
         return $query;
