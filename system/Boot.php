@@ -123,6 +123,19 @@ class Boot
     }
 
     /**
+     * Used by `preload.php`
+     */
+    public static function preload(Paths $paths): void
+    {
+        static::definePathConstants($paths);
+        static::loadConstants();
+        static::defineEnvironment();
+        static::loadEnvironmentBootstrap($paths, false);
+
+        static::loadAutoloader();
+    }
+
+    /**
      * Load environment settings from .env files into $_SERVER and $_ENV
      */
     protected static function loadDotEnv(Paths $paths): void
@@ -183,7 +196,16 @@ class Boot
 
         // The path to the writable directory.
         if (! defined('WRITEPATH')) {
-            define('WRITEPATH', realpath(rtrim($paths->writableDirectory, '\\/ ')) . DIRECTORY_SEPARATOR);
+            $writePath = realpath(rtrim($paths->writableDirectory, '\\/ '));
+
+            if ($writePath === false) {
+                header('HTTP/1.1 503 Service Unavailable.', true, 503);
+                echo 'The WRITEPATH is not set correctly.';
+
+                // EXIT_ERROR is not yet defined
+                exit(1);
+            }
+            define('WRITEPATH', $writePath . DIRECTORY_SEPARATOR);
         }
 
         // The path to the tests directory
@@ -233,12 +255,12 @@ class Boot
 
     protected static function autoloadHelpers(): void
     {
-        Services::autoloader()->loadHelpers();
+        service('autoloader')->loadHelpers();
     }
 
     protected static function setExceptionHandler(): void
     {
-        Services::exceptions()->initialize();
+        service('exceptions')->initialize();
     }
 
     protected static function checkMissingExtensions(): void
@@ -266,7 +288,7 @@ class Boot
 
         $message = sprintf(
             'The framework needs the following extension(s) installed and loaded: %s.',
-            implode(', ', $missingExtensions)
+            implode(', ', $missingExtensions),
         );
 
         header('HTTP/1.1 503 Service Unavailable.', true, 503);
@@ -277,7 +299,7 @@ class Boot
 
     protected static function initializeKint(): void
     {
-        Services::autoloader()->initializeKint(CI_DEBUG);
+        service('autoloader')->initializeKint(CI_DEBUG);
     }
 
     protected static function loadConfigCache(): FactoriesCache
@@ -295,7 +317,7 @@ class Boot
      */
     protected static function initializeCodeIgniter(): CodeIgniter
     {
-        $app = Config\Services::codeigniter();
+        $app = service('codeigniter');
         $app->initialize();
         $context = is_cli() ? 'php-cli' : 'web';
         $app->setContext($context);

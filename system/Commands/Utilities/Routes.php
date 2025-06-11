@@ -86,7 +86,7 @@ class Routes extends BaseCommand
         $host          = $params['host'] ?? null;
 
         // Set HTTP_HOST
-        if ($host) {
+        if ($host !== null) {
             $request              = service('request');
             $_SERVER              = $request->getServer();
             $_SERVER['HTTP_HOST'] = $host;
@@ -96,7 +96,7 @@ class Routes extends BaseCommand
         $collection = service('routes')->loadRoutes();
 
         // Reset HTTP_HOST
-        if ($host) {
+        if ($host !== null) {
             unset($_SERVER['HTTP_HOST']);
         }
 
@@ -119,8 +119,8 @@ class Routes extends BaseCommand
                 $route['route'],
                 $routeName,
                 $route['handler'],
-                implode(' ', array_map('class_basename', $filters['before'])),
-                implode(' ', array_map('class_basename', $filters['after'])),
+                implode(' ', array_map(class_basename(...), $filters['before'])),
+                implode(' ', array_map(class_basename(...), $filters['after'])),
             ];
         }
 
@@ -133,13 +133,15 @@ class Routes extends BaseCommand
                     $collection->getDefaultController(),
                     $collection->getDefaultMethod(),
                     $methods,
-                    $collection->getRegisteredControllers('*')
+                    $collection->getRegisteredControllers('*'),
                 );
 
                 $autoRoutes = $autoRouteCollector->get();
 
                 // Check for Module Routes.
-                if ($routingConfig = config(Routing::class)) {
+                $routingConfig = config(Routing::class);
+
+                if ($routingConfig instanceof Routing) {
                     foreach ($routingConfig->moduleRoutes as $uri => $namespace) {
                         $autoRouteCollector = new AutoRouteCollectorImproved(
                             $namespace,
@@ -147,7 +149,7 @@ class Routes extends BaseCommand
                             $collection->getDefaultMethod(),
                             $methods,
                             $collection->getRegisteredControllers('*'),
-                            $uri
+                            $uri,
                         );
 
                         $autoRoutes = [...$autoRoutes, ...$autoRouteCollector->get()];
@@ -157,7 +159,7 @@ class Routes extends BaseCommand
                 $autoRouteCollector = new AutoRouteCollector(
                     $collection->getDefaultNamespace(),
                     $collection->getDefaultController(),
-                    $collection->getDefaultMethod()
+                    $collection->getDefaultMethod(),
                 );
 
                 $autoRoutes = $autoRouteCollector->get();
@@ -166,8 +168,8 @@ class Routes extends BaseCommand
                     // There is no `AUTO` method, but it is intentional not to get route filters.
                     $filters = $filterCollector->get('AUTO', $uriGenerator->get($routes[1]));
 
-                    $routes[] = implode(' ', array_map('class_basename', $filters['before']));
-                    $routes[] = implode(' ', array_map('class_basename', $filters['after']));
+                    $routes[] = implode(' ', array_map(class_basename(...), $filters['before']));
+                    $routes[] = implode(' ', array_map(class_basename(...), $filters['after']));
                 }
             }
 
@@ -185,10 +187,10 @@ class Routes extends BaseCommand
 
         // Sort by Handler.
         if ($sortByHandler) {
-            usort($tbody, static fn ($handler1, $handler2) => strcmp($handler1[3], $handler2[3]));
+            usort($tbody, static fn ($handler1, $handler2): int => strcmp($handler1[3], $handler2[3]));
         }
 
-        if ($host) {
+        if ($host !== null) {
             CLI::write('Host: ' . $host);
         }
 

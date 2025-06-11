@@ -29,6 +29,7 @@ use CodeIgniter\Debug\Timer;
 use CodeIgniter\Debug\Toolbar;
 use CodeIgniter\Email\Email;
 use CodeIgniter\Encryption\EncrypterInterface;
+use CodeIgniter\Exceptions\InvalidArgumentException;
 use CodeIgniter\Filters\Filters;
 use CodeIgniter\Format\Format;
 use CodeIgniter\Honeypot\Honeypot;
@@ -75,10 +76,10 @@ use Config\Modules;
 use Config\Optimize;
 use Config\Pager as ConfigPager;
 use Config\Services as AppServices;
+use Config\Session as ConfigSession;
 use Config\Toolbar as ConfigToolbar;
 use Config\Validation as ConfigValidation;
 use Config\View as ConfigView;
-use InvalidArgumentException;
 
 /**
  * Services Configuration file.
@@ -130,7 +131,7 @@ use InvalidArgumentException;
  * @method static Router                     router(RouteCollectionInterface $routes = null, Request $request = null, $getShared = true)
  * @method static RouteCollection            routes($getShared = true)
  * @method static Security                   security(App $config = null, $getShared = true)
- * @method static Session                    session(App $config = null, $getShared = true)
+ * @method static Session                    session(ConfigSession $config = null, $getShared = true)
  * @method static SiteURIFactory             siteurifactory(App $config = null, Superglobals $superglobals = null, $getShared = true)
  * @method static Superglobals               superglobals(array $server = null, array $get = null, bool $getShared = true)
  * @method static Throttler                  throttler($getShared = true)
@@ -346,6 +347,8 @@ class BaseService
      * Reset shared instances and mocks for testing.
      *
      * @return void
+     *
+     * @testTag only available to test code
      */
     public static function reset(bool $initAutoloader = true)
     {
@@ -362,6 +365,8 @@ class BaseService
      * Resets any mock and shared instances for a single service.
      *
      * @return void
+     *
+     * @testTag only available to test code
      */
     public static function resetSingle(string $name)
     {
@@ -375,11 +380,22 @@ class BaseService
      * @param object $mock
      *
      * @return void
+     *
+     * @testTag only available to test code
      */
     public static function injectMock(string $name, $mock)
     {
         static::$instances[$name]         = $mock;
         static::$mocks[strtolower($name)] = $mock;
+    }
+
+    /**
+     * Resets the service cache.
+     */
+    public static function resetServicesCache(): void
+    {
+        self::$serviceNames = [];
+        static::$discovered = false;
     }
 
     protected static function buildServicesCache(): void

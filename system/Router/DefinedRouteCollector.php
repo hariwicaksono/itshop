@@ -23,7 +23,7 @@ use Generator;
  */
 final class DefinedRouteCollector
 {
-    public function __construct(private readonly RouteCollection $routeCollection)
+    public function __construct(private readonly RouteCollectionInterface $routeCollection)
     {
     }
 
@@ -38,6 +38,10 @@ final class DefinedRouteCollector
             $routes = $this->routeCollection->getRoutes($method);
 
             foreach ($routes as $route => $handler) {
+                // The route key should be a string, but it is stored as an array key,
+                // it might be an integer.
+                $route = (string) $route;
+
                 if (is_string($handler) || $handler instanceof Closure) {
                     if ($handler instanceof Closure) {
                         $view = $this->routeCollection->getRoutesOptions($route, $method)['view'] ?? false;

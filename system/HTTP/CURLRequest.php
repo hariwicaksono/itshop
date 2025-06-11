@@ -13,10 +13,10 @@ declare(strict_types=1);
 
 namespace CodeIgniter\HTTP;
 
+use CodeIgniter\Exceptions\InvalidArgumentException;
 use CodeIgniter\HTTP\Exceptions\HTTPException;
 use Config\App;
 use Config\CURLRequest as ConfigCURLRequest;
-use InvalidArgumentException;
 
 /**
  * A lightweight HTTP client for sending synchronous HTTP requests via cURL.
@@ -125,9 +125,7 @@ class CURLRequest extends OutgoingRequest
         $this->baseURI        = $uri->useRawQueryString();
         $this->defaultOptions = $options;
 
-        /** @var ConfigCURLRequest|null $configCURLRequest */
-        $configCURLRequest  = config(ConfigCURLRequest::class);
-        $this->shareOptions = $configCURLRequest->shareOptions ?? true;
+        $this->shareOptions = config(ConfigCURLRequest::class)->shareOptions ?? true;
 
         $this->config = $this->defaultConfig;
         $this->parseOptions($options);
@@ -342,7 +340,7 @@ class CURLRequest extends OutgoingRequest
             $uri->getAuthority(),
             $uri->getPath(),
             $uri->getQuery(),
-            $uri->getFragment()
+            $uri->getFragment(),
         );
     }
 
@@ -385,11 +383,15 @@ class CURLRequest extends OutgoingRequest
         // Set the string we want to break our response from
         $breakString = "\r\n\r\n";
 
+        if (isset($this->config['allow_redirects']) && $this->config['allow_redirects'] !== false) {
+            $output = $this->handleRedirectHeaders($output, $breakString);
+        }
+
         while (str_starts_with($output, 'HTTP/1.1 100 Continue')) {
             $output = substr($output, strpos($output, $breakString) + 4);
         }
 
-        if (str_starts_with($output, 'HTTP/1.1 200 Connection established')) {
+        if (preg_match('/HTTP\/\d\.\d 200 Connection established/i', $output)) {
             $output = substr($output, strpos($output, $breakString) + 4);
         }
 
@@ -649,14 +651,30 @@ class CURLRequest extends OutgoingRequest
             $this->setHeader('Content-Length', (string) strlen($json));
         }
 
+        // Resolve IP
+        if (array_key_exists('force_ip_resolve', $config)) {
+            $curlOptions[CURLOPT_IPRESOLVE] = match ($config['force_ip_resolve']) {
+                'v4'    => CURL_IPRESOLVE_V4,
+                'v6'    => CURL_IPRESOLVE_V6,
+                default => CURL_IPRESOLVE_WHATEVER,
+            };
+        }
+
         // version
         if (! empty($config['version'])) {
-            if ($config['version'] === 1.0) {
+            $version = sprintf('%.1F', $config['version']);
+            if ($version === '1.0') {
                 $curlOptions[CURLOPT_HTTP_VERSION] = CURL_HTTP_VERSION_1_0;
-            } elseif ($config['version'] === 1.1) {
+            } elseif ($version === '1.1') {
                 $curlOptions[CURLOPT_HTTP_VERSION] = CURL_HTTP_VERSION_1_1;
-            } elseif ($config['version'] === 2.0) {
+            } elseif ($version === '2.0') {
                 $curlOptions[CURLOPT_HTTP_VERSION] = CURL_HTTP_VERSION_2_0;
+            } elseif ($version === '3.0') {
+                if (! defined('CURL_HTTP_VERSION_3')) {
+                    define('CURL_HTTP_VERSION_3', 30);
+                }
+
+                $curlOptions[CURLOPT_HTTP_VERSION] = CURL_HTTP_VERSION_3;
             }
         }
 
@@ -694,6 +712,32 @@ class CURLRequest extends OutgoingRequest
         }
 
         curl_close($ch);
+
+        return $output;
+    }
+
+    private function handleRedirectHeaders(string $output, string $breakString): string
+    {
+        // Strip out multiple redirect header sections
+        while (preg_match('/^HTTP\/\d(?:\.\d)? 3\d\d/', $output)) {
+            $breakStringPos        = strpos($output, $breakString);
+            $redirectHeaderSection = substr($output, 0, $breakStringPos);
+            $redirectHeaders       = explode("\n", $redirectHeaderSection);
+            $locationHeaderFound   = false;
+
+            foreach ($redirectHeaders as $header) {
+                if (str_starts_with(strtolower($header), 'location:')) {
+                    $locationHeaderFound = true;
+                    break;
+                }
+            }
+
+            if ($locationHeaderFound) {
+                $output = substr($output, $breakStringPos + 4);
+            } else {
+                break;
+            }
+        }
 
         return $output;
     }
