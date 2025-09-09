@@ -25,7 +25,8 @@ $imgNavbar = $setting->info['img_navbar'];
 ?>
 <!--
 PT ITSHOP BISNIS DIGITAL
-Toko Online: ITSHOP Purwokerto (Tokopedia.com/itshoppwt, Shopee.co.id/itshoppwt, Bukalapak.com/itshoppwt)
+Website: https://itshop.biz.id
+Toko Online: ITSHOP Purwokerto (Tokopedia.com/itshoppwt, Shopee.co.id/itshoppwt, Toco.id/store/itshop-purwokerto)
 Dibuat oleh: Hari Wicaksono, S.Kom
 Created: 11-2021
 Modified: 07-2023
@@ -104,7 +105,7 @@ Modified: 07-2023
                 if (session()->get('role') == 1) {
                     $url = base_url('admin/orders');
                 } else {
-                    $url = base_url('member/orders');
+                    $url = base_url('member/order-list');
                 }
                 ?>
                 <v-btn icon class="mr-1" href="<?= $url; ?>" elevation="0">
@@ -435,13 +436,9 @@ Modified: 07-2023
                 icon: '<?= base_url('images/shopee-logo-31405.png'); ?>',
                 link: 'https://www.shopee.co.id/itshoppwt'
             }, {
-                text: 'Toko Bukalapak',
-                icon: '<?= base_url('images/bukalapak-icon-png-6.png'); ?>',
-                link: 'https://www.bukalapak.com/itshoppwt'
-            }, {
-                text: 'Toko BliBli',
-                icon: '<?= base_url('images/blibli.png'); ?>',
-                link: 'https://www.blibli.com/merchant/IT-Shop-Purwokerto/ITS-70007'
+                text: 'Toko Toco',
+                icon: '<?= base_url('images/toco.png'); ?>',
+                link: 'https://toco.id/store/itshop-purwokerto'
             }, {
                 text: 'Toko Lazada',
                 icon: '<?= base_url('images/lazada.png'); ?>',

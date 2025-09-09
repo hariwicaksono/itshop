@@ -17,13 +17,13 @@
                         </v-avatar>
                         <h2 class="font-weight-regular"><strong>{{item.product_name}}</strong> | Qty: {{item.qty}}
                             <br />
-                            <?= lang('app.price'); ?>: <span v-if="item.discount > 0">
-                                {{ RibuanLocale(item.product_price - item.discount) }}
+                            <?= lang('App.price'); ?>: <span v-if="item.discount > 0">
+                                {{ RibuanLocale(item.product_price) }}
                             </span>
                             <span v-else>{{ RibuanLocale(item.product_price) }}</span>
 
                             <span v-show="item.discount > 0">
-                                <p class="text-body-2 mb-0"><span class="text-decoration-line-through">{{ RibuanLocale(item.product_price) }}</span> <v-chip color="red" label x-small dark class="px-1" title="<?= lang('App.discount'); ?>">{{item.discount_percent}}%</v-chip></p>
+                                <p class="text-body-2 mb-0"><span class="text-decoration-line-through">{{ RibuanLocale(item.product_price_normal) }}</span> <v-chip color="red" label x-small dark class="px-1" title="<?= lang('App.discount'); ?>">{{item.discount_percent}}%</v-chip></p>
                             </span>
                         </h2>
                     </v-col>
@@ -258,7 +258,7 @@
                     console.log(result.status_message);
                     console.log(JSON.stringify(result));
                     if (result.transaction_status == 'settlement') {
-                        window.location.href = '<?= base_url('/checkout-success'); ?>';
+                        window.location.href = '<?= base_url('/checkout/success/finish'); ?>';
                     }
                 },
                 // Optional

@@ -95,7 +95,8 @@ class Product extends BaseControllerApi
                 'category_id' => $json->category_id,
                 'product_code' => $json->product_code,
                 'product_name' => $json->product_name,
-                'product_price' => $productPrice,
+                'product_price' => $hitung,
+                'product_price_normal' => $productPrice,
                 'product_description' => nl2br($json->product_description),
                 'product_image' => $json->product_image ?? null,
                 'product_image1' => $json->product_image1 ?? null,
@@ -127,7 +128,8 @@ class Product extends BaseControllerApi
                 'category_id' => $this->request->getPost('category_id'),
                 'product_code' => $this->request->getPost('product_code'),
                 'product_name' => $this->request->getPost('product_name'),
-                'product_price' => $productPrice,
+                'product_price' => $hitung,
+                'product_price_normal' => $productPrice,
                 'product_description' => nl2br($this->request->getPost('product_description') ?? ""),
                 'product_image' => $this->request->getPost('product_image') ?? null,
                 'product_image1' => $this->request->getPost('product_image1') ?? null,
@@ -195,7 +197,8 @@ class Product extends BaseControllerApi
                 'category_id' => $json->category_id,
                 'product_code' => $json->product_code,
                 'product_name' => $json->product_name,
-                'product_price' => $json->product_price,
+                'product_price' => $hitung,
+                'product_price_normal' => $productPrice,
                 'product_description' => $json->product_description,
                 'product_image' => $json->product_image,
                 'product_image1' => $json->product_image1,
@@ -225,7 +228,8 @@ class Product extends BaseControllerApi
                 'category_id' => $input['category_id'],
                 'product_code' => $input['product_code'],
                 'product_name' => $input['product_name'],
-                'product_price' => $productPrice,
+                'product_price' => $hitung,
+                'product_price_normal' => $productPrice,
                 'product_description' => $input['product_description'],
                 'product_image' => $input['product_image'],
                 'product_image1' => $input['product_image1'],
@@ -443,15 +447,15 @@ class Product extends BaseControllerApi
         $input = $this->request->getVar('data');
 
         $total = 0;
-        foreach($input as $value){
+        foreach ($input as $value) {
             $product_id = $value;
             $product = $this->model->find($product_id);
             $discount = $product['discount'];
             if ($discount == 0) {
                 $total += $product['product_price'];
             } else {
-                $total += $product['product_price']-$discount;
-            } 
+                $total += $product['product_price'];
+            }
         }
 
         $response = [

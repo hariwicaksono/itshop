@@ -36,9 +36,9 @@
                                                     <v-list-item-content>
                                                         <p class="font-weight-medium black--text">{{row.product_name}} - {{row.product_code ?? "-"}}</p>
                                                         <p v-if="row.discount > 0">
-                                                            {{row.qty}} x {{ RibuanLocale(row.price - row.discount) }}
+                                                            {{row.qty}} x {{ RibuanLocale(row.price) }}
                                                             <span>
-                                                                <span class="text-decoration-line-through">{{ RibuanLocale(row.price) }}</span> <v-chip color="red" label x-small dark class="px-1" title="<?= lang('App.discount'); ?>">{{row.discount_percent}}%</v-chip>
+                                                                <span class="text-decoration-line-through">{{ RibuanLocale(row.price_normal) }}</span> <v-chip color="red" label x-small dark class="px-1" title="<?= lang('App.discount'); ?>">{{row.discount_percent}}%</v-chip>
                                                             </span>
                                                         </p>
                                                         <p v-else>{{row.qty}} x {{ RibuanLocale(row.price) }}</p>

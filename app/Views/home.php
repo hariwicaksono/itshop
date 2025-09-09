@@ -57,7 +57,7 @@
                         <br />
 
                         <h3 class="mb-3">Show:</h3>
-                        <v-btn @click="limitPage8" elevation="0" :color="activeColor1">8</v-btn>
+                        <v-btn @click="limitPage16" elevation="0" :color="activeColor1">16</v-btn>
                         <v-btn @click="limitPage32" elevation="0" :color="activeColor2">32</v-btn>
                         <v-btn @click="limitPage64" elevation="0" :color="activeColor3">64</v-btn>
                     </v-card-text>
@@ -104,12 +104,12 @@
                             </v-card-title>
                             <v-card-subtitle class="text-h6 font-weight-bold">
                                 <span v-if="item.discount > 0">
-                                    {{ RibuanLocale(item.product_price - item.discount) }}
+                                    {{ RibuanLocale(item.product_price) }}
                                 </span>
                                 <span v-else>{{ RibuanLocale(item.product_price) }}</span>
 
                                 <span v-show="item.discount > 0">
-                                    <p class="text-body-2 mb-0"><span class="text-decoration-line-through">{{ RibuanLocale(item.product_price) }}</span> <v-chip color="red" label x-small dark class="px-1" title="<?= lang('App.discount'); ?>">{{item.discount_percent}}%</v-chip></p>
+                                    <p class="text-body-2 mb-0"><span class="text-decoration-line-through">{{ RibuanLocale(item.product_price_normal) }}</span> <v-chip color="red" label x-small dark class="px-1" title="<?= lang('App.discount'); ?>">{{item.discount_percent}}%</v-chip></p>
                                 </span>
                             </v-card-subtitle>
                             <v-card-actions>
@@ -237,7 +237,7 @@
         pageCount: 0,
         pageCount1: 0,
         currentPage: 1,
-        limitPage: 8,
+        limitPage: 16,
         activeColor1: "primary",
         activeColor2: "",
         activeColor3: "",
@@ -326,8 +326,8 @@
         },
 
         // Limit Data Barang
-        limitPage8: function() {
-            this.limitPage = 8;
+        limitPage16: function() {
+            this.limitPage = 16;
             this.activeColor1 = "primary";
             this.activeColor2 = "";
             this.activeColor3 = "";

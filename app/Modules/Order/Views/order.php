@@ -114,7 +114,7 @@
                             </template>
                         </v-autocomplete>
 
-                        <v-select v-model="selectedProduct" label="<?= lang('App.product'); ?>" :items="dataProduct" :item-text="dataProduct =>`${dataProduct.product_name} - Rp${dataProduct.product_price - dataProduct.discount}`" item-value="product_id" @change="getProductTotal" multiple chips attach :loading="loading2" outlined></v-select>
+                        <v-autocomplete v-model="selectedProduct" label="<?= lang('App.product'); ?>" :items="dataProduct" :item-text="dataProduct =>`${dataProduct.product_name} - Rp${dataProduct.product_price}`" item-value="product_id" @change="getProductTotal" multiple chips attach :loading="loading2" outlined></v-autocomplete>
 
                         <v-row>
                             <v-col cols="12" md="6">
@@ -189,9 +189,9 @@
                                         <v-list-item-content>
                                             <p class="font-weight-medium black--text">{{row.product_name}} - {{row.product_code ?? "-"}}</p>
                                             <p v-if="row.discount > 0">
-                                                {{row.qty}} x {{ RibuanLocale(row.price - row.discount) }}
+                                                {{row.qty}} x {{ RibuanLocale(row.price) }}
                                                 <span>
-                                                    <span class="text-decoration-line-through">{{ RibuanLocale(row.price) }}</span> <v-chip color="red" label x-small dark class="px-1" title="<?= lang('App.discount'); ?>">{{row.discount_percent}}%</v-chip>
+                                                    <span class="text-decoration-line-through">{{ RibuanLocale(row.price_normal) }}</span> <v-chip color="red" label x-small dark class="px-1" title="<?= lang('App.discount'); ?>">{{row.discount_percent}}%</v-chip>
                                                 </span>
                                             </p>
                                             <p v-else>{{row.qty}} x {{ RibuanLocale(row.price) }}</p>

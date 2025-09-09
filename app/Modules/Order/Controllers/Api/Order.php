@@ -570,6 +570,7 @@ class Order extends BaseControllerApi
                 $product_id = $value;
                 $product = $this->product->find($product_id);
                 $price = $product['product_price'];
+                $priceNormal = $product['product_price_normal'];
                 $discount = $product['discount'];
                 $discountPersen = $product['discount_percent'];
                 $stock = $product['stock'];
@@ -584,6 +585,7 @@ class Order extends BaseControllerApi
                     'product_id' => $product_id,
                     'user_id' => $user_id,
                     'price' => $price,
+                    'price_normal' => $priceNormal,
                     'discount' => $discount,
                     'discount_percent' => $discountPersen,
                     'stock' => $stock,

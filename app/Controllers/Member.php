@@ -120,7 +120,7 @@ class Member extends BaseController
         //}
         $data = [
             'title' => 'Checkout Success',
-            'companyName' => $this->setting->info['company_name'],
+            'companyName' => $this->setting->info['company_nama'],
             //'order' => $this->order->checkoutOrder($input['idorder'], $input['iduser'])
         ];
         return view('member/checkout_pg', $data);
@@ -145,7 +145,7 @@ class Member extends BaseController
         }
         $data = [
             'title' => 'Checkout Success',
-            'companyName' => $this->setting->info['company_name'],
+            'companyName' => $this->setting->info['company_nama'],
             'order' => $this->order->checkoutOrder($input['order_id'], $input['user_id'])
         ];
         return view('member/checkout_tf', $data);

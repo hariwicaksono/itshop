@@ -48,10 +48,11 @@ class Cart extends BaseControllerApi
 
             $data = $this->product->where(['product_id' => $product_id])->first();
             $price = $data['product_price'];
+            $priceNormal = $data['product_price_normal'];
             $discount = $data['discount'];
             $discountPercent = $data['discount_percent'];
             if ($discount > 0) {
-                $subTotal = $price - $discount;
+                $subTotal = $price;
             } else {
                 $subTotal = $price;
             }
@@ -60,6 +61,7 @@ class Cart extends BaseControllerApi
                 'product_id' => $product_id,
                 'user_id' => $user_id,
                 'price' => $json->price,
+                'price_normal' => $priceNormal,
                 'discount' => $discount,
                 'discount_percent' => $discountPercent,
                 'stock' => $json->stock,
@@ -73,10 +75,11 @@ class Cart extends BaseControllerApi
 
             $data = $this->product->where(['product_id' => $product_id])->first();
             $price = $data['product_price'];
+            $priceNormal = $data['product_price_normal'];
             $discount = $data['discount'];
             $discountPercent = $data['discount_percent'];
             if ($discount > 0) {
-                $subTotal = $price - $discount;
+                $subTotal = $price;
             } else {
                 $subTotal = $price;
             }
@@ -85,6 +88,7 @@ class Cart extends BaseControllerApi
                 'product_id' => $product_id,
                 'user_id' => $user_id,
                 'price' => $this->request->getPost('price'),
+                'price_normal' => $priceNormal,
                 'discount' => $discount,
                 'discount_percent' => $discountPercent,
                 'stock' => $this->request->getPost('stock'),
@@ -115,11 +119,12 @@ class Cart extends BaseControllerApi
             if ($searchCart) {
                 $idCart = $searchCart['cart_id'];
                 $price = $searchCart['price'];
+                $priceNormal = $searchCart['price_normal'];
                 $discount = $searchCart['discount'];
                 $discountPercent = $searchCart['discount_percent'];
                 $cartQty = $searchCart['qty'] + $qty;
                 if ($discount > 0) {
-                    $subTotal = $price - $discount;
+                    $subTotal = $price;
                 } else {
                     $subTotal = $price;
                 }
@@ -165,10 +170,11 @@ class Cart extends BaseControllerApi
 
         $product = $this->product->where(['product_id' => $product_id])->first();
         $price = $product['product_price'];
+        $priceNormal = $product['product_price_normal'];
         $discount = $product['discount'];
         $discountPercent = $product['discount_percent'];
         if ($discount > 0) {
-            $subTotal = $price - $discount;
+            $subTotal = $price;
         } else {
             $subTotal = $price;
         }

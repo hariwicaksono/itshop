@@ -15,7 +15,8 @@ $imgNavbar = $setting->info['img_navbar'];
 ?>
 <!--
 PT ITSHOP BISNIS DIGITAL
-Toko Online: ITSHOP Purwokerto (Tokopedia.com/itshoppwt, Shopee.co.id/itshoppwt, Bukalapak.com/itshoppwt)
+Website: https://itshop.biz.id
+Toko Online: ITSHOP Purwokerto (Tokopedia.com/itshoppwt, Shopee.co.id/itshoppwt, Toco.id/store/itshop-purwokerto)
 Dibuat oleh: Hari Wicaksono, S.Kom
 Created: 11-2021
 Modified: 07-2023

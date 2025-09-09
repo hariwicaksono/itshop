@@ -123,6 +123,12 @@ abstract  class BaseControllerApi extends ResourceController
         foreach ($data as &$value) {
             if (is_string($value)) {
                 $value = htmlspecialchars($value, true);
+            } else if (is_int($value)) {
+                $value = (int)$value;
+            } else if (is_float($value)) {
+                $value = (float)$value;
+            } else if (is_null($value)) {
+                $value = null; 
             }
         }
         unset($value);

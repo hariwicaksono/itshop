@@ -87,11 +87,11 @@ $imgLogo = $setting->info['img_logo'];
                 <p class="mb-4">{{code}} &nbsp;&bull;&nbsp; <?= lang('App.sold'); ?>: <?= $productSold; ?></p>
                 <h2 class="text-h4 font-weight-bold mb-5">
                     <span v-if="discount > 0">
-                        {{ RibuanLocale(price - discount) }}
+                        {{ RibuanLocale(price) }}
                     </span>
                     <span v-else>{{ RibuanLocale(price) }}</span>
                     <span v-show="discount > 0">
-                        <p class="text-body-1 mb-0"><span class="text-decoration-line-through">{{ RibuanLocale(price) }}</span> <v-chip color="red" label x-small dark class="px-1" title="<?= lang('App.discount'); ?>">{{discountPercent}}%</v-chip></p>
+                        <p class="text-body-1 mb-0"><span class="text-decoration-line-through">{{ RibuanLocale(priceNormal) }}</span> <v-chip color="red" label x-small dark class="px-1" title="<?= lang('App.discount'); ?>">{{discountPercent}}%</v-chip></p>
                     </span>
                 </h2>
                 <v-divider></v-divider>
@@ -178,6 +178,7 @@ $imgLogo = $setting->info['img_logo'];
         code: "",
         name: "",
         price: 0,
+        priceNormal: 0,
         discount: 0,
         discountPercent: 0,
         stock: 0,
@@ -199,7 +200,7 @@ $imgLogo = $setting->info['img_logo'];
         qty: function() {
             if (this.qty >= 1) {
                 if (this.discount > 0) {
-                    var subtotalDisc = this.price - this.discount;
+                    var subtotalDisc = this.price;
                     this.subTotal = subtotalDisc * this.qty;
                 } else {
                     this.subTotal = this.price * this.qty;
@@ -231,13 +232,14 @@ $imgLogo = $setting->info['img_logo'];
                         this.code = this.products.product_code;
                         this.name = this.products.product_name;
                         this.price = parseInt(this.products.product_price);
+                        this.priceNormal = parseInt(this.products.product_price_normal);
                         this.discount = parseInt(this.products.discount);
                         this.discountPercent = parseInt(this.products.discount_percent);
                         this.stock = parseInt(this.products.stock);
                         this.image = this.products.media_path;
                         if (this.qty == 1) {
                             if (this.discount > 0) {
-                                var subtotalDisc = this.price - this.discount;
+                                var subtotalDisc = this.price;
                                 this.subTotal = subtotalDisc * this.qty;
                             } else {
                                 this.subTotal = this.price * this.qty;

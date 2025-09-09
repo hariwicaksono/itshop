@@ -38,8 +38,8 @@
                             <td>{{item.category_name}}</td>
                             <td>
                                 <v-edit-dialog large :return-value.sync="item.product_price" @save="setPrice(item)" @cancel="" @open="" @close="">
-                                    <div v-if="item.discount > 0"><span class="text-decoration-line-through">{{ Ribuan(item.product_price) }}</span>
-                                        <v-chip color="red" label x-small dark class="px-1" title="<?= lang('App.discount'); ?>">{{item.discount_percent}}%</v-chip><br />{{ Ribuan(item.product_price - item.discount) }}
+                                    <div v-if="item.discount > 0"><span class="text-decoration-line-through">{{ Ribuan(item.product_price_normal) }}</span>
+                                        <v-chip color="red" label x-small dark class="px-1" title="<?= lang('App.discount'); ?>">{{item.discount_percent}}%</v-chip><br />{{ Ribuan(item.product_price) }}
                                     </div>
                                     <div v-else>{{ Ribuan(item.product_price) }}</div>
                                     <template v-slot:input>
@@ -256,7 +256,7 @@
                             </v-col>
                             <v-col cols="12" sm="9">
                                 <quill-editor v-model="productDescription" ref="quillEditor" :options="editorOption" :error-messages="product_descriptionError" style="min-height:200px !important;"></quill-editor>
-                                    <!-- <v-textarea v-model="productDescription" counter maxlength="3000" :error-messages="product_descriptionError" rows="10" outlined full-width single-line></v-textarea> -->
+                                <!-- <v-textarea v-model="productDescription" counter maxlength="3000" :error-messages="product_descriptionError" rows="10" outlined full-width single-line></v-textarea> -->
                             </v-col>
                         </v-row>
                         <v-row>
@@ -704,7 +704,7 @@
                             </v-col>
                             <v-col cols="12" sm="9">
                                 <quill-editor v-model="productDescriptionEdit" ref="quillEditor" :options="editorOption" :error-messages="product_descriptionError"></quill-editor>
-                                    <!-- <v-textarea v-model="productDescriptionEdit" counter maxlength="3000" rows="10" :error-messages="product_descriptionError" outlined full-width single-line></v-textarea> -->
+                                <!-- <v-textarea v-model="productDescriptionEdit" counter maxlength="3000" rows="10" :error-messages="product_descriptionError" outlined full-width single-line></v-textarea> -->
                             </v-col>
                         </v-row>
                         <v-row>
@@ -876,6 +876,8 @@
         product_nameError: "",
         productPrice: 0,
         product_priceError: "",
+        productPriceNormal: 0,
+        product_price_normalError: "",
         productDescription: "",
         product_descriptionError: "",
         productImage: null,
@@ -904,6 +906,7 @@
         productCodeEdit: "",
         productNameEdit: "",
         productPriceEdit: 0,
+        productPriceNormalEdit: 0,
         productDescriptionEdit: "",
         productImageEdit: null,
         mediaPathEdit: null,
@@ -1119,7 +1122,7 @@
                 .catch(err => {
                     // handle error
                     console.log(err);
-                    var error = err.response
+                    var error = err.response;
                     if (error.data.expired == true) {
                         this.snackbar = true;
                         this.snackbarMessage = error.data.message;
@@ -1131,13 +1134,18 @@
         modalAddOpen: function() {
             this.modalAdd = true;
             this.notifType = "";
+            this.mediaID = "";
+            this.media1 = "";
+            this.media2 = "";
+            this.media3 = "";
+            this.media4 = "";
             this.checkDiscount = false;
             this.discount = 0;
         },
         modalAddClose: function() {
             this.productCode = "";
             this.productName = "";
-            this.productPrice = "";
+            this.productPrice = 0;
             this.productDescription = "";
             if (this.alert == true) {
                 this.modalAdd = true;
@@ -1201,7 +1209,7 @@
                 .catch(err => {
                     // handle error
                     console.log(err);
-                    var error = err.response
+                    var error = err.response;
                     if (error.data.expired == true) {
                         this.snackbar = true;
                         this.snackbarMessage = error.data.message;
@@ -1233,7 +1241,7 @@
                 .catch(err => {
                     // handle error
                     console.log(err.response);
-                    var error = err.response
+                    var error = err.response;
                     if (error.data.expired == true) {
                         this.snackbar = true;
                         this.snackbarMessage = error.data.message;
@@ -1293,7 +1301,7 @@
                 .catch(err => {
                     // handle error
                     console.log(err);
-                    var error = err.response
+                    var error = err.response;
                     if (error.data.expired == true) {
                         this.snackbar = true;
                         this.snackbarMessage = error.data.message;
@@ -1325,7 +1333,7 @@
                 .catch(err => {
                     // handle error
                     console.log(err.response);
-                    var error = err.response
+                    var error = err.response;
                     if (error.data.expired == true) {
                         this.snackbar = true;
                         this.snackbarMessage = error.data.message;
@@ -1385,7 +1393,7 @@
                 .catch(err => {
                     // handle error
                     console.log(err);
-                    var error = err.response
+                    var error = err.response;
                     if (error.data.expired == true) {
                         this.snackbar = true;
                         this.snackbarMessage = error.data.message;
@@ -1417,7 +1425,7 @@
                 .catch(err => {
                     // handle error
                     console.log(err.response);
-                    var error = err.response
+                    var error = err.response;
                     if (error.data.expired == true) {
                         this.snackbar = true;
                         this.snackbarMessage = error.data.message;
@@ -1477,7 +1485,7 @@
                 .catch(err => {
                     // handle error
                     console.log(err);
-                    var error = err.response
+                    var error = err.response;
                     if (error.data.expired == true) {
                         this.snackbar = true;
                         this.snackbarMessage = error.data.message;
@@ -1509,7 +1517,7 @@
                 .catch(err => {
                     // handle error
                     console.log(err.response);
-                    var error = err.response
+                    var error = err.response;
                     if (error.data.expired == true) {
                         this.snackbar = true;
                         this.snackbarMessage = error.data.message;
@@ -1569,7 +1577,7 @@
                 .catch(err => {
                     // handle error
                     console.log(err);
-                    var error = err.response
+                    var error = err.response;
                     if (error.data.expired == true) {
                         this.snackbar = true;
                         this.snackbarMessage = error.data.message;
@@ -1601,7 +1609,7 @@
                 .catch(err => {
                     // handle error
                     console.log(err.response);
-                    var error = err.response
+                    var error = err.response;
                     if (error.data.expired == true) {
                         this.snackbar = true;
                         this.snackbarMessage = error.data.message;
@@ -1702,7 +1710,7 @@
                     // handle error
                     this.loading = false
                     console.log(err.response);
-                    var error = err.response
+                    var error = err.response;
                     if (error.data.expired == true) {
                         this.snackbar = true;
                         this.snackbarMessage = error.data.message;
@@ -1720,7 +1728,6 @@
             this.productNameEdit = product.product_name;
             this.idCategoryEdit = product.category_id;
             this.productCodeEdit = product.product_code;
-            this.productPriceEdit = product.product_price;
             this.productDescriptionEdit = product.product_description;
             this.mediaID = product.product_image;
             this.media1 = product.product_image1;
@@ -1735,6 +1742,9 @@
             this.discountEdit = product.discount;
             if (Number(this.discountEdit) > 0) {
                 this.checkDiscount = true;
+                this.productPriceEdit = product.product_price_normal;
+            } else {
+                this.productPriceEdit = product.product_price;
             }
             this.linkdemoEdit = product.link_demo;
             this.stock = product.stock;
@@ -1750,7 +1760,6 @@
             this.productNameEdit = product.product_name;
             this.idCategoryEdit = product.category_id;
             this.productCodeEdit = product.product_code;
-            this.productPriceEdit = product.product_price;
             this.productDescriptionEdit = product.product_description;
             this.mediaID = product.product_image;
             this.media1 = product.product_image1;
@@ -1765,6 +1774,9 @@
             this.discountEdit = product.discount;
             if (Number(this.discountEdit) > 0) {
                 this.checkDiscount = true;
+                this.productPriceEdit = product.product_price_normal;
+            } else {
+                this.productPriceEdit = product.product_price;
             }
             this.linkdemoEdit = product.link_demo;
             this.stockEdit = product.stock;
@@ -1772,6 +1784,7 @@
         },
         modalEditClose: function() {
             this.modalEdit = false;
+            this.checkDiscount = false;
             this.$refs.form.resetValidation();
         },
 
@@ -1821,6 +1834,11 @@
                         this.imagePreview2 = null;
                         this.imagePreview3 = null;
                         this.imagePreview4 = null;
+                        this.mediaPath = null;
+                        this.mediaPath1 = null;
+                        this.mediaPath2 = null;
+                        this.mediaPath3 = null;
+                        this.mediaPath4 = null;
                         this.checkDiscount = false;
                         this.discount = 0;
                         this.linkdemoEdit = "";
@@ -1851,7 +1869,7 @@
                     // handle error
                     this.loading = true;
                     console.log(err.response);
-                    var error = err.response
+                    var error = err.response;
                     if (error.data.expired == true) {
                         this.snackbar = true;
                         this.snackbarMessage = error.data.message;
@@ -1892,7 +1910,7 @@
                     // handle error
                     this.loading = true;
                     console.log(err);
-                    var error = err.response
+                    var error = err.response;
                     if (error.data.expired == true) {
                         this.snackbar = true;
                         this.snackbarMessage = error.data.message;
@@ -1922,7 +1940,7 @@
                 .catch(err => {
                     // handle error
                     console.log(err.response);
-                    var error = err.response
+                    var error = err.response;
                     if (error.data.expired == true) {
                         this.snackbar = true;
                         this.snackbarMessage = error.data.message;
@@ -1952,7 +1970,7 @@
                 .catch(err => {
                     // handle error
                     console.log(err.response);
-                    var error = err.response
+                    var error = err.response;
                     if (error.data.expired == true) {
                         this.snackbar = true;
                         this.snackbarMessage = error.data.message;
@@ -1982,7 +2000,7 @@
                 .catch(err => {
                     // handle error
                     console.log(err.response);
-                    var error = err.response
+                    var error = err.response;
                     if (error.data.expired == true) {
                         this.snackbar = true;
                         this.snackbarMessage = error.data.message;
@@ -2011,7 +2029,7 @@
                     // handle error
                     console.log(err);
                     this.loading1 = false;
-                    var error = err.response
+                    var error = err.response;
                     if (error.data.expired == true) {
                         this.snackbar = true;
                         this.snackbarMessage = error.data.message;
@@ -2065,7 +2083,7 @@
                     // handle error
                     console.log(err);
                     this.loading6 = false;
-                    var error = err.response
+                    var error = err.response;
                     if (error.data.expired == true) {
                         this.snackbar = true;
                         this.snackbarMessage = error.data.message;
@@ -2095,7 +2113,7 @@
                     // handle error
                     console.log(err);
                     this.loading7 = false;
-                    var error = err.response
+                    var error = err.response;
                     if (error.data.expired == true) {
                         this.snackbar = true;
                         this.snackbarMessage = error.data.message;

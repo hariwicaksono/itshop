@@ -42,7 +42,7 @@ class CartModel extends Model
 
     public function getCart()
     {
-        $this->select("{$this->table}.*, p.product_code, p.product_name, p.product_price, m.media_path, m1.media_path as media_path1,  m2.media_path as media_path2, m3.media_path as media_path3, m4.media_path as media_path4, p.slug, c.category_name, c.category_slug");
+        $this->select("{$this->table}.*, p.product_code, p.product_name, p.product_price, p.product_price_normal, m.media_path, m1.media_path as media_path1,  m2.media_path as media_path2, m3.media_path as media_path3, m4.media_path as media_path4, p.slug, c.category_name, c.category_slug");
         $this->join("products p", "p.product_id = {$this->table}.product_id");
         $this->join("media m", "m.media_id = p.product_image", "left");
         $this->join("media m1", "m1.media_id = p.product_image1", "left");
@@ -57,7 +57,7 @@ class CartModel extends Model
 
     public function getUserCart($userid = null, $where = false)
     {
-        $this->select("{$this->table}.*, p.product_code, p.product_name, p.product_price, m.media_path, m1.media_path as media_path1,  m2.media_path as media_path2, m3.media_path as media_path3,  m4.media_path as media_path4, p.slug, c.category_name, c.category_slug");
+        $this->select("{$this->table}.*, p.product_code, p.product_name, p.product_price, p.product_price_normal, m.media_path, m1.media_path as media_path1,  m2.media_path as media_path2, m3.media_path as media_path3,  m4.media_path as media_path4, p.slug, c.category_name, c.category_slug");
         $this->join("products p", "p.product_id = {$this->table}.product_id");
         $this->join("media m", "m.media_id = p.product_image", "left");
         $this->join("media m1", "m1.media_id = p.product_image1", "left");
