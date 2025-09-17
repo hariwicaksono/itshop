@@ -51,12 +51,12 @@
                 <template v-slot:item="{ item, isSelected, select}">
                     <tr>
                         <td>{{item.no_order}}</td>
-                        <td>{{item.email}}<br />{{item.phone}}</td>
+                        <td>{{item.first_name}} {{item.last_name}}<br />{{item.email}}<br />{{item.phone}}</td>
                         <td>{{item.created_at}}</td>
                         <td>{{RibuanLocale(item.total)}}</td>
                         <td>
                             {{item.payment_name}}
-                            <a @click="showConfirmation(item)" v-show="item.payment_id == '2'"><?= lang('App.see'); ?></a>
+                            <a @click="showConfirmation(item)"><?= lang('App.see'); ?></a>
                         </td>
                         <td>
                             <v-select v-model="item.status" name="status" :items="list_status" item-text="label" item-value="value" label="Select Status" single-line @change="setStatus(item)"></v-select>
@@ -67,6 +67,9 @@
                         <td>
                             <v-btn icon color="primary" class="mr-2" @click="showOrder(item)" title="Detail" alt="Detail">
                                 <v-icon>mdi-information-outline</v-icon>
+                            </v-btn>
+                            <v-btn icon link :href="'<?= base_url('admin/orders/invoice/'); ?>' + item.no_order" target="_blank">
+                                <v-icon>mdi-printer</v-icon>
                             </v-btn>
                         </td>
                     </tr>
@@ -172,15 +175,15 @@
                     <div v-if="loading3 == true">
                         <v-skeleton-loader type="heading,list-item-two-line"></v-skeleton-loader>
                     </div>
-                    <div v-for="item in userOrder" :key="item.cart_id" v-else-if="loading3 == false">
-                        <h3 class="font-weight-regular mb-3"><strong>{{item.status==0?"Belum Diproses":""}}{{item.status==1?"Sedang Diproses":""}}{{item.status==2?"Dikirim":""}}{{item.status==3?"Dibatalkan":""}}</strong> / {{item.no_order}} / {{item.email}} / {{item.created_at}}</h3>
+                    <div v-else-if="loading3 == false">
+                        <h3 class="font-weight-regular mb-3"><strong>{{userOrder.status==0?"Belum Diproses":""}}{{userOrder.status==1?"Sedang Diproses":""}}{{userOrder.status==2?"Dikirim":""}}{{userOrder.status==3?"Dibatalkan":""}}</strong> / {{userOrder.no_order}} / {{userOrder.email}} / {{userOrder.created_at}}</h3>
                         <v-row>
                             <v-col>
                                 <strong><?= lang('App.product'); ?></strong><br />
                                 <div v-if="show == true">
                                     <v-skeleton-loader type="list-item-avatar-three-line"></v-skeleton-loader>
                                 </div>
-                                <div v-for="row in itemOrder" :key="row.cart_id" v-if="show == false && item.order_id == row.order_id">
+                                <div v-for="row in itemOrder" :key="row.cart_id" v-if="show == false && userOrder.order_id == row.order_id">
                                     <v-list-item class="ma-n3 pa-n3" two-line>
                                         <v-list-item-avatar size="50" rounded>
                                             <v-img lazy-src="<?= base_url('images/no_image.jpg') ?>" :src="'<?= base_url() ?>' + row.media_path" v-if="row.media_path != null"></v-img>
@@ -199,15 +202,15 @@
                                     </v-list-item>
                                 </div>
                                 <br />
-                                <em>Note: " {{item.note}} "</em>
+                                <em>Note: " {{userOrder.note}} "</em>
                             </v-col>
                             <v-col>
                                 <strong><?= lang('App.shipment'); ?></strong><br />
-                                {{item.shipment}}<br />
+                                {{userOrder.shipment}}<br />
                                 <strong><?= lang('App.payment'); ?></strong><br />
-                                {{item.payment_name}} / <em>{{item.status_payment}}</em>
+                                {{userOrder.payment_name}} / <em>{{userOrder.status_payment}}</em>
                                 <p class="text-subtitle-2 mb-0"><strong>Total <?= lang('App.order'); ?></strong><br />
-                                    <span class="text-h6"><strong>{{RibuanLocale(item.total)}}</strong></span>
+                                    <span class="text-h6"><strong>{{RibuanLocale(userOrder.total)}}</strong></span>
                                 </p>
                             </v-col>
                         </v-row>
@@ -366,6 +369,8 @@
                         <v-text-field v-model="firstName" label="First Name *" :error-messages="first_nameError" outlined></v-text-field>
 
                         <v-text-field v-model="lastName" label="Last Name *" :error-messages="last_nameError" outlined></v-text-field>
+
+                        <v-text-field v-model="company" label="Perusahaan" :error-messages="companyError" outlined></v-text-field>
 
                         <v-text-field v-model="phone" v-on:keyup="changeNumber" label="Telepon *" :error-messages="phoneError" outlined></v-text-field>
 
@@ -537,6 +542,8 @@
         first_nameError: "",
         lastName: "",
         last_nameError: "",
+        company: "",
+        companyError: "",
         phone: "",
         phoneError: "",
         show1: false,
@@ -1243,6 +1250,7 @@
                     password: this.password,
                     first_name: this.firstName,
                     last_name: this.lastName,
+                    company: this.company,
                     phone: this.phone
                 }, options)
                 .then(res => {
@@ -1254,6 +1262,7 @@
                         this.snackbarMessage = data.message;
                         this.firstName = "";
                         this.lastName = "";
+                        this.company = "";
                         this.phone = "";
                         this.getUser();
                         this.modalAddUser = false;

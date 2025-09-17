@@ -5,10 +5,8 @@ namespace App\Controllers;
 use App\Modules\Order\Models\OrderModel;
 use App\Modules\Product\Models\ProductModel;
 use App\Modules\User\Models\UserModel;
-use TCPDF;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use Spipu\Html2Pdf\Html2Pdf;
 
 class Admin extends BaseController
 {
@@ -56,83 +54,6 @@ class Admin extends BaseController
             'harian' => $harian,
             'transaksi' => $transaksi
          ]);
-    }
-
-    public function export()
-    {
-        return view('admin/export');
-    }
-
-    public function exportTcpdf()
-    {
-        //mengambil result array productModel
-        $data = [
-            'product' => $this->product->findAll()
-        ];
-        $html = view('admin/export_tcpdf', $data);
-        // create new PDF document
-        $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-        // set margins
-        $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_RIGHT);
-        $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
-
-        // Add a page
-        // This method has several options, check the source code documentation for more information.
-        $pdf->AddPage();
-
-        // Print text using writeHTMLCell()
-        $pdf->writeHTML($html);
-        $this->response->setContentType('application/pdf');
-        // Close and output PDF document
-        // This method has several options, check the source code documentation for more information.
-        $pdf->Output('products.pdf','I');  // display on the browser
-    }
-
-    public function exportMpdf()
-    {
-        //mengambil result array productModel
-        $data = [
-            'product' => $this->product->findAll()
-        ];
-
-        $html = view('admin/export_mpdf', $data);
-
-        // create new PDF document
-        $pdf = new \Mpdf\Mpdf();
-
-        // Print text using writeHTMLCell()
-        $pdf->writeHTML($html);
-        $this->response->setContentType('application/pdf');
-        // Close and output PDF document
-        // This method has several options, check the source code documentation for more information.
-        $pdf->Output('products.pdf', 'I');
-    }
-
-    public function exportHtml2pdf()
-    {
-        //mengambil result array productModel
-        $data = [
-            'product' => $this->product->findAll()
-        ];
-
-        $html = view('admin/export_html2pdf', $data);
-
-        // create new PDF document
-        $pdf = new Html2Pdf('P', 'A4');
-
-        // Print text using writeHTMLCell()
-        $pdf->writeHTML($html);
-        $this->response->setContentType('application/pdf');
-        // Close and output PDF document
-        // This method has several options, check the source code documentation for more information.
-        $file = $_SERVER['DOCUMENT_ROOT'].'files/products.pdf';
-        $pdf->Output($file, 'F');
-        $attachment = base_url('files/products.pdf');
-        if (file_exists($file)) {
-            helper('email');
-            sendEmailAttachment("Invoice PDF", "hariwicaksono87@gmail.com", "This is test", $attachment);
-        }
-        $pdf->Output('products.pdf','I');  // display on the browser
     }
 
     public function exportExcel()

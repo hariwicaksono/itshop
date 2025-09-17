@@ -19,6 +19,7 @@
                     <tr>
                         <td width="300"><strong>{{item.first_name}} {{item.last_name}}</strong><br /><em>{{item.biography}}</em></td>
                         <td>{{item.email}}<br /><em>{{item.username}}</em></td>
+                        <td>{{item.company}}</td>
                         <td>{{item.phone}}</td>
                         <td>
                             {{item.alamat}}
@@ -76,6 +77,8 @@
 
                         <v-text-field v-model="lastName" label="Last Name *" :error-messages="last_nameError" outlined></v-text-field>
 
+                        <v-text-field v-model="company" label="Perusahaan" :error-messages="companyError" outlined></v-text-field>
+
                         <v-text-field v-model="phone" v-on:keyup="changeNumber" label="Telepon *" :error-messages="phoneError" outlined></v-text-field>
 
                         <v-text-field v-model="password" :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'" :rules="[rules.min]" :type="show1 ? 'text' : 'password'" label="Password" hint="<?= lang('App.minChar') ?>" counter @click:append="show1 = !show1" :error-messages="passwordError" outlined></v-text-field>
@@ -118,20 +121,20 @@
 
                         <v-text-field label="Email *" v-model="emailEdit" :error-messages="emailError" outlined></v-text-field>
 
-                        <v-row>
-                            <v-col>
+                        <v-row dense>
+                            <v-col cols="12" sm="6">
                                 <v-text-field label="Username *" v-model="userNameEdit" :error-messages="usernameError" outlined></v-text-field>
                             </v-col>
-                            <v-col>
+                            <v-col cols="12" sm="6">
                                 <v-text-field label="Telepon *" v-model="phoneEdit" :error-messages="phoneError" outlined></v-text-field>
                             </v-col>
                         </v-row>
 
-                        <v-row class="mt-n4">
-                            <v-col>
+                        <v-row dense>
+                            <v-col cols="12" sm="6">
                                 <v-text-field label="First Name *" v-model="firstNameEdit" :error-messages="first_nameError" outlined></v-text-field>
                             </v-col>
-                            <v-col>
+                            <v-col cols="12" sm="6">
                                 <v-text-field label="Last Name *" v-model="lastNameEdit" :error-messages="last_nameError" outlined></v-text-field>
                             </v-col>
                         </v-row>
@@ -140,21 +143,21 @@
 
                         <v-text-field label="Alamat" v-model="alamatEdit" :error-messages="alamatError" outlined></v-text-field>
 
-                        <v-row>
-                            <v-col>
+                        <v-row dense>
+                            <v-col cols="12" sm="6">
                                 <v-select label="Provinsi" v-model="select_provinsi" :items="list_provinsi" item-text="provinsi_nama" item-value="provinsi_id" :error-messages="provinsi_idError" :loading="loading2" outlined></v-select>
                             </v-col>
-                            <v-col>
+                            <v-col cols="12" sm="6">
                                 <v-select label="Kabupaten/Kota" v-model="select_kabupaten" :items="list_kabupaten" item-text="kabupaten_kota_nama" item-value="kabupaten_kota_id" :error-messages="kabupaten_kota_idError" :loading="loading2" outlined></v-select>
                             </v-col>
                         </v-row>
 
-                        <v-row>
-                            <v-col>
+                        <v-row dense>
+                            <v-col cols="12" sm="6">
                                 <v-text-field label="Kodepos" v-model="kodeposEdit" :error-messages="kodeposError" outlined></v-text-field>
                             </v-col>
-                            <v-col>
-
+                            <v-col cols="12" sm="6">
+                                <v-text-field label="Perusahaan" v-model="companyEdit" :error-messages="companyError" outlined></v-text-field>
                             </v-col>
                         </v-row>
                     </v-form>
@@ -269,8 +272,11 @@
             text: 'Name',
             value: 'first_name'
         }, {
-            text: 'Email',
+            text: 'Email/Username',
             value: 'email'
+        }, {
+            text: 'Company',
+            value: 'company'
         }, {
             text: 'Telepon',
             value: 'phone'
@@ -319,6 +325,9 @@
         lastName: "",
         last_nameError: "",
         lastNameEdit: "",
+        company: "",
+        companyError: "",
+        companyEdit: "",
         phone: "",
         phoneError: "",
         phoneEdit: "",
@@ -516,6 +525,7 @@
                     password: this.password,
                     first_name: this.firstName,
                     last_name: this.lastName,
+                    company: this.company,
                     phone: this.phone
                 }, options)
                 .then(res => {
@@ -570,6 +580,7 @@
             this.emailEdit = user.email;
             this.firstNameEdit = user.first_name;
             this.lastNameEdit = user.last_name;
+            this.companyEdit = user.company;
             this.phoneEdit = user.phone;
             this.alamatEdit = user.alamat;
             this.kodeposEdit = user.kodepos;
@@ -590,6 +601,7 @@
                     email: this.emailEdit,
                     first_name: this.firstNameEdit,
                     last_name: this.lastNameEdit,
+                    company: this.companyEdit,
                     phone: this.phoneEdit,
                     alamat: this.alamatEdit,
                     provinsi_id: this.select_provinsi,

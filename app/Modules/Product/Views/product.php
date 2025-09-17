@@ -57,7 +57,7 @@
                             </td>
                             <td>{{RibuanNoRp(item.views)}}</td>
                             <td>
-                                <v-switch v-model="item.active" value="active" false-value="0" true-value="1" color="success" @click="setActive(item)"></v-switch>
+                                <v-switch v-model="item.active" color="success" @click="setActive(item)"></v-switch>
                             </td>
                             <td>
                                 <v-btn icon class="mr-2" @click="editItem(item)" title="Edit" alt="Edit">

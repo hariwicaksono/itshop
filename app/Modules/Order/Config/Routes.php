@@ -6,6 +6,7 @@ if (!isset($routes)) {
 
 $routes->group('admin', ['filter' => 'auth', 'namespace' => 'App\Modules\Order\Controllers'], function ($routes) {
 	$routes->get('orders', 'Order::index');
+	$routes->get('orders/invoice/(:segment)', 'Order::invoice/$1');
 });
 
 $routes->group('openapi', ['namespace' => 'App\Modules\Order\Controllers\Api'], function ($routes) {

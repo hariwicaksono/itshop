@@ -6,10 +6,8 @@ use App\Controllers\BaseController;
 use App\Modules\Order\Models\OrderModel;
 use App\Modules\Product\Models\ProductModel;
 use App\Modules\User\Models\UserModel;
-use TCPDF;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use Spipu\Html2Pdf\Html2Pdf;
 
 class Product extends BaseController
 {

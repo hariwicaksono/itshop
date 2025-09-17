@@ -3,9 +3,10 @@
 namespace App\Modules\Product\Models;
 
 use CodeIgniter\Model;
+use App\Models\BaseTypedModel;
 //use App\Modules\Product\Entities\Product;
 
-class ProductModel extends Model
+class ProductModel extends BaseTypedModel
 {
     protected $DBGroup              = 'default';
     protected $table                = 'products';

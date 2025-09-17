@@ -81,6 +81,7 @@ class User extends BaseControllerApi
                 'active' => 0,
                 'first_name' => $json->first_name,
                 'last_name' => $json->last_name,
+                'company' => $json->company,
                 'phone' => $json->phone,
                 'kodepos' => 0
             ];
@@ -93,6 +94,7 @@ class User extends BaseControllerApi
                 'active' => 0,
                 'first_name' => $this->request->getPost('first_name'),
                 'last_name' => $this->request->getPost('last_name'),
+                'company' => $this->request->getPost('company'),
                 'phone' => $this->request->getPost('phone'),
                 'kodepos' => 0
             ];
@@ -141,9 +143,11 @@ class User extends BaseControllerApi
         if ($this->request->getJSON()) {
             $json = $this->request->getJSON();
             $data = [
+                'email' => $json->email,
                 'username' => $json->username,
                 'first_name' => $json->first_name,
                 'last_name' => $json->last_name,
+                'company' => $json->company,
                 'phone' => $json->phone,
                 'alamat' => $json->alamat,
                 'provinsi_id' => $json->provinsi_id,
@@ -152,7 +156,20 @@ class User extends BaseControllerApi
                 'biography' => $json->biography
             ];
         } else {
-            $data = $this->request->getRawInput();
+            $input = $this->request->getRawInput();
+            $data = [
+                'email' => $input['email'],
+                'username' => $input['username'],
+                'first_name' => $input['first_name'],
+                'last_name' => $input['last_name'],
+                'company' => $input['company'],
+                'phone' => $input['phone'],
+                'alamat' => $input['alamat'],
+                'provinsi_id' => $input['provinsi_id'],
+                'kabupaten_kota_id' => $input['kabupaten_kota_id'],
+                'kodepos' => $input['kodepos'],
+                'biography' => $input['biography']
+            ];
         }
 
         if (!$this->validate($rules)) {
