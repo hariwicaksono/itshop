@@ -1220,10 +1220,22 @@
         },
 
         changeNumber() {
-            if (this.phone.length > 1) {
-            } else {
-                this.phone = '62';
-            } 
+            // Buang spasi, +, dan -
+            let cleaned = this.phone.replace(/[\s+-]/g, '');
+
+            // Kalau masih ada leading 0 di depan 62 → hapus
+            // Contoh: 62813 menjadi 62813 (aman)
+            // Contoh: 062813 → jadi 62813
+            if (cleaned.startsWith('0')) {
+                cleaned = '62' + cleaned.substring(1);
+            }
+
+            // Minimal harus '62'
+            if (cleaned.length < 2) {
+                cleaned = '62';
+            }
+
+            this.phone = cleaned;
         },
 
         modalAddUserOpen: function() {

@@ -19,7 +19,7 @@ class Home extends BaseController
 		if (!session()->get('lang')) :
 			session()->set('lang', env('app.defaultLocale'));
 		endif;
-		
+
 		$this->product = new ProductModel();
 		$this->setting = new Settings();
 		$this->page = new PageModel();
@@ -48,18 +48,20 @@ class Home extends BaseController
 		//var_dump($sold);die;
 
 		//set cookie for today
-        $awal  = new \DateTime(date('Y-m-d 23:59:59'));
-        $akhir = new \DateTime(); // Waktu sekarang
-        $diff  = $awal->diff($akhir);
-        $jam = $diff->h;
-        $detik = $jam * 3600;
-        $time = time() + $detik;
-        if (!get_cookie("itshop_product_view_id_" . $find['product_id'])) {
-            setcookie("itshop_product_view_id_" . $find['product_id'], true, $time, "/", null, null, true);
-			$this->product->update($find['product_id'], [
-				"views" => $find['views'] + 1
-			]);
-        }
+		$awal  = new \DateTime(date('Y-m-d 23:59:59'));
+		$akhir = new \DateTime(); // Waktu sekarang
+		$diff  = $awal->diff($akhir);
+		$jam = $diff->h;
+		$detik = $jam * 3600;
+		$time = time() + $detik;
+		if (!get_cookie("itshop_product_view_id_" . $find['product_id'])) {
+			setcookie("itshop_product_view_id_" . $find['product_id'], true, $time, "/", null, null, true);
+			$db = \Config\Database::connect();
+			$db->table('products')
+			->where('product_id', $find['product_id'])
+			->set('views', $find['views'] + 1)
+			->update();
+		}
 
 		return view('product', [
 			'title' => $productName,

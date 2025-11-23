@@ -653,7 +653,7 @@
                                 <p class="text-caption"></p>
                             </v-col>
                             <v-col cols="12" md="9">
-                                <v-select v-model="idCategoryEdit" label="<?= lang('App.category'); ?>" :items="dataCategory" item-text="category_name" item-value="category_id" :error-messages="category_idError" :loading="loading2" outlined append-outer-icon="mdi-plus-thick" @click:append-outer="addCategory"></v-select>
+                                <v-select v-model="idCategoryEdit" label="<?= lang('App.category'); ?>" :items="dataCategory" item-text="category_name" item-value="category_id" :error-messages="category_idError" :loading="loading2" outlined append-outer-icon="mdi-plus-thick" @click:append-outer="addCategory" return-object></v-select>
                             </v-col>
                         </v-row>
                         <v-row>
@@ -1726,7 +1726,7 @@
             this.notifType = "";
             this.productIdEdit = product.product_id;
             this.productNameEdit = product.product_name;
-            this.idCategoryEdit = product.category_id;
+            this.idCategoryEdit = String(product.category_id);
             this.productCodeEdit = product.product_code;
             this.productDescriptionEdit = product.product_description;
             this.mediaID = product.product_image;
@@ -1758,7 +1758,7 @@
             this.notifType = "";
             this.productIdEdit = product.product_id;
             this.productNameEdit = product.product_name;
-            this.idCategoryEdit = product.category_id;
+            this.idCategoryEdit = String(product.category_id);
             this.productCodeEdit = product.product_code;
             this.productDescriptionEdit = product.product_description;
             this.mediaID = product.product_image;

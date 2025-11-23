@@ -242,6 +242,9 @@
         activeColor2: "",
         activeColor3: "",
         dataSort: [{
+            text: 'Terbaru Update',
+            value: 'updated_new'
+        }, {
             text: 'Terbaru',
             value: 'created_new'
         }, {
@@ -254,7 +257,7 @@
             text: 'Termahal',
             value: 'price_desc'
         }, ],
-        orderBy: "created_new",
+        orderBy: "updated_new",
         messageNoData: "",
         dataCategory: [],
         selectedCategory: [],

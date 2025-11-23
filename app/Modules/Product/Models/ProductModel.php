@@ -67,6 +67,8 @@ class ProductModel extends BaseTypedModel
             $this->orderBy("{$this->table}.product_price", "ASC");
         } else if ($orderBy == 'price_desc') {
             $this->orderBy("{$this->table}.product_price", "DESC");
+        } else if ($orderBy == 'updated_new') {
+            $this->orderBy("{$this->table}.updated_at", "DESC");
         } else {
             $this->orderBy("{$this->table}.created_at", "DESC");
         }
