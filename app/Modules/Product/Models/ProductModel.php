@@ -45,13 +45,14 @@ class ProductModel extends BaseTypedModel
     public function getProduct($page = false, $limit = false, $where = false, $orderBy = false)
     {
         $offset = ($page - 1) * $limit;
-        $this->select("{$this->table}.*, m.media_path, m1.media_path as media_path1,  m2.media_path as media_path2, m3.media_path as media_path3,  m4.media_path as media_path4, c.category_name, c.category_slug");
+        $this->select("{$this->table}.*, m.media_path, m1.media_path as media_path1,  m2.media_path as media_path2, m3.media_path as media_path3,  m4.media_path as media_path4, c.category_name, c.category_slug, ps.sold");
         $this->join("media m", "m.media_id = {$this->table}.product_image", "left");
         $this->join("media m1", "m1.media_id = {$this->table}.product_image1", "left");
         $this->join("media m2", "m2.media_id = {$this->table}.product_image2", "left");
         $this->join("media m3", "m3.media_id = {$this->table}.product_image3", "left");
         $this->join("media m4", "m4.media_id = {$this->table}.product_image4", "left");
         $this->join("category c", "c.category_id = {$this->table}.category_id");
+        $this->join("products_sold ps", "ps.product_id = {$this->table}.product_id", "left");
         if ($where != '') :
             $groups = explode(",", $where);
             $this->whereIn("{$this->table}.category_id", $groups);
@@ -69,25 +70,29 @@ class ProductModel extends BaseTypedModel
             $this->orderBy("{$this->table}.product_price", "DESC");
         } else if ($orderBy == 'updated_new') {
             $this->orderBy("{$this->table}.updated_at", "DESC");
+        } else if ($orderBy == 'recommended') {
+            // 🔥 Rekomendasi seperti marketplace
+            $this->orderBy("ps.sold", "DESC");
+            $this->orderBy("{$this->table}.views", "DESC");
+            $this->orderBy("{$this->table}.created_at", "DESC");
         } else {
             $this->orderBy("{$this->table}.created_at", "DESC");
         }
-        $query = $this->findAll($limit, $offset);
-        return $query;
+        return $this->findAll($limit, $offset);
     }
 
     public function showProduct($id)
     {
-        $this->select("{$this->table}.*, m.media_path, m1.media_path as media_path1,  m2.media_path as media_path2, m3.media_path as media_path3,  m4.media_path as media_path4, c.category_name, c.category_slug");
+        $this->select("{$this->table}.*, m.media_path, m1.media_path as media_path1,  m2.media_path as media_path2, m3.media_path as media_path3,  m4.media_path as media_path4, c.category_name, c.category_slug, ps.sold");
         $this->join("media m", "m.media_id = {$this->table}.product_image", "left");
         $this->join("media m1", "m1.media_id = {$this->table}.product_image1", "left");
         $this->join("media m2", "m2.media_id = {$this->table}.product_image2", "left");
         $this->join("media m3", "m3.media_id = {$this->table}.product_image3", "left");
         $this->join("media m4", "m4.media_id = {$this->table}.product_image4", "left");
         $this->join("category c", "c.category_id = {$this->table}.category_id");
+        $this->join("products_sold ps", "ps.product_id = {$this->table}.product_id", "left");
         $this->where("{$this->table}.product_id", $id);
-        $query = $this->first();
-        return $query;
+        return $this->first();
     }
 
     public function countProduct($status = null)
@@ -118,19 +123,19 @@ class ProductModel extends BaseTypedModel
         $builder->groupBy("n.product_id");
         $builder->orderBy("qty", "DESC");
         $builder->limit("5");
-        $query = $builder->get()->getResultArray();
-        return $query;
+        return $builder->get()->getResultArray();
     }
 
     public function searchData($keyword = false)
     {
-        $this->select("{$this->table}.*, m.media_path, m1.media_path as media_path1,  m2.media_path as media_path2, m3.media_path as media_path3,  m4.media_path as media_path4, c.category_name, c.category_slug");
+        $this->select("{$this->table}.*, m.media_path, m1.media_path as media_path1,  m2.media_path as media_path2, m3.media_path as media_path3,  m4.media_path as media_path4, c.category_name, c.category_slug, ps.sold");
         $this->join("media m", "m.media_id = {$this->table}.product_image", "left");
         $this->join("media m1", "m1.media_id = {$this->table}.product_image1", "left");
         $this->join("media m2", "m2.media_id = {$this->table}.product_image2", "left");
         $this->join("media m3", "m3.media_id = {$this->table}.product_image3", "left");
         $this->join("media m4", "m4.media_id = {$this->table}.product_image4", "left");
         $this->join("category c", "c.category_id = {$this->table}.category_id");
+        $this->join("products_sold ps", "ps.product_id = {$this->table}.product_id", "left");
         $this->groupStart();
         $this->like("{$this->table}.product_name", $keyword);
         $this->orLike("{$this->table}.product_code", $keyword);

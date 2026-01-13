@@ -84,7 +84,7 @@ $imgLogo = $setting->info['img_logo'];
             </v-col>
             <v-col cols="12" sm="5">
                 <h1 class="text-h5 font-weight-bold mb-3">{{name}}</h1>
-                <p class="mb-4">{{code}} &nbsp;&bull;&nbsp; <?= lang('App.sold'); ?>: <?= $productSold; ?></p>
+                <p class="mb-4">{{code}} &nbsp;&bull;&nbsp; <?= lang('App.sold'); ?>: {{products.sold}}</p>
                 <h2 class="text-h4 font-weight-bold mb-5">
                     <span v-if="discount > 0">
                         {{ RibuanLocale(price) }}

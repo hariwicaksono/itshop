@@ -242,6 +242,9 @@
         activeColor2: "",
         activeColor3: "",
         dataSort: [{
+            text: 'Rekomendasi',
+            value: 'recommended'
+        }, {
             text: 'Terbaru Update',
             value: 'updated_new'
         }, {

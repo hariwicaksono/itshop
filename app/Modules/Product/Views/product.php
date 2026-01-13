@@ -56,6 +56,7 @@
                                 </v-edit-dialog>
                             </td>
                             <td>{{RibuanNoRp(item.views)}}</td>
+                            <td>{{RibuanNoRp(item.sold)}}</td>
                             <td>
                                 <v-switch v-model="item.active" color="success" @click="setActive(item)"></v-switch>
                             </td>
@@ -853,6 +854,9 @@
         }, {
             text: 'Views',
             value: 'views'
+        }, {
+            text: 'Sold',
+            value: 'sold'
         }, {
             text: '<?= lang('App.active') ?>',
             value: 'active'
