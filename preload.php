@@ -57,6 +57,7 @@ class preload
                 '/system/Config/Routes.php',
                 '/system/Language/',
                 '/system/bootstrap.php',
+                '/system/util_bootstrap.php',
                 '/system/rewrite.php',
                 '/Views/',
                 // Errors occur.
@@ -100,7 +101,9 @@ class preload
                 }
 
                 require_once $file[0];
-                echo 'Loaded: ' . $file[0] . "\n";
+                // Uncomment only for debugging (to inspect which files are included).
+                // Never use this in production - preload scripts must not generate output.
+                // echo 'Loaded: ' . $file[0] . "\n";
             }
         }
     }

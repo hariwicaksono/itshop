@@ -6,6 +6,7 @@ use App\Modules\Product\Models\ProductModel;
 use App\Libraries\Settings;
 use App\Modules\Article\Models\ArticleModel;
 use App\Modules\Page\Models\PageModel;
+use CodeIgniter\Exceptions\PageNotFoundException;
 
 class Home extends BaseController
 {
@@ -41,6 +42,9 @@ class Home extends BaseController
 	public function show($id = null)
 	{
 		$find = $this->product->where('slug', $id)->first();
+		if (!$find) {
+			throw PageNotFoundException::forPageNotFound("Produk dengan slug '{$id}' tidak ditemukan");
+		}
 		$idProduct = $find['product_id'];
 		$product = $this->product->showProduct($idProduct);
 		$productName = $product['product_name'];
@@ -58,9 +62,9 @@ class Home extends BaseController
 			setcookie("itshop_product_view_id_" . $find['product_id'], true, $time, "/", null, null, true);
 			$db = \Config\Database::connect();
 			$db->table('products')
-			->where('product_id', $find['product_id'])
-			->set('views', $find['views'] + 1)
-			->update();
+				->where('product_id', $find['product_id'])
+				->set('views', $find['views'] + 1)
+				->update();
 		}
 
 		return view('product', [

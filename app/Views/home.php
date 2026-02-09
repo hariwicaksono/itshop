@@ -237,9 +237,9 @@
         pageCount: 0,
         pageCount1: 0,
         currentPage: 1,
-        limitPage: 16,
-        activeColor1: "primary",
-        activeColor2: "",
+        limitPage: 32,
+        activeColor1: "",
+        activeColor2: "primary",
         activeColor3: "",
         dataSort: [{
             text: 'Rekomendasi',
