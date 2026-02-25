@@ -43,6 +43,7 @@
         "codeigniter4/framework": "self.version"
     },
     "suggest": {
+        "ext-apcu": "If you use Cache class ApcuHandler",
         "ext-curl": "If you use CURLRequest class",
         "ext-dom": "If you use TestResponse",
         "ext-exif": "If you run Image class tests",
@@ -54,7 +55,9 @@
         "ext-memcached": "If you use Cache class MemcachedHandler with Memcached",
         "ext-mysqli": "If you use MySQL",
         "ext-oci8": "If you use Oracle Database",
+        "ext-pcntl": "If you use Signals",
         "ext-pgsql": "If you use PostgreSQL",
+        "ext-posix": "If you use Signals",
         "ext-readline": "Improves CLI::input() usability",
         "ext-redis": "If you use Cache class RedisHandler",
         "ext-simplexml": "If you format XML",
