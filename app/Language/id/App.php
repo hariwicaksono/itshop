@@ -57,6 +57,7 @@ return [
     'isRequired' => 'Field Wajib diisi',
     'isNumber' => 'Nilainya harus berupa angka',
     'isZero' => 'Nilainya harus lebih besar dari nol',
+    'errorPassword' => 'Password Salah',
 
     //Auth
     'authSuccess' => 'Pengguna berhasil diautentikasi',

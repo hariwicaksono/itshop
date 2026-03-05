@@ -217,6 +217,14 @@ $imgLogo = $setting->info['img_logo'];
 
     methodsVue = {
         ...methodsVue,
+        // Format Ribuan Rupiah versi 2
+        Ribuan(key) {
+            const format = key.toString().split('').reverse().join('');
+            const convert = format.match(/\d{1,3}/g);
+            const rupiah = 'Rp' + convert.join('.').split('').reverse().join('');
+            return rupiah;
+        },
+
         // Get Product
         getProduct: function() {
             this.loading = true;
@@ -344,7 +352,7 @@ $imgLogo = $setting->info['img_logo'];
 
         // send WhatsApp (Wa.me)
         sendWhatsApp: function(item) {
-            let encoded = encodeURIComponent('<?= $wa_text; ?> ' + item.category_name + ': ' + item.product_name);
+            let encoded = encodeURIComponent('<?= $wa_text; ?> ' + item.category_name + ': ' + item.product_name + '. Harga: ' + this.Ribuan(item.product_price));
             setTimeout(() => window.location.href = `https://wa.me/<?= $telepon; ?>?text=${encoded}`, 100);
         },
     }

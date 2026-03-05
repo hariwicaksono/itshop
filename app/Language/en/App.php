@@ -57,6 +57,7 @@ return [
     'isRequired' => 'Field is required',
     'isNumber' => 'The value must be a number',
     'isZero' => 'The value must be greater than zero',
+    'errorPassword' => 'Wrong Password',
 
     //Auth
     'authSuccess' => 'User authenticated successfully',

@@ -1,17 +1,78 @@
 <?php $this->extend("layouts/app-front"); ?>
+<?php $this->section("style"); ?>
+<style>
+    .hero-text,
+    .hero-text h1,
+    .hero-text p,
+    .hero-text h2,
+    .hero-text span {
+        text-shadow: 0 2px 6px rgba(0, 0, 0, .25);
+    }
+
+    .hero-title {
+        animation: fadeUp .8s ease-out forwards;
+    }
+
+    .hero-sub {
+        animation: fadeUp .8s ease-out .15s forwards;
+    }
+
+    .hero-stats {
+        animation: fadeUp .8s ease-out .3s forwards;
+    }
+
+    .hero-title,
+    .hero-sub,
+    .hero-stats {
+        opacity: 0;
+    }
+
+    @keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(12px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+<?php $this->endSection("style") ?>
 <?php $this->section("content"); ?>
 <template>
     <v-container class="mt-3">
-        <v-parallax src="<?= base_url() ?>/images/Banner-2023-2.jpg" dark class="rounded-lg" height="350">
-            <v-row align="center" justify="center">
-                <v-col class="text-center" cols="12">
-                    <h1 class="text-h5 font-weight-thin mt-n15 mb-0">
-                        <?= lang('App.welcome'); ?>
+        <v-parallax
+            src="<?= base_url() ?>/images/Banner-2023-2.jpg"
+            dark
+            class="rounded-lg"
+            height="350">
+            <v-row v-if="heroReady" align="center" justify="center" class="fill-height">
+                <v-col cols="12" md="8" class="text-center hero-text">
+                    <?= lang('App.welcome'); ?> <strong><?= $app_name; ?></strong>
+                    <h1 class="hero-title text-h4 text-md-h3 font-weight-bold mb-1">
+                        Solusi Digital untuk Bisnis Anda
                     </h1>
-                    <?= $company_name; ?>
-                    <h1 class="text-h4 font-weight-medium mb-3">
-                        <strong><?= $app_name; ?></strong>
-                    </h1>
+
+                    <p class="hero-sub text-subtitle-1 mb-0">
+                        POS • DISFO • Inventory • Keuangan • Sistem Custom
+                    </p>
+
+                    <v-row class="hero-stats" justify="center">
+                        <v-col cols="4">
+                            <h2 class="text-h4 font-weight-bold">100+</h2>
+                            <span>Klien</span>
+                        </v-col>
+                        <v-col cols="4">
+                            <h2 class="text-h4 font-weight-bold">100+</h2>
+                            <span>Project</span>
+                        </v-col>
+                        <v-col cols="4">
+                            <h2 class="text-h4 font-weight-bold">10+</h2>
+                            <span>Tahun Pengalaman</span>
+                        </v-col>
+                    </v-row>
                 </v-col>
             </v-row>
         </v-parallax>
@@ -75,30 +136,40 @@
                 <v-row v-masonry transition-duration="0.3s" item-selector=".item" class="masonry-container" v-if="show == false">
                     <v-col v-masonry-tile class="item" v-for="item in products" :key="item.product_id" cols="12" sm="4">
                         <v-card min-height="400">
-                            <v-img lazy-src="<?= base_url('images/no_image.jpg') ?>" :src="'<?= base_url(); ?>' + item.media_path" aspect-ratio="1" v-if="item.media_path != null">
-                                <v-overlay absolute="true" v-if="item.active == '0'">
-                                    <v-chip>
-                                        <v-icon small>mdi-alert-circle-outline</v-icon> <?= lang('App.notAvailable'); ?>
-                                    </v-chip>
-                                </v-overlay>
-                                <v-overlay absolute="true" v-else-if="item.stock == '0'">
-                                    <v-chip>
-                                        <v-icon small>mdi-alert-circle-outline</v-icon> <?= lang('App.outofStock'); ?>
-                                    </v-chip>
-                                </v-overlay>
-                            </v-img>
-                            <v-img lazy-src="<?= base_url('images/no_image.jpg') ?>" src="<?= base_url('images/no_image.jpg') ?>" v-else>
-                                <v-overlay absolute="true" v-if="item.active == '0'">
-                                    <v-chip>
-                                        <v-icon small>mdi-alert-circle-outline</v-icon> <?= lang('App.notAvailable'); ?>
-                                    </v-chip>
-                                </v-overlay>
-                                <v-overlay absolute="true" v-else-if="item.stock == '0'">
-                                    <v-chip>
-                                        <v-icon small>mdi-alert-circle-outline</v-icon> <?= lang('App.outofStock'); ?>
-                                    </v-chip>
-                                </v-overlay>
-                            </v-img>
+                            <v-carousel
+                                :height="$vuetify.breakpoint.mdAndUp ? 270 : 340"
+                                :show-arrows="productImages(item).length > 1"
+                                :hide-delimiters="productImages(item).length <= 1"
+                                hide-delimiter-background
+                                show-arrows-on-hover>
+                                <v-carousel-item
+                                    v-for="(img, i) in productImages(item)"
+                                    :key="i">
+                                    <v-img
+                                        :src="img"
+                                        :lazy-src="'<?= base_url('images/no_image.jpg') ?>'"
+                                        aspect-ratio="1"
+                                        cover>
+                                        <v-overlay
+                                            absolute
+                                            v-if="item.active == '0'">
+                                            <v-chip small color="error" dark>
+                                                <v-icon small class="mr-1">mdi-alert-circle-outline</v-icon>
+                                                <?= lang('App.notAvailable'); ?>
+                                            </v-chip>
+                                        </v-overlay>
+
+                                        <v-overlay
+                                            absolute
+                                            v-else-if="item.stock == '0'">
+                                            <v-chip small color="warning" dark>
+                                                <v-icon small class="mr-1">mdi-alert-circle-outline</v-icon>
+                                                <?= lang('App.outofStock'); ?>
+                                            </v-chip>
+                                        </v-overlay>
+                                    </v-img>
+                                </v-carousel-item>
+                            </v-carousel>
                             <v-card-title class="subtitle-1 font-weight-medium">
                                 <a link :href="'<?= base_url(); ?>' + item.category_slug + '/' + item.slug" class="text-decoration-none" :title="item.product_name" :alt="item.product_name">{{ item.product_name }}</a>
                             </v-card-title>
@@ -232,6 +303,7 @@
     // Initial Data
     dataVue = {
         ...dataVue,
+        heroReady: false,
         dialog: false,
         products: [],
         pageCount: 0,
@@ -280,6 +352,9 @@
     // Vue Created
     // Created: Dipanggil secara sinkron setelah instance dibuat
     createdVue = function() {
+        setTimeout(() => {
+            this.heroReady = true
+        }, 2000)
         this.getProducts();
         this.getCategory();
         this.getArticles();
@@ -316,6 +391,14 @@
     // Methods: Metode-metode yang kemudian digabung ke dalam Vue instance
     methodsVue = {
         ...methodsVue,
+        // Format Ribuan Rupiah versi 2
+        Ribuan(key) {
+            const format = key.toString().split('').reverse().join('');
+            const convert = format.match(/\d{1,3}/g);
+            const rupiah = 'Rp' + convert.join('.').split('').reverse().join('');
+            return rupiah;
+        },
+
         // Toggle Select All
         toggle() {
             this.$nextTick(() => {
@@ -400,6 +483,25 @@
                 })
         },
 
+        productImages: function(item) {
+            let base = '<?= base_url(); ?>'
+            let noImage = '<?= base_url('images/no_image.jpg') ?>'
+
+            let images = [
+                item.media_path,
+                item.media_path1,
+                item.media_path2,
+                item.media_path3,
+                item.media_path4
+            ].filter(img => img) // buang null
+
+            if (images.length === 0) {
+                return [noImage]
+            }
+
+            return images.map(img => base + img)
+        },
+
         // Save Cart
         saveCart: function(item) {
             this.loading = true;
@@ -478,7 +580,7 @@
 
         // send WhatsApp (Wa.me)
         sendWhatsApp: function(item) {
-            let encoded = encodeURIComponent('<?= $wa_text; ?> ' + item.category_name + ': ' + item.product_name);
+            let encoded = encodeURIComponent('<?= $wa_text; ?> ' + item.category_name + ': ' + item.product_name + '. Harga: ' + this.Ribuan(item.product_price));
             setTimeout(() => window.location.href = `https://wa.me/<?= $telepon; ?>?text=${encoded}`, 100);
         },
 

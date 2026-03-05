@@ -1,15 +1,12 @@
 <?php
 // Memanggil library
-use App\Libraries\Settings;
-use App\Libraries\Language;
-
-$language = new Language();
+$language = new \App\Libraries\Language();
 $request = \Config\Services::request();
 $agent = $request->getUserAgent();
 $isMobile = $agent->getMobile();
 
 $uri = new \CodeIgniter\HTTP\URI(current_url());
-$setting = new Settings();
+$setting = new \App\Libraries\Settings();
 $appName = $setting->info['app_name'];
 $appDesc = $setting->info['app_description'];
 $snackbarsPosition = $setting->info['snackbars_position'];
@@ -29,7 +26,7 @@ Website: https://itshop.biz.id
 Toko Online: ITSHOP Purwokerto (Tokopedia.com/itshoppwt, Shopee.co.id/itshoppwt, Toco.id/store/itshop-purwokerto)
 Dibuat oleh: Hari Wicaksono, S.Kom
 Created: 11-2021
-Modified: 07-2023
+Modified: 03-2026
 -->
 <!DOCTYPE html>
 <html>
@@ -57,6 +54,7 @@ Modified: 07-2023
     <link href="<?= base_url('assets/css/materialdesignicons.min.css') ?>" rel="stylesheet">
     <link href="<?= base_url('assets/css/vuetify.min.css') ?>" rel="stylesheet">
     <link href="<?= base_url('assets/css/styles.css') ?>" rel="stylesheet">
+    <?= $this->renderSection('style') ?>
     <?= $this->renderSection('opengraph') ?>
 </head>
 
