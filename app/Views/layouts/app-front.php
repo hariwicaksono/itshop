@@ -246,12 +246,11 @@ Modified: 03-2026
                                 <v-col>
                                     <h2 class="font-weight-medium subheading mb-3"><?= lang('App.aboutUs'); ?>:</h2>
                                     <h2><?= $appName; ?></h2>
-                                    <h3 class="font-weight-regular"><?= $companyNama; ?></h3>
                                     <p><?= $companyAlamat; ?>, Indonesia</p>
-                                    <h3 class="font-weight-medium subheading mb-2 mt-3"><?= lang('App.contactUs'); ?>: </h3>
+                                    <h3 class="font-weight-medium subheading mb-3"><?= lang('App.contactUs'); ?>: </h3>
                                     <p>Email 1: <?= $companyEmail1; ?> <br />
                                         Email 2: <?= $companyEmail2; ?></p>
-                                    Telp/WA: <v-btn small rounded link elevation="0" href="https://wa.me/<?= $companyTelp; ?>"><v-icon small color="green">mdi-whatsapp</v-icon> Message us</v-btn><br />
+                                    Telp/WA: <v-btn color="success" rounded link elevation="0" href="https://wa.me/<?= $companyTelp; ?>"><v-icon>mdi-whatsapp</v-icon> Message us</v-btn><br />
                                     <h3 class="font-weight-medium subheading mb-2 mt-3">Jam Kerja: </h3>
                                     <p>Office: Senin - Jum'at: 09.00 - 16.00 WIB, Sabtu - Minggu: Libur<br />
                                         Pengiriman: Buka 24 Jam</p>
