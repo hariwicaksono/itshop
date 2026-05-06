@@ -61,7 +61,7 @@
 
                     <v-row class="hero-stats" justify="center">
                         <v-col cols="4">
-                            <h2 class="text-h4 font-weight-bold">1672+</h2>
+                            <h2 class="text-h4 font-weight-bold">1675+</h2>
                             <span>Terjual/Ulasan</span>
                         </v-col>
                         <v-col cols="4">
