@@ -9,6 +9,7 @@ use App\Modules\Category\Models\CategoryModel;
 $routes->get('/', 'Home::index');
 $routes->get('/lang/{locale}', 'Home::setLanguage');
 $routes->get('sitemap.xml', 'Home::sitemap');
+//$routes->get('test', 'Home::test');
 
 //Routes Detail Produk tampil sesuai Nama Category
 $catModel = new CategoryModel();
@@ -30,6 +31,7 @@ $routes->group('member', ['filter' => 'auth'], function ($routes) {
 	$routes->get('/', 'Member::index');
 	$routes->get('dashboard', 'Member::index');
 	$routes->get('order-list', 'Member::order');
+	$routes->get('order-list/payment', 'Member::orderPayment');
 	$routes->get('profile', 'Member::profile');
 });
 
