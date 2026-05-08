@@ -51,8 +51,7 @@ class CartModel extends Model
         $this->join("media m4", "m4.media_id = p.product_image4", "left");
         $this->join("category c", "c.category_id = p.category_id");
         $this->orderBy("{$this->table}.cart_id", "ASC");
-        $query = $this->findAll();
-        return $query;
+        return $this->findAll();
     }
 
     public function getUserCart($userid = null, $where = false)
@@ -70,8 +69,23 @@ class CartModel extends Model
             $this->where("{$this->table}.order_id", null);
         }
         $this->orderBy("{$this->table}.cart_id", "ASC");
-        $query = $this->findAll();
-        return $query;
+        return $this->findAll();
+    }
+
+    public function getUserCartByOrderId($userid = null, $where = null)
+    {
+        $this->select("{$this->table}.*, p.product_code, p.product_name, p.product_price, p.product_price_normal, m.media_path, m1.media_path as media_path1,  m2.media_path as media_path2, m3.media_path as media_path3,  m4.media_path as media_path4, p.slug, c.category_name, c.category_slug");
+        $this->join("products p", "p.product_id = {$this->table}.product_id");
+        $this->join("media m", "m.media_id = p.product_image", "left");
+        $this->join("media m1", "m1.media_id = p.product_image1", "left");
+        $this->join("media m2", "m2.media_id = p.product_image2", "left");
+        $this->join("media m3", "m3.media_id = p.product_image3", "left");
+        $this->join("media m4", "m4.media_id = p.product_image4", "left");
+        $this->join("category c", "c.category_id = p.category_id");
+        $this->where("{$this->table}.user_id", $userid);
+        $this->where("{$this->table}.order_id", $where);
+        $this->orderBy("{$this->table}.cart_id", "ASC");
+        return $this->findAll();
     }
 
     public function countUserCart($userid = null)
@@ -97,7 +111,6 @@ class CartModel extends Model
         $this->join("payment py", "py.payment_id = o.payment_id");
         $this->join("shipment sh", "sh.shipment_id = o.shipment_id");
         $this->where("{$this->table}.order_id", $id);
-        $query = $this->findAll();
-        return $query;
+        return $this->findAll();
     }
 }

@@ -110,6 +110,7 @@ return [
     'newPassword' => 'Create New Password ',
 
     //Cart & Order
+    'orderPending' => 'Order Pending',
     'orderSuccess' => 'Order Success',
     'noOrder' => 'Invoice Number',
     'order' => 'Order',
@@ -137,5 +138,7 @@ return [
     'cod' => 'COD',
     'send' => 'Send',
     'sent' => 'Sent',
-    'trackOrders' => 'Track Orders'
+    'trackOrders' => 'Track Orders',
+    'cancel' => 'Cancel',
+    'confirmCancelOrder' => 'Are you sure you want to cancel the status of this order?'
 ];

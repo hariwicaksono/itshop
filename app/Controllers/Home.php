@@ -39,6 +39,39 @@ class Home extends BaseController
 		]);
 	}
 
+	public function test(): string
+	{
+		helper('email');
+		$order_id = "123";
+		$email = $this->setting->info['company_email2'];
+		$dataEmail = [
+			'no_order' => "123",
+			'created_at' => date('Y-m-d H:i:s'),
+			'email' => "hariwicaksono87@gmail.com",
+			'phone' => "628123456789",
+			'qty' => "1",
+			'total' => "100",
+			'note' => "test",
+		];
+		// Send Email
+		sendEmail("Pesanan Baru #$order_id Siap Dikirim", $email, view('App\Modules\Order\Views\email/order_new_pg', $dataEmail));
+
+		//$mail = service('email');
+		//$mail->setFrom('info@itshop.biz.id', 'ITSHOP.biz.id');
+		//$mail->setTo($email);
+		//$mail->setSubject('Email Test');
+		//$mail->setMessage('Testing the email class.');
+		//$mail->send();
+
+		return view('welcome_message', [
+			'title' => $this->setting->info['title_home'],
+			'app_name' => $this->setting->info['app_name'],
+			'company_name' => $this->setting->info['company_nama'],
+			'telepon' => $this->setting->info['company_telepon'],
+			'wa_text' => $this->setting->info['wa_text'],
+		]);
+	}
+
 	public function show($id = null)
 	{
 		$find = $this->product->where('slug', $id)->first();

@@ -50,7 +50,7 @@
             <v-data-table :headers="dataTable" :items="data" :options.sync="options" :server-items-length="totalData" :items-per-page="10" :loading="loading">
                 <template v-slot:item="{ item, isSelected, select}">
                     <tr>
-                        <td>{{item.no_order}}</td>
+                        <td><a @click="showOrder(item)">{{item.no_order}}</a></td>
                         <td>{{item.first_name}} {{item.last_name}}<br />{{item.email}}<br />{{item.phone}}</td>
                         <td>{{item.created_at}}</td>
                         <td>{{RibuanLocale(item.total)}}</td>
@@ -65,11 +65,14 @@
                             <v-select v-model="item.status_payment" name="status_payment" :items="list_payment" item-text="label" item-value="value" label="Select Status Payment" single-line @change="setStatusPayment(item)"></v-select>
                         </td>
                         <td>
-                            <v-btn icon color="primary" class="mr-2" @click="showOrder(item)" title="Detail" alt="Detail">
+                            <!-- <v-btn icon color="primary" @click="showOrder(item)" title="Detail" alt="Detail">
                                 <v-icon>mdi-information-outline</v-icon>
-                            </v-btn>
+                            </v-btn><br /> -->
                             <v-btn icon link :href="'<?= base_url('admin/orders/invoice/'); ?>' + item.no_order" target="_blank">
                                 <v-icon>mdi-printer</v-icon>
+                            </v-btn><br />
+                            <v-btn icon @click="deleteItem(item)" title="Delete" alt="Delete" :disabled="item.status == '2'">
+                                <v-icon color="red">mdi-delete</v-icon>
                             </v-btn>
                         </td>
                     </tr>
@@ -223,7 +226,7 @@
                     </v-form>
                     <v-btn color="primary" @click="updateLinkGdrive" elevation="1" :loading="loading1"><v-icon>mdi-content-save</v-icon> <?= lang('App.save'); ?></v-btn>
                     <v-spacer></v-spacer>
-                    <v-btn small color="success" outlined @click="modalTrackingOpen" class="py-4" elevation="1">
+                    <v-btn small color="primary" outlined @click="modalTrackingOpen" class="py-4" elevation="1">
                         <?= lang('App.trackOrders') ?>
                     </v-btn>
                 </v-card-actions>
@@ -392,6 +395,31 @@
 </template>
 <!-- End Modal Add -->
 
+<!-- Modal Delete Order -->
+<template>
+    <v-row justify="center">
+        <v-dialog v-model="modalDelete" persistent max-width="600px">
+            <v-card class="pa-2">
+                <v-card-title>
+                    <v-icon color="error" class="mr-2" x-large>mdi-alert-octagon</v-icon> <?= lang('App.confirm'); ?> <?= lang('App.delete'); ?>
+                </v-card-title>
+                <v-card-text>
+                    <div class="mt-3 py-4">
+                        <h2 class="font-weight-regular"><?= lang('App.delConfirm') ?></h2>
+                    </div>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn large text @click="modalDelete = false"><?= lang('App.no') ?></v-btn>
+                    <v-btn large color="error" dark @click="deleteOrder" :loading="loading"><?= lang('App.yes') ?></v-btn>
+                    <v-spacer></v-spacer>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+    </v-row>
+</template>
+<!-- End Modal Delete Order -->
+
 <?php $this->endSection("content") ?>
 
 <?php $this->section("js") ?>
@@ -512,6 +540,7 @@
         modalOrder: false,
         modalConfirm: false,
         modalTracking: false,
+        modalDelete: false,
         bank: "",
         nama: "",
         norekening: "",
@@ -551,6 +580,7 @@
         passwordError: "",
         verify: randPass,
         verifyError: "",
+        orderIdDelete: ""
     }
 
     createdVue = function() {
@@ -1303,6 +1333,47 @@
                     console.log(err.response);
                     this.loading5 = false;
                     var error = err.response
+                    if (error.data.expired == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = error.data.message;
+                        setTimeout(() => window.location.href = error.data.data.url, 1000);
+                    }
+                })
+        },
+
+        // Get Item Delete Order
+        deleteItem: function(item) {
+            this.modalDelete = true;
+            this.orderIdDelete = item.order_id;
+        },
+
+        // Delete Order
+        deleteOrder: function() {
+            this.loading = true;
+            axios.delete(`<?= base_url() ?>api/order/delete/${this.orderIdDelete}`, options)
+                .then(res => {
+                    // handle success
+                    this.loading = false;
+                    var data = res.data;
+                    if (data.status == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = data.message;
+                        this.getOrder();
+                        this.getOrderCount();
+                        this.modalDelete = false;
+                    } else {
+                        this.notifType = "error";
+                        this.notifMessage = data.message;
+                        this.snackbar = true;
+                        this.snackbarMessage = data.message;
+                        this.modalDelete = true;
+                    }
+                })
+                .catch(err => {
+                    // handle error
+                    this.loading = true;
+                    console.log(err);
+                    var error = err.response;
                     if (error.data.expired == true) {
                         this.snackbar = true;
                         this.snackbarMessage = error.data.message;

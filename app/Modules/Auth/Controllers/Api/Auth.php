@@ -8,6 +8,7 @@ use App\Modules\Log\Models\LogModel;
 use App\Modules\Log\Models\LogUserModel;
 use CodeIgniter\HTTP\Response;
 use CodeIgniter\HTTP\ResponseInterface;
+use App\Libraries\Settings;
 use Exception;
 use ReflectionException;
 
@@ -17,11 +18,13 @@ class Auth extends BaseControllerApi
     protected $modelName    = UserModel::class;
     protected $log;
     protected $loginLog;
+    protected $setting;
 
     public function __construct()
     {
         $this->log = new LogModel();
         $this->loginLog = new LogUserModel();
+        $this->setting = new Settings();
     }
 
     /**
@@ -63,7 +66,11 @@ class Auth extends BaseControllerApi
 
         if ($this->model->save($data)) {
             helper('email');
+            // Kirim Email ke Pengguna untuk Verifikasi Akun
             sendEmail("Verifikasi Akun", $input['email'], view('App\Modules\Auth\Views\email/verify', $data));
+            // Kirim Email ke Admin untuk Notifikasi Pendaftaran Akun Baru
+            $email = $this->setting->info['company_email2'];
+            sendEmail("Ada Pendaftaran Akun Baru", $email, view('App\Modules\Auth\Views\email/notify', $data));
             return $this->getResponse(
                 [
                     'status' => true,

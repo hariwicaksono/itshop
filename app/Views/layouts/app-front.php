@@ -358,7 +358,9 @@ Modified: 03-2026
         }
         var mountedVue = function() {
             this.getCartCount();
-            this.getOrderCount();
+            <?php if (!empty(session()->get('username'))) : ?>
+                this.getOrderCount();
+            <?php endif; ?>
             setTimeout(() => this.pushNewOrder(), 4000);
             setTimeout(() => this.startNotification(), 5000);
             const theme = localStorage.getItem("dark_theme");

@@ -2,6 +2,11 @@
 <?php $this->section("content"); ?>
 <template>
     <h1 class="mb-2 font-weight-medium"><?= lang('App.orderList') ?></h1>
+    <?php if (session()->getFlashdata('error')) { ?>
+        <v-alert type="error" dismissible v-model="alert">
+            <?= session()->getFlashdata('error') ?>
+        </v-alert>
+    <?php } ?>
     <v-card>
         <v-tabs v-model="tabsMenu" color="primary">
             <v-tab href="#tab-semua">All <?= lang('App.order') ?></v-tab>
@@ -59,10 +64,15 @@
                                                 <v-icon color="error">mdi-alert-octagon</v-icon> <?= lang('App.confirm') ?>
                                             </v-btn>
                                         </span>
-                                        <span v-else-if="item.payment_id == 1 && item.status == 2">
+                                        <span v-else-if="item.payment_id == 1 && item.status == 0">
+                                            <v-btn text :href="`<?= base_url('member/order-list/payment?no_order=') ?>` + item.no_order" target="_blank" link elevation="1">
+                                                <v-icon color="error">mdi-alert-octagon</v-icon> <?= lang('App.payment') ?>
+                                            </v-btn>
+                                        </span>
+                                        <span v-else-if="item.status == 1 || item.status == 2 && item.status_payment == 'settlement'">
                                             <v-icon color="success">mdi-check-circle</v-icon>
                                         </span>
-                                        <span v-else-if="item.payment_id == 1 && item.status == 3">
+                                        <span v-else-if="item.status == 3 && item.status_payment == 'canceled'">
                                             <v-icon color="error">mdi-alert-circle</v-icon>
                                         </span>
                                         <p class="text-subtitle-2 mb-0"><strong>Total <?= lang('App.order'); ?></strong><br />
@@ -73,10 +83,29 @@
                             </v-card-text>
                             <v-divider></v-divider>
                             <v-card-actions>
+                                <v-textarea rows="1" label="Link Google Drive" v-model="item.link_gdrive" class="mr-3" @focus="$event.target.select()" hint="Press CTRL+C to Copy" persistent-hint append-outer-icon="mdi-open-in-new" @click:append-outer="openLink(item)" v-show="item.status == 2"></v-textarea>
                                 <v-spacer></v-spacer>
                                 <v-btn small color="primary" outlined @click="modalTrackingOpen(item)" class="py-4" elevation="1">
                                     <?= lang('App.trackOrders') ?>
                                 </v-btn>
+                                <v-menu right bottom min-width="200px" v-if="item.status == 0">
+                                    <template v-slot:activator="{ on, attrs }">
+                                        <v-btn icon v-bind="attrs" v-on="on" class="ms-3">
+                                            <v-icon>mdi-dots-vertical</v-icon>
+                                        </v-btn>
+                                    </template>
+
+                                    <v-list dense>
+                                        <v-list-item @click="setStatus(item)" v-if="item.status == 0">
+                                            <v-list-item-icon class="me-3">
+                                                <v-icon>mdi-delete-outline</v-icon>
+                                            </v-list-item-icon>
+                                            <v-list-item-content>
+                                                <v-list-item-title><?= lang('App.cancel') ?></v-list-item-title>
+                                            </v-list-item-content>
+                                        </v-list-item>
+                                    </v-list>
+                                </v-menu>
                             </v-card-actions>
                         </v-card>
                     </v-card-text>
@@ -130,6 +159,11 @@
                                                 <v-icon color="error">mdi-alert-octagon</v-icon> <?= lang('App.confirm') ?>
                                             </v-btn>
                                         </span>
+                                        <span v-else-if="item.payment_id == 1 && item.status == 0">
+                                            <v-btn text :href="`<?= base_url('member/order-list/payment?no_order=') ?>` + item.no_order" target="_blank" link elevation="1">
+                                                <v-icon color="error">mdi-alert-octagon</v-icon> <?= lang('App.payment') ?>
+                                            </v-btn>
+                                        </span>
                                         <p class="text-subtitle-2 mb-0"><strong>Total <?= lang('App.order'); ?></strong><br />
                                             <span class="text-h6"><strong>{{RibuanLocale(item.total)}}</strong></span>
                                         </p>
@@ -142,6 +176,24 @@
                                 <v-btn small color="primary" outlined @click="modalTrackingOpen(item)" class="py-4" elevation="1">
                                     <?= lang('App.trackOrders') ?>
                                 </v-btn>
+                                <v-menu right bottom min-width="200px">
+                                    <template v-slot:activator="{ on, attrs }">
+                                        <v-btn icon v-bind="attrs" v-on="on" class="ms-3">
+                                            <v-icon>mdi-dots-vertical</v-icon>
+                                        </v-btn>
+                                    </template>
+
+                                    <v-list dense>
+                                        <v-list-item @click="setStatus(item)" v-if="item.status == 0">
+                                            <v-list-item-icon class="me-3">
+                                                <v-icon>mdi-delete-outline</v-icon>
+                                            </v-list-item-icon>
+                                            <v-list-item-content>
+                                                <v-list-item-title><?= lang('App.cancel') ?></v-list-item-title>
+                                            </v-list-item-content>
+                                        </v-list-item>
+                                    </v-list>
+                                </v-menu>
                             </v-card-actions>
                         </v-card>
                     </v-card-text>
@@ -477,6 +529,26 @@
 </template>
 <!-- End Modal Tracking -->
 
+<v-dialog v-model="dialogConfirm" max-width="420">
+    <v-card>
+        <v-card-title class="headline">
+            <?= lang('App.confirm') ?>
+        </v-card-title>
+        <v-card-text class="text-subtitle-1">
+            <?= lang('App.confirmCancelOrder') ?>
+        </v-card-text>
+        <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn text color="grey" @click="dialogConfirm = false">
+                <?= lang('App.no') ?>
+            </v-btn>
+            <v-btn color="red" dark @click="confirmSetStatus" :loading="loading">
+                <?= lang('App.yes') ?>
+            </v-btn>
+        </v-card-actions>
+    </v-card>
+</v-dialog>
+
 <?php $this->endSection("content") ?>
 
 <?php $this->section("js") ?>
@@ -513,7 +585,10 @@
         nominalError: "",
         dataPaymentConfirm: [],
         dataTracking: [],
-        linkGdrive: ""
+        linkGdrive: "",
+        status: "",
+        dialogConfirm: false,
+        selectedItem: null,
     }
 
     createdVue = function() {
@@ -830,7 +905,42 @@
         openLink(item) {
             if (item.link_gdrive != null) {
                 window.open(item.link_gdrive, '_blank');
-            } 
+            }
+        },
+
+        setStatus: function(item) {
+            this.selectedItem = item;
+            this.dialogConfirm = true;
+        },
+
+        confirmSetStatus: function() {
+            this.loading = true;
+            this.idOrder = this.selectedItem.order_id;
+            this.status = 3;
+            axios.put(`<?= base_url() ?>api/order/setstatus/${this.idOrder}`, {
+                    status: this.status,
+                }, options)
+                .then(res => {
+                    this.dialogConfirm = false;
+                    this.loading = false;
+                    const data = res.data;
+                    if (data.status === true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = data.message;
+                        this.getOrders();
+                    }
+                })
+                .catch(err => {
+                    this.loading = false;
+                    const error = err.response;
+                    if (error?.data?.expired === true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = error.data.message;
+                        setTimeout(() => {
+                            window.location.href = error.data.data.url;
+                        }, 1000);
+                    }
+                });
         },
     }
 </script>

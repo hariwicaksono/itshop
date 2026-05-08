@@ -46,30 +46,12 @@ function Ribuan($angka)
 
 <?php $this->section("js") ?>
 <script>
-    computedVue = {
-        ...computedVue,
-    }
-    createdVue = function() {
-
-    }
-    watchVue = {
-        ...watchVue,
-
-    }
-    dataVue = {
-        ...dataVue,
-
-    }
     const token = JSON.parse(localStorage.getItem('access_token'));
     const options = {
         headers: {
             "Authorization": `Bearer ${token}`,
             "Content-Type": "application/json"
         }
-    }
-    methodsVue = {
-        ...methodsVue,
-
     }
 </script>
 

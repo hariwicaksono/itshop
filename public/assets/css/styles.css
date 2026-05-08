@@ -170,26 +170,22 @@
   }
 }
 
-/* width */
-::-webkit-scrollbar {
+/* ::-webkit-scrollbar {
   width: 4px;
   height: 4px;
 }
 
-/* Track */
 ::-webkit-scrollbar-track {
   background: #E0E0E0;
 }
 
-/* Handle */
 ::-webkit-scrollbar-thumb {
   background: rgba(117, 117, 117, 0.7);
 }
 
-/* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(117, 117, 117, 1);
-}
+} */
 
 .v-data-table>.v-data-table__wrapper>table>thead>tr>th {
   font-size: 14px;

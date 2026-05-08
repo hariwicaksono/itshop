@@ -57,7 +57,7 @@
 
 <?php $this->section("js") ?>
 <!-- TODO: Remove ".sandbox" from script src URL for production environment. Also input your client key in "data-client-key" -->
-<script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="<?= $clientKey; ?>"></script>
+<script src="https://app.midtrans.com/snap/snap.js" data-client-key="<?= $clientKey; ?>"></script>
 <script>
     const token = JSON.parse(localStorage.getItem('access_token'));
     const options = {
@@ -67,33 +67,25 @@
         }
     }
 
-    computedVue = {
-        ...computedVue,
-    }
-
     dataVue = {
         ...dataVue,
         dialog: false,
         carts: [],
         note: "",
         tbheader: [{
-                text: '<?= lang('App.productName'); ?>',
-                value: 'product_name'
-            },
-            {
-                text: 'Qty',
-                value: 'qty'
-            },
-            {
-                text: 'Subtotal',
-                value: 'total'
-            },
-            {
-                text: '',
-                value: 'actions',
-                sortable: false
-            },
-        ],
+            text: '<?= lang('App.productName'); ?>',
+            value: 'product_name'
+        }, {
+            text: 'Qty',
+            value: 'qty'
+        }, {
+            text: 'Subtotal',
+            value: 'total'
+        }, {
+            text: '',
+            value: 'actions',
+            sortable: false
+        }, ],
         no_order: "<?= $noOrder; ?>",
         total: "<?= $total; ?>",
         grandtotal: "",

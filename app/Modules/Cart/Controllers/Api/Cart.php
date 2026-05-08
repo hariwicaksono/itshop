@@ -163,7 +163,6 @@ class Cart extends BaseControllerApi
 
     public function update($id = NULL)
     {
-        $id = $this->model->find($id);
         $input = $this->getRequestInput();
         $product_id = $input['product_id'];
         $qty = $input['qty'];

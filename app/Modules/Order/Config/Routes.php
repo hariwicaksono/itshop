@@ -31,4 +31,5 @@ $routes->group('api', ['filter' => 'jwtauth', 'namespace' => 'App\Modules\Order\
 	$routes->get('order/count/pending_processed', 'Order::countUserOrder');
 	$routes->put('order/update_link_gdrive/(:segment)', 'Order::updateLinkGdrive/$1');
 	$routes->post('order/save_manual', 'Order::create1');
+	$routes->delete('order/delete/(:segment)', 'Order::delete/$1');
 });

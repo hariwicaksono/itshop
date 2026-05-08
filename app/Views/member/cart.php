@@ -34,7 +34,7 @@
                     </td>
                 </tr>
             </template>
-           <!--  <template slot="footer.prepend">
+            <!--  <template slot="footer.prepend">
                 <v-text-field label="<?= lang('App.note') ?> Order *" v-model="note" class="mt-3  mr-3" hint="Cantumkan disini alamat email Gmail Anda" persistent-hint></v-text-field>
             </template> -->
         </v-data-table>
@@ -105,19 +105,14 @@
 
 <?php $this->section("js") ?>
 <script>
-    computedVue = {
-        ...computedVue,
+    const token = JSON.parse(localStorage.getItem('access_token'));
+    const options = {
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+        }
     }
-    createdVue = function() {
-        this.getUserCart();
-    }
-    watchVue = {
-        ...watchVue,
-        select_payment: function() {
-            //let RandNumber = Math.floor(Math.random() * 100);
-            this.grandtotal = this.total;
-        },
-    }
+
     dataVue = {
         ...dataVue,
         dialog: false,
@@ -149,13 +144,19 @@
         list_payment: [],
         select_payment: null,
     }
-    const token = JSON.parse(localStorage.getItem('access_token'));
-    const options = {
-        headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json"
-        }
+
+    createdVue = function() {
+        this.getUserCart();
     }
+
+    watchVue = {
+        ...watchVue,
+        select_payment: function() {
+            //let RandNumber = Math.floor(Math.random() * 100);
+            this.grandtotal = this.total;
+        },
+    }
+    
     methodsVue = {
         ...methodsVue,
         goCheckout: function() {

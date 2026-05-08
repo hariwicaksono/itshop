@@ -53,8 +53,7 @@ class Product extends BaseControllerApi
     public function create()
     {
         $uuid = Uuid::uuid4();
-        $suuid = new ShortUUID();
-
+        
         $rules = [
             'category_id' => [
                 'rules'  => 'required',
@@ -91,7 +90,7 @@ class Product extends BaseControllerApi
             }
             $data = [
                 'product_id' => strtotime(Time::now()),
-                'product_uuid' => $suuid->encode($uuid),
+                'product_uuid' => $uuid->toString(),
                 'category_id' => $json->category_id,
                 'product_code' => $json->product_code,
                 'product_name' => $json->product_name,
@@ -124,7 +123,7 @@ class Product extends BaseControllerApi
             }
             $data = [
                 'product_id' => strtotime(Time::now()),
-                'product_uuid' => $suuid->encode($uuid),
+                'product_uuid' => $uuid->toString(),
                 'category_id' => $this->request->getPost('category_id'),
                 'product_code' => $this->request->getPost('product_code'),
                 'product_name' => $this->request->getPost('product_name'),

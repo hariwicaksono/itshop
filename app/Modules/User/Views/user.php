@@ -17,9 +17,8 @@
             <v-data-table :headers="dataTable" :items="data" :options.sync="options" :server-items-length="totalData" :items-per-page="10" :loading="loading">
                 <template v-slot:item="{ item }">
                     <tr>
-                        <td width="300"><strong>{{item.first_name}} {{item.last_name}}</strong><br /><em>{{item.biography}}</em></td>
-                        <td>{{item.email}}<br /><em>{{item.username}}</em></td>
-                        <td>{{item.company}}</td>
+                        <td width="250"><strong>{{item.first_name}} {{item.last_name}}</strong><br /><em>{{item.biography}}</em></td>
+                        <td>{{item.email}}<br /><em>{{item.username}}</em><br />{{item.company}}</td>
                         <td>{{item.phone}}</td>
                         <td>
                             {{item.alamat}}
@@ -36,7 +35,8 @@
                         <td>
                             <v-switch v-model="item.active" name="active" false-value="0" true-value="1" color="success" @click="setActive(item)" :disabled="item.username == 'admin'"></v-switch>
                         </td>
-                        <td width="200">
+                        <td>{{item.created_at}}</td>
+                        <td width="170">
                             <v-btn icon color="primary" class="mr-2" @click="editItem(item)" title="Edit" alt="Edit">
                                 <v-icon>mdi-pencil</v-icon>
                             </v-btn>
@@ -275,9 +275,6 @@
             text: 'Email/Username',
             value: 'email'
         }, {
-            text: 'Company',
-            value: 'company'
-        }, {
             text: 'Telepon',
             value: 'phone'
         }, {
@@ -289,6 +286,9 @@
         }, {
             text: '<?= lang("App.active") ?>',
             value: 'active'
+        }, {
+            text: 'Created',
+            value: 'created_at'
         }, {
             text: '<?= lang('App.action') ?>',
             value: 'actions',

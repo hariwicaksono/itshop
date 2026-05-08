@@ -38,7 +38,7 @@ class Order extends BaseControllerApi
         $this->log = new LogModel();
         $this->setting = new Settings();
 
-        //Options Pusher
+        // Options Pusher
         $options = array(
             'cluster' => 'ap1',
             'useTLS' => true
@@ -188,17 +188,20 @@ class Order extends BaseControllerApi
                 array_push($arrStock, $stock);
             }
             $dataStock = $arrStock;
-            $this->product->updateBatch($dataStock, 'product_id');
+            $db = \Config\Database::connect();
+            $db->table('products')
+                ->updateBatch($dataStock, 'product_id');
+            //$this->product->updateBatch($dataStock, 'product_id');
 
-            //Simpan data Tracking
+            // Simpan data Tracking
             if ($order_id) {
                 $arrTracking = [
                     ["order_id" => $order_id, "tracking_information" => "Pesanan berhasil dibuat", "created_at" => Time::now(), "updated_at" => null],
-                    ["order_id" => $order_id, "tracking_information" => "Menunggu pembayaran dan konfirmasi", "created_at" => Time::now()->addMinutes(1), "updated_at" => null]
+                    ["order_id" => $order_id, "tracking_information" => "Menunggu pembayaran dan konfirmasi", "created_at" => Time::now()->addSeconds(10), "updated_at" => null]
                 ];
                 $this->tracking->insertBatch($arrTracking);
 
-                //Simpan data Log
+                // Simpan data Log
                 $this->log->save(['keterangan' => session('first_name') . ' ' . session('last_name') . ' (' . session('email') . ') ' . strtolower(lang('App.do')) . ' Create Pesanan Baru ID: ' . $order_id]);
             }
 
@@ -218,7 +221,7 @@ class Order extends BaseControllerApi
                 sendEmail("Pesanan Baru #$no_order Siap Dikirim", $email, view('App\Modules\Order\Views\email/order_new_tf', $dataEmail));
             }
 
-            //Pusher
+            // Pusher
             if (@fsockopen('www.google.com', 80)) {
                 if ((env('PUSHER_APP_KEY') != "") && (env('PUSHER_APP_SECRET') != "") && (env('PUSHER_APP_ID') != "")) {
                     $push['message'] = lang('App.refreshSuccess');
@@ -278,9 +281,30 @@ class Order extends BaseControllerApi
 
     public function delete($id = null)
     {
-        $hapus = $this->model->find($id);
-        if ($hapus) {
+        $delete = $this->model->find($id);
+        $cart = $this->cart->where("order_id", $delete['order_id'])->findAll();
+        if ($delete) {
+            // Cari data cart
+            foreach ($cart as $row) {
+                // Cari data productnya
+                $product = $this->product->where('product_id', $row['product_id'])->first();
+                $dataStok = [
+                    'stock' => $product['stock'] + $row['qty'],
+                ];
+                // Update stok productnya
+                $db = \Config\Database::connect();
+                $db->table('products')
+                    ->update($dataStok, ['product_id' => $row['product_id']]);
+
+                // Delete Cart
+                $this->cart->delete($row['cart_id']);
+            }
+            // Hapus order
             $this->model->delete($id);
+
+            // Simpan data Log
+            $this->log->save(['keterangan' => session('first_name') . ' ' . session('last_name') . ' (' . session('email') . ') ' . strtolower(lang('App.do')) . ' Delete Pesanan ID: ' . $id]);
+
             $response = [
                 'status' => true,
                 'message' => lang('App.delSuccess'),
@@ -316,7 +340,7 @@ class Order extends BaseControllerApi
         if ($data > 0) {
             $this->model->update($id, $data);
 
-            //Simpan data Tracking
+            // Simpan data Tracking
             if ($status == '0') {
                 $this->tracking->save(["order_id" => $id, "tracking_information" => "Pesanan berhasil dibuat"]);
             } else if ($status == '1') {
@@ -331,7 +355,7 @@ class Order extends BaseControllerApi
                 $this->tracking->save(["order_id" => $id, "tracking_information" => "Pesanan dibatalkan sistem"]);
             }
 
-            //Simpan data Log
+            // Simpan data Log
             $this->log->save(['keterangan' => session('first_name') . ' ' . session('last_name') . ' (' . session('email') . ') ' . strtolower(lang('App.do')) . ' Update Status Pesanan ID: ' . $id]);
 
             $response = [
@@ -369,7 +393,7 @@ class Order extends BaseControllerApi
         if ($data > 0) {
             $this->model->update($id, $data);
 
-            //Simpan data Tracking
+            // Simpan data Tracking
             if ($status_payment == 'pending') {
                 $this->tracking->save(["order_id" => $id, "tracking_information" => "Menunggu pembayaran dan konfirmasi"]);
             } else if ($status_payment == 'success') {
@@ -380,7 +404,7 @@ class Order extends BaseControllerApi
                 $this->tracking->save(["order_id" => $id, "tracking_information" => "Pesanan dibatalkan sistem"]);
             }
 
-            //Simpan data Log
+            // Simpan data Log
             $this->log->save(['keterangan' => session('first_name') . ' ' . session('last_name') . ' (' . session('email') . ') ' . strtolower(lang('App.do')) . ' Update Status Pembayaran ID: ' . $id]);
 
             $response = [
@@ -471,10 +495,10 @@ class Order extends BaseControllerApi
         } else {
             $this->model->update($id, $data);
 
-            //Simpan data Tracking
+            // Simpan data Tracking
             $this->tracking->save(["order_id" => $id, "tracking_information" => "Link Google Drive sudah dikirimkan oleh Admin"]);
 
-            //Simpan data Log
+            // Simpan data Log
             $this->log->save(['keterangan' => session('first_name') . ' ' . session('last_name') . ' (' . session('email') . ') ' . strtolower(lang('App.do')) . ' Update Link GDrive Pesanan ID: ' . $id]);
 
             $response = [
@@ -576,10 +600,10 @@ class Order extends BaseControllerApi
                 $stock = $product['stock'];
                 $qty = 1;
                 if ($discount == 0) {
-                    $total = $price ;
+                    $cartTotal = $price;
                 } else {
-                    $total = $price-$discount;
-                } 
+                    $cartTotal = $price - $discount;
+                }
 
                 $cart = array(
                     'product_id' => $product_id,
@@ -590,7 +614,7 @@ class Order extends BaseControllerApi
                     'discount_percent' => $discountPersen,
                     'stock' => $stock,
                     'qty' => $qty,
-                    'total' => $total,
+                    'total' => $cartTotal,
                     'order_id' => $order_id,
                 );
                 array_push($arrCart, $cart);
@@ -602,7 +626,7 @@ class Order extends BaseControllerApi
             foreach ($input as $key => $value) {
                 $product_id = $value;
                 $product = $this->product->find($product_id);
-
+                $qty = 1;
                 $stock = array(
                     'product_id' => $product_id,
                     'stock' => $product['stock'] - $qty,
@@ -612,20 +636,20 @@ class Order extends BaseControllerApi
             $dataStock = $arrStock;
             $this->product->updateBatch($dataStock, 'product_id');
 
-            //Simpan data Tracking
+            // Simpan data Tracking
             if ($order_id) {
                 $arrTracking = [
                     ["order_id" => $order_id, "tracking_information" => "Pesanan berhasil dibuat", "created_at" => Time::now(), "updated_at" => null],
-                    ["order_id" => $order_id, "tracking_information" => "Menunggu pembayaran dan konfirmasi", "created_at" => Time::now()->addMinutes(1), "updated_at" => null],
-                    ["order_id" => $order_id, "tracking_information" => "Transaksi telah selesai", "created_at" => Time::now()->addMinutes(2), "updated_at" => null]
+                    ["order_id" => $order_id, "tracking_information" => "Menunggu pembayaran dan konfirmasi", "created_at" => Time::now()->addSeconds(10), "updated_at" => null],
+                    ["order_id" => $order_id, "tracking_information" => "Transaksi telah selesai", "created_at" => Time::now()->addSeconds(20), "updated_at" => null]
                 ];
                 $this->tracking->insertBatch($arrTracking);
 
-                //Simpan data Log
+                // Simpan data Log
                 $this->log->save(['keterangan' => session('first_name') . ' ' . session('last_name') . ' (' . session('email') . ') ' . strtolower(lang('App.do')) . ' Create Pesanan Baru ID: ' . $order_id]);
             }
 
-            //Pusher
+            // Pusher
             if (@fsockopen('www.google.com', 80)) {
                 if ((env('PUSHER_APP_KEY') != "") && (env('PUSHER_APP_SECRET') != "") && (env('PUSHER_APP_ID') != "")) {
                     $push['message'] = lang('App.refreshSuccess');

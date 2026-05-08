@@ -54,7 +54,6 @@ class Member extends BaseController
 
     public function checkoutProcess()
     {
-        
         $userid = $this->session->id;
         $cart = $this->cart->getUserCart($userid);
         $total = $this->cart->sumUserCart($userid);
@@ -63,7 +62,7 @@ class Member extends BaseController
         //$hasil = $query->get()->getRowArray();
         //$last = $hasil['last'] + 1;
         //$no_order = sprintf('%04s', $last);
-       
+
         $no_order = date('ymd') . strtoupper(random_string('alnum', 7));
         //var_dump($total);die;
 
@@ -71,7 +70,7 @@ class Member extends BaseController
         \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
         $clientKey = env('MIDTRANS_CLIENT_KEY');
         // Set to Development/Sandbox Environment (default). Set to true for Production Environment (accept real transaction).
-        \Midtrans\Config::$isProduction = false;
+        \Midtrans\Config::$isProduction = true;
         // Set sanitization on (default)
         \Midtrans\Config::$isSanitized = true;
         // Set 3DS transaction for credit card to true
@@ -89,7 +88,7 @@ class Member extends BaseController
                 'phone' => $this->session->phone,
             ),
         );
-        
+
         $snapToken = \Midtrans\Snap::getSnapToken($params);
 
         return view('member/checkout_process', [
@@ -106,17 +105,17 @@ class Member extends BaseController
         //$input = $this->request->getVar();
         //if ($this->session->id != $input['iduser']) return redirect()->to(base_url('/'));
         //$rules = [
-            //'idorder' => [
-                //'rules'  => 'required',
-                //'errors' => []
-            //],
-            //'iduser' => [
-                //'rules'  => 'required',
-                //'errors' => []
-            //],
+        //'idorder' => [
+        //'rules'  => 'required',
+        //'errors' => []
+        //],
+        //'iduser' => [
+        //'rules'  => 'required',
+        //'errors' => []
+        //],
         //];
         //if (!$this->validate($rules)) {
-            //return redirect()->to(base_url());
+        //return redirect()->to(base_url());
         //}
         $data = [
             'title' => 'Checkout Success',
@@ -160,6 +159,67 @@ class Member extends BaseController
     {
         return view('member/order', [
             'bank' => $this->bank->where('payment_id', 2)->first()
+        ]);
+    }
+
+    public function orderPayment()
+    {
+        $userid = $this->session->id;
+        $input = $this->request->getVar();
+        if (!$input) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        }
+
+        $order = $this->order->where('no_order', $input['no_order'])->first();
+        if (!$order) {
+            return redirect()->back()->with('error', 'Order tidak ditemukan');
+        }
+
+        $isInvalidPayment =
+            $order['payment_id'] != 1 &&
+            $order['status'] != 0 &&
+            $order['status_payment'] !== 'pending';
+
+        if ($isInvalidPayment) {
+            return redirect()->to('/member/order-list')->with('error', 'Order tidak dapat diproses');;
+        }
+
+        $cart = $this->cart->getUserCartByOrderId($userid, $order['order_id']);
+
+        // Set your Merchant Server Key
+        \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
+        $clientKey = env('MIDTRANS_CLIENT_KEY');
+        // Set to Development/Sandbox Environment (default). Set to true for Production Environment (accept real transaction).
+        \Midtrans\Config::$isProduction = true;
+        // Set sanitization on (default)
+        \Midtrans\Config::$isSanitized = true;
+        // Set 3DS transaction for credit card to true
+        \Midtrans\Config::$is3ds = true;
+
+        $params = array(
+            'transaction_details' => array(
+                'order_id' => $input['no_order'],
+                'gross_amount' => $order['total'],
+            ),
+            'customer_details' => array(
+                'first_name' => $this->session->first_name,
+                'last_name' => $this->session->last_name,
+                'email' => $this->session->email,
+                'phone' => $this->session->phone,
+            ),
+        );
+
+        $snapToken = \Midtrans\Snap::getSnapToken($params);
+
+        return view('member/order_payment', [
+            'title' => lang('App.payment') . ' #' . $input['no_order'],
+            'noOrder' => $input['no_order'],
+            'cart' => $cart,
+            'order' => $order,
+            'total' => $order['total'],
+            'clientKey' => $clientKey,
+            'SnapToken' => $snapToken,
+            'params' => $params
         ]);
     }
 }

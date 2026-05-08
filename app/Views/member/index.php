@@ -63,18 +63,5 @@
             "Content-Type": "application/json"
         }
     };
-
-    dataVue = {
-        ...dataVue,
-    }
-
-    createdVue = function() {
-
-    }
-
-    methodsVue = {
-        ...methodsVue,
-
-    }
 </script>
 <?php $this->endSection("js") ?>

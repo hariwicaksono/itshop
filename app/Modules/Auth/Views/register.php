@@ -11,7 +11,7 @@
                         <v-alert v-if="notifType != ''" dense :type="notifType">{{notifMessage}}</v-alert>
                         <v-form v-model="valid" ref="form">
                             <v-text-field v-model="email" :rules="[rules.required, rules.email]" label="E-mail" :error-messages="emailError" outlined required :disabled="submitted"></v-text-field>
-                            <v-text-field type="number" v-model="phone" :rules="[rules.required]" label="Nomor Telepon/WA" :error-messages="phoneError" outlined required :disabled="submitted"></v-text-field>
+                            <v-text-field type="number" v-model="phone" :rules="[rules.required]" label="Nomor Telepon/WA (Format 62)" v-on:keyup="changeNumber" :error-messages="phoneError" outlined required :disabled="submitted"></v-text-field>
                             <v-text-field v-model="password" :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'" :rules="[rules.required, rules.min]" :type="show1 ? 'text' : 'password'" label="Password" hint="<?= lang('App.minChar') ?>" counter @click:append="show1 = !show1" :error-messages="passwordError" outlined :disabled="submitted"></v-text-field>
                             <v-text-field block v-model="verify" :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'" :rules="[rules.required, passwordMatch]" :type="show1 ? 'text' : 'password'" label="Confirm Password" counter @click:append="show1 = !show1" outlined :disabled="submitted"></v-text-field>
                             <v-layout class="mb-5">
@@ -54,6 +54,25 @@
 
     methodsVue = {
         ...methodsVue,
+        changeNumber() {
+            // Buang spasi, +, dan -
+            let cleaned = this.phone.replace(/[\s+-]/g, '');
+
+            // Kalau masih ada leading 0 di depan 62 → hapus
+            // Contoh: 62813 menjadi 62813 (aman)
+            // Contoh: 062813 → jadi 62813
+            if (cleaned.startsWith('0')) {
+                cleaned = '62' + cleaned.substring(1);
+            }
+
+            // Minimal harus '62'
+            if (cleaned.length < 2) {
+                cleaned = '62';
+            }
+
+            this.phone = cleaned;
+        },
+
         submit() {
             this.loading = true;
             axios.post(`<?= base_url() ?>auth/register`, {

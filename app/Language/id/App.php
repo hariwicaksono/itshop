@@ -111,6 +111,7 @@ return [
     'newPassword' => 'Buat Password Baru',
     
     //Cart & Order
+    'orderPending' => 'Pesanan Tertunda',
     'orderSuccess' => 'Pesanan Sukses',
     'noOrder' => 'Nomor Invoice',
     'order' => 'Pesanan',
@@ -138,5 +139,7 @@ return [
     'cod' => 'COD',
     'send' => 'Kirim',
     'sent' => 'Dikirim',
-    'trackOrders' => 'Lacak Pesanan'
+    'trackOrders' => 'Lacak Pesanan',
+    'cancel' => 'Batalkan',
+    'confirmCancelOrder' => 'Apakah Anda yakin ingin membatalkan status order ini?'
 ];

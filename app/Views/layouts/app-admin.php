@@ -257,13 +257,40 @@ Modified: 03-2026
 
                 </v-list>
 
-                <template v-slot:append>
+                <!-- <template v-slot:append>
                     <v-divider></v-divider>
                     <div class="pa-3 text-center text-caption white--text">
                         <img src="<?= base_url('images/') . $imgLogo; ?>" alt="Logo" width="35">
                     </div>
+                </template> -->
+                <template v-slot:append>
+                    <v-divider></v-divider>
+                    <v-menu bottom min-width="200px" rounded offset-y>
+                        <template v-slot:activator="{ on }">
+                            <v-btn icon x-large v-on="on">
+                                <v-avatar color="primary" size="36">
+                                    <span class="white--text text-h6">
+                                        <?= substr(session()->get('first_name'), 0, 1); ?><?= substr(session()->get('last_name'), 0, 1); ?>
+                                    </span>
+                                </v-avatar>
+                            </v-btn>
+                        </template>
+                        <v-card>
+                            <v-list-item-content class="justify-center">
+                                <div class="mx-auto text-center">
+                                    <v-btn depressed rounded text>
+                                        <?= session()->get('first_name'); ?> <?= session()->get('last_name'); ?><br />
+                                        <?= session()->get('email') ?>
+                                    </v-btn>
+                                    <v-divider class="my-3"></v-divider>
+                                    <v-btn link href="<?= base_url('logout'); ?>" @click="localStorage.removeItem('access_token')" depressed rounded text>
+                                        <v-icon>mdi-logout</v-icon> Logout
+                                    </v-btn>
+                                </div>
+                            </v-list-item-content>
+                        </v-card>
+                    </v-menu>
                 </template>
-
             </v-navigation-drawer>
 
             <v-navigation-drawer v-model="rightMenu" app right bottom temporary>

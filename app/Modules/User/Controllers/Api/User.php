@@ -15,7 +15,7 @@ class User extends BaseControllerApi
         $input = $this->request->getVar();
         $role = $input['role'] ?? "";
         if ($role == "") {
-            $data = $this->model->findAll();
+            $data = $this->model->orderBy('user_id', 'DESC')->findAll();
         } else {
             $data = $this->model->where('role', 2)->orderBy('user_id', 'DESC')->findAll();
         }
