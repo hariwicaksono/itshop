@@ -11,13 +11,14 @@
                         <v-alert v-if="notifType != ''" dense :type="notifType">{{notifMessage}}</v-alert>
                         <v-form v-model="valid" ref="form">
                             <v-text-field v-model="email" :rules="[rules.required, rules.email]" label="E-mail" :error-messages="emailError" outlined required :disabled="submitted"></v-text-field>
-                            <v-text-field type="number" v-model="phone" :rules="[rules.required]" label="Nomor Telepon/WA (Format 62)" v-on:keyup="changeNumber" :error-messages="phoneError" outlined required :disabled="submitted"></v-text-field>
+                            <v-text-field type="number" v-model="phone" :rules="[rules.required]" label="Nomor Telepon/WA (Format 62)" placeholder="Format 62 Contoh: 628123456789 (tanpa 0 di depan)" v-on:keyup="changeNumber" :error-messages="phoneError" outlined required :disabled="submitted"></v-text-field>
                             <v-text-field v-model="password" :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'" :rules="[rules.required, rules.min]" :type="show1 ? 'text' : 'password'" label="Password" hint="<?= lang('App.minChar') ?>" counter @click:append="show1 = !show1" :error-messages="passwordError" outlined :disabled="submitted"></v-text-field>
                             <v-text-field block v-model="verify" :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'" :rules="[rules.required, passwordMatch]" :type="show1 ? 'text' : 'password'" label="Confirm Password" counter @click:append="show1 = !show1" outlined :disabled="submitted"></v-text-field>
                             <v-layout class="mb-5">
                                 <v-btn block x-large color="primary" @click="submit" :loading="loading" :disabled="submitted">Daftar</v-btn>
                             </v-layout>
-                            <a href="<?= base_url('login') ?>"><?= lang('App.haveAccount') ?></a>
+                            <a href="<?= base_url('login') ?>"><?= lang('App.haveAccount') ?></a><br />
+                            <a href="<?= base_url('password/reset') ?>"><?= lang('App.forgotPass') ?></a>
                         </v-form>
                     </v-card-text>
                 </v-card>

@@ -35,7 +35,12 @@ class Auth extends BaseControllerApi
     public function register()
     {
         $rules = [
-            'email' => 'required|min_length[6]|max_length[50]|valid_email|is_unique[users.email]',
+            'email' => [
+                'rules' => 'required|min_length[6]|max_length[50]|valid_email|is_unique[users.email]',
+                'errors' => [
+                    'is_unique'   => 'Email sudah terdaftar, silakan gunakan fitur lupa password'
+                ]
+            ],
             'phone' => 'required|is_unique[users.phone]',
             'password' => 'required|min_length[8]|max_length[255]'
         ];
@@ -76,7 +81,8 @@ class Auth extends BaseControllerApi
                     'status' => true,
                     'message' => lang('App.regSuccess'),
                     'data' => ['url' => base_url("")]
-                ], ResponseInterface::HTTP_OK
+                ],
+                ResponseInterface::HTTP_OK
             );
         } else {
             return $this->getResponse(
@@ -84,7 +90,8 @@ class Auth extends BaseControllerApi
                     'status' => false,
                     'message' => lang('App.regFailed'),
                     'data' => []
-                ], ResponseInterface::HTTP_OK
+                ],
+                ResponseInterface::HTTP_OK
             );
         }
     }
@@ -151,10 +158,10 @@ class Auth extends BaseControllerApi
         ];
 
         $user = $this->model->where(['email' => $input['email']])->first();
-        $user_id = $user['user_id']; 
-		$user_data = [
-			'token' => $token,
-		];
+        $user_id = $user['user_id'];
+        $user_data = [
+            'token' => $token,
+        ];
 
         if ($this->model->update($user_id, $user_data)) {
             helper('email');
@@ -164,7 +171,8 @@ class Auth extends BaseControllerApi
                     'status' => true,
                     'message' => lang('App.checkEmail'),
                     'data' => ['url' => base_url("")]
-                ], ResponseInterface::HTTP_OK
+                ],
+                ResponseInterface::HTTP_OK
             );
         } else {
             return $this->getResponse(
@@ -172,7 +180,8 @@ class Auth extends BaseControllerApi
                     'status' => false,
                     'message' => lang('App.reqFailed'),
                     'data' => []
-                ], ResponseInterface::HTTP_OK
+                ],
+                ResponseInterface::HTTP_OK
             );
         }
     }
@@ -203,23 +212,24 @@ class Auth extends BaseControllerApi
             );
         }
 
-        $forgot_pass = $this->model->where(['email' => $input['email'],'token' => $input['token']])->first();
+        $forgot_pass = $this->model->where(['email' => $input['email'], 'token' => $input['token']])->first();
         if (!$forgot_pass) {
             return $this->getResponse(["status" => false, "message" => lang('App.tokenInvalid'), "data" => []], ResponseInterface::HTTP_OK);
         }
 
         $user = $this->model->where(['email' => $input['email']])->first();
-        $user_id = $user['user_id']; 
-		$user_data = [
-			'password' => $input['password'],
-		];
+        $user_id = $user['user_id'];
+        $user_data = [
+            'password' => $input['password'],
+        ];
         if ($this->model->update($user_id, $user_data)) {
             return $this->getResponse(
                 [
                     'status' => true,
                     'message' => lang('App.passChanged'),
                     'data' => ['url' => base_url("/login")]
-                ], ResponseInterface::HTTP_OK
+                ],
+                ResponseInterface::HTTP_OK
             );
         } else {
             return $this->getResponse(
@@ -227,7 +237,8 @@ class Auth extends BaseControllerApi
                     'status' => false,
                     'message' => lang('App.regFailed'),
                     'data' => []
-                ], ResponseInterface::HTTP_OK
+                ],
+                ResponseInterface::HTTP_OK
             );
         }
     }
@@ -237,7 +248,7 @@ class Auth extends BaseControllerApi
         int $responseCode = ResponseInterface::HTTP_OK
     ) {
         try {
-            $user = $this->model->where(['active'=> 1])->findUserByEmailAddress($emailAddress);
+            $user = $this->model->where(['active' => 1])->findUserByEmailAddress($emailAddress);
             unset($user['password']);
 
             helper('jwt');
@@ -269,8 +280,8 @@ class Auth extends BaseControllerApi
                     'logged_in_at' => date('Y-m-d H:i:s')
                 ]
             );
-			
-			setcookie("access_token", getSignedJWTForUser($emailAddress), time()+7200, "/", "", false, true);
+
+            setcookie("access_token", getSignedJWTForUser($emailAddress), time() + 7200, "/", "", false, true);
 
             return $this->getResponse(
                 [
