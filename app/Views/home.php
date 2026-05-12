@@ -174,6 +174,7 @@
                                 <a link :href="'<?= base_url(); ?>' + item.category_slug + '/' + item.slug" class="text-decoration-none" :title="item.product_name" :alt="item.product_name">{{ item.product_name }}</a>
                             </v-card-title>
                             <v-card-subtitle class="text-h6 font-weight-bold">
+                                <span class="text-body-2"><?= lang('App.sold'); ?>: {{ item.sold }}</span><br />
                                 <span v-if="item.discount > 0">
                                     {{ RibuanLocale(item.product_price) }}
                                 </span>
