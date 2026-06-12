@@ -23,6 +23,7 @@ $routes->group('api', ['filter' => 'jwtauth', 'namespace' => 'App\Modules\Articl
 	$routes->get('articles', 'Article::index');
 	$routes->get('article/(:segment)', 'Article::show/$1');
 	$routes->post('article/save', 'Article::create');
+	$routes->post('article/generate-ai', 'Article::generateAI');
 	$routes->put('article/update/(:segment)', 'Article::update/$1');
 	$routes->put('article/setactive/(:segment)', 'Article::setActive/$1');
 	$routes->delete('article/delete/(:segment)', 'Article::delete/$1');

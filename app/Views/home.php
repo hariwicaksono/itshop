@@ -229,7 +229,7 @@
         </div>
         <v-list two-line v-else>
             <template v-for="(item, index) in articles">
-                <v-list-item>
+                <v-list-item three-line>
                     <v-list-item-avatar size="150" rounded>
                         <v-img lazy-src="<?= base_url('images/no-image.png') ?>" :src="'<?= base_url(); ?>' + item.media_path" aspect-ratio="1" v-if="item.media_path != null"></v-img>
                         <v-img lazy-src="<?= base_url('images/no-image.png') ?>" src="<?= base_url('images/no-image.png') ?>" v-else></v-img>
@@ -237,10 +237,10 @@
 
                     <v-list-item-content>
                         <v-list-item-title>
-                            <a class="text-h4 text-capitalize text-decoration-none" :href="'<?= base_url('read/'); ?>' + item.category_slug + '/' + item.slug">{{item.article_title}}</a>
+                            <a class="text-h5 text-capitalize text-decoration-none" :href="'<?= base_url('read/'); ?>' + item.category_slug + '/' + item.slug" :title="item.article_title" :alt="item.article_title">{{item.article_title}}</a>
                         </v-list-item-title>
                         <v-list-item-subtitle>
-                            <h6 class="text-h6 mb-2 font-weight-light">{{item.article_headline}}</h6>
+                            <h6 class="text-subtitle-1 mb-2">{{item.article_headline}}</h6>
                         </v-list-item-subtitle>
                         <v-list-item-subtitle>
                             <p>{{dayjs(item.created_at).fromNow()}} &mdash; <v-icon small>mdi-tag</v-icon> {{item.category_name}} &mdash; <v-icon small>mdi-account</v-icon> {{item.first_name}} {{item.last_name}} <v-icon small color="primary" v-show="item.role == '1'" title="Official Account" alt="Official Account">mdi-check-decagram</v-icon></p>

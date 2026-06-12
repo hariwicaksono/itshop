@@ -6,6 +6,11 @@
         <v-card-title>
             <!-- Button Add New Article -->
             <v-btn large color="primary" dark @click="modalAddOpen" elevation="1"><v-icon>mdi-plus</v-icon> <?= lang('App.add') ?></v-btn>
+            &nbsp;
+            <!-- Button AI Article Generator -->
+            <v-btn large color="deep-purple darken-1" dark @click="modalAIOpen" elevation="1">
+                <v-icon class="mr-1">mdi-robot-outline</v-icon> Generate AI Article
+            </v-btn>
             <v-spacer></v-spacer>
             <v-text-field v-model="search" v-on:keydown.enter="getArticles" @click:clear="getArticles" append-icon="mdi-magnify" label="<?= lang('App.search'); ?>" single-line hide-details clearable>
             </v-text-field>
@@ -33,7 +38,7 @@
                         <v-btn color="error" @click="deleteItem(item)" icon class="mr-2" title="Delete" alt="Delete">
                             <v-icon>mdi-delete</v-icon>
                         </v-btn>
-                        <v-btn color="info" link :href="'<?= base_url(); ?>' + item.category_slug + '/' + item.year + '/' + item.month + '/' + item.slug" target="_blank" icon title="Show" alt="Show">
+                        <v-btn color="info" link :href="'<?= base_url('read/'); ?>' + item.category_slug + '/' + item.year + '/' + item.month + '/' + item.slug" target="_blank" icon title="Show" alt="Show">
                             <v-icon>mdi-arrow-right</v-icon>
                         </v-btn>
                     </td>
@@ -304,6 +309,209 @@
     </v-row>
 </template>
 
+<!-- Modal AI Article Generator -->
+<template>
+    <v-row justify="center">
+        <v-dialog v-model="modalAI" fullscreen persistent scrollable>
+            <v-card style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);">
+                <v-card-title class="white--text py-4" style="background: rgba(103,58,183,0.85); backdrop-filter: blur(10px);">
+                    <v-btn icon @click="modalAIClose" class="mr-3" dark>
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                    <v-icon class="mr-2" color="amber">mdi-robot-outline</v-icon>
+                    <span class="headline font-weight-bold">AI Article Generator</span>
+                    <v-chip class="ml-3" color="amber" small label>Powered by Gemini</v-chip>
+                    <v-spacer></v-spacer>
+                    <v-btn large color="amber darken-2" dark @click="useAIResult" :disabled="!aiResult.title_id" elevation="2">
+                        <v-icon class="mr-1">mdi-check-circle</v-icon> Gunakan Artikel Ini
+                    </v-btn>
+                </v-card-title>
+                <v-divider></v-divider>
+                <v-card-text class="py-5">
+                    <v-row>
+                        <!-- Panel Kiri: Form Setting -->
+                        <v-col cols="12" md="4">
+                            <v-card dark color="rgba(255,255,255,0.07)" class="pa-4" style="border: 1px solid rgba(255,255,255,0.15); border-radius:16px;">
+                                <div class="mb-4">
+                                    <div class="d-flex align-center mb-3">
+                                        <v-icon color="deep-purple lighten-2" class="mr-2">mdi-lightbulb-on</v-icon>
+                                        <span class="subtitle-1 font-weight-bold white--text">Pengaturan Artikel</span>
+                                    </div>
+
+                                    <p class="caption grey--text text--lighten-1 mb-4">Isi pengaturan di bawah ini, lalu klik <strong>Generate</strong> untuk membuat artikel dengan AI.</p>
+
+                                    <v-textarea
+                                        v-model="aiTopic"
+                                        label="Topik / Judul Artikel *"
+                                        rows="3"
+                                        outlined
+                                        dark
+                                        color="deep-purple lighten-2"
+                                        placeholder="Contoh: Cara mempercepat laptop Windows yang lemot, Tutorial instalasi XAMPP di Windows 11..."
+                                        :error-messages="aiTopicError"
+                                        counter="300"></v-textarea>
+
+                                    <v-select
+                                        v-model="aiType"
+                                        :items="aiTypeOptions"
+                                        item-text="label"
+                                        item-value="value"
+                                        label="Jenis Artikel"
+                                        outlined
+                                        dark
+                                        color="deep-purple lighten-2"></v-select>
+
+                                    <v-select
+                                        v-model="aiTone"
+                                        :items="aiToneOptions"
+                                        item-text="label"
+                                        item-value="value"
+                                        label="Gaya Penulisan"
+                                        outlined
+                                        dark
+                                        color="deep-purple lighten-2"></v-select>
+
+                                    <v-select
+                                        v-model="aiCategory"
+                                        label="Kategori Artikel"
+                                        :items="dataCategory"
+                                        item-text="category_name"
+                                        item-value="category_id"
+                                        outlined
+                                        dark
+                                        color="deep-purple lighten-2"
+                                        clearable></v-select>
+
+                                    <!-- Bahasa Generate (Bilingual by default) -->
+                                    <p class="caption grey--text text--lighten-1 mb-2">Bahasa: <strong>Bilingual (ID & EN)</strong></p>
+
+                                    <div class="mt-5">
+                                        <v-btn
+                                            block
+                                            x-large
+                                            color="deep-purple"
+                                            dark
+                                            @click="generateAIArticle"
+                                            :loading="loadingAI"
+                                            elevation="3"
+                                            style="border-radius:12px;">
+                                            <v-icon class="mr-2">mdi-creation</v-icon>
+                                            Generate Artikel
+                                        </v-btn>
+                                    </div>
+
+                                    <!-- Topik Populer -->
+                                    <div class="mt-5">
+                                        <p class="caption grey--text text--lighten-1 mb-2"><v-icon x-small color="amber">mdi-fire</v-icon> Topik Populer:</p>
+                                        <v-chip-group column>
+                                            <v-chip v-for="t in aiPopularTopics" :key="t" small outlined color="deep-purple lighten-3" @click="aiTopic = t" class="mb-1">{{t}}</v-chip>
+                                        </v-chip-group>
+                                    </div>
+                                </div>
+                            </v-card>
+                        </v-col>
+
+                        <!-- Panel Kanan: Preview Hasil -->
+                        <v-col cols="12" md="8">
+                            <!-- State: Belum generate -->
+                            <v-card v-if="!aiResult.title_id && !loadingAI" dark color="rgba(255,255,255,0.05)" class="pa-6 text-center" style="border: 1px dashed rgba(255,255,255,0.2); border-radius:16px; min-height:400px; display:flex; align-items:center; justify-content:center;">
+                                <div>
+                                    <v-icon size="80" color="deep-purple lighten-3" class="mb-4">mdi-robot-excited-outline</v-icon>
+                                    <h3 class="white--text mb-2">Siap Generate Artikel!</h3>
+                                    <p class="grey--text">Isi topik dan pengaturan di sebelah kiri, lalu klik <strong>Generate Artikel</strong> untuk membuat artikel berkualitas tinggi dengan AI.</p>
+                                    <div class="mt-3">
+                                        <v-chip small color="deep-purple darken-1" dark class="ma-1"><v-icon x-small left>mdi-check</v-icon>Humanisasi Tinggi</v-chip>
+                                        <v-chip small color="deep-purple darken-1" dark class="ma-1"><v-icon x-small left>mdi-check</v-icon>SEO Friendly</v-chip>
+                                        <v-chip small color="deep-purple darken-1" dark class="ma-1"><v-icon x-small left>mdi-check</v-icon>Bilingual Support</v-chip>
+                                    </div>
+                                </div>
+                            </v-card>
+
+                            <!-- State: Loading -->
+                            <v-card v-if="loadingAI" dark color="rgba(255,255,255,0.05)" class="pa-6 text-center" style="border: 1px solid rgba(103,58,183,0.5); border-radius:16px; min-height:400px; display:flex; align-items:center; justify-content:center;">
+                                <div>
+                                    <v-progress-circular indeterminate color="deep-purple lighten-2" size="80" width="4" class="mb-4"></v-progress-circular>
+                                    <h3 class="white--text mb-2">AI sedang menulis artikel...</h3>
+                                    <p class="grey--text">Mohon tunggu, Gemini AI sedang membuat artikel yang menarik dan terhumanisasi untuk Anda.</p>
+                                    <v-progress-linear indeterminate color="deep-purple lighten-2" class="mt-4" rounded></v-progress-linear>
+                                </div>
+                            </v-card>
+
+                            <!-- State: Hasil AI -->
+                            <v-card v-if="aiResult.title_id && !loadingAI" dark color="rgba(255,255,255,0.07)" style="border: 1px solid rgba(103,58,183,0.6); border-radius:16px;">
+                                <v-card-title class="py-3 px-5" style="background: rgba(103,58,183,0.3); border-radius:16px 16px 0 0;">
+                                    <v-icon color="amber" class="mr-2">mdi-check-circle</v-icon>
+                                    <span class="white--text subtitle-1">Artikel Berhasil Dibuat!</span>
+                                    <v-spacer></v-spacer>
+                                    <v-btn small text color="grey" @click="clearAIResult"><v-icon small>mdi-refresh</v-icon> Reset</v-btn>
+                                </v-card-title>
+                                <v-tabs background-color="transparent" color="amber" class="px-5" dark>
+                                    <v-tab>🇮🇩 Indonesian</v-tab>
+                                    <v-tab>🇬🇧 English</v-tab>
+
+                                    <v-tab-item class="mt-4" style="background-color: transparent !important;">
+                                        <v-card-text class="pa-0 pt-2">
+                                            <!-- Preview Title ID -->
+                                            <div class="mb-4" style="background: rgba(255,255,255,0.05); border-left: 3px solid #7c4dff; padding: 12px 16px; border-radius:0 8px 8px 0;">
+                                                <p class="caption amber--text mb-1">📌 JUDUL ARTIKEL (ID)</p>
+                                                <h3 class="grey--text text--darken-3">{{aiResult.title_id}}</h3>
+                                            </div>
+
+                                            <!-- Headline ID -->
+                                            <div class="mb-4" style="background: rgba(255,255,255,0.05); border-left: 3px solid #26c6da; padding: 12px 16px; border-radius:0 8px 8px 0;">
+                                                <p class="caption cyan--text mb-1">📝 HEADLINE (ID)</p>
+                                                <p class="grey--text text--darken-3 mb-0">{{aiResult.headline_id}}</p>
+                                            </div>
+
+                                            <!-- Preview Body ID -->
+                                            <div class="mb-4" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius:8px; max-height: 350px; overflow-y: auto;">
+                                                <p class="caption green--text mb-2">📄 ISI ARTIKEL (ID Preview)</p>
+                                                <div class="grey--text text--darken-3 ai-article-preview" v-html="aiResult.body_id" style="font-size:0.92rem; line-height:1.7;"></div>
+                                            </div>
+                                        </v-card-text>
+                                    </v-tab-item>
+
+                                    <v-tab-item class="mt-4">
+                                        <v-card-text class="pa-0 pt-2">
+                                            <!-- Preview Title EN -->
+                                            <div class="mb-4" style="border-left: 3px solid #7c4dff; padding: 12px 16px; border-radius:0 8px 8px 0;">
+                                                <p class="caption amber--text mb-1">📌 ARTICLE TITLE (EN)</p>
+                                                <h3 class="grey--text text--darken-3">{{aiResult.title_en}}</h3>
+                                            </div>
+
+                                            <!-- Headline EN -->
+                                            <div class="mb-4" style="border-left: 3px solid #26c6da; padding: 12px 16px; border-radius:0 8px 8px 0;">
+                                                <p class="caption cyan--text mb-1">📝 HEADLINE (EN)</p>
+                                                <p class="grey--text text--darken-3 mb-0">{{aiResult.headline_en}}</p>
+                                            </div>
+
+                                            <!-- Preview Body EN -->
+                                            <div class="mb-4" style="border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius:8px; max-height: 350px; overflow-y: auto;">
+                                                <p class="caption green--text mb-2">📄 ARTICLE BODY (EN Preview)</p>
+                                                <div class="grey--text text--darken-3 ai-article-preview" v-html="aiResult.body_en" style="font-size:0.92rem; line-height:1.7;"></div>
+                                            </div>
+                                        </v-card-text>
+                                    </v-tab-item>
+                                </v-tabs>
+                                <v-card-actions class="px-5 pb-4">
+                                    <v-btn color="deep-purple" dark @click="generateAIArticle" :loading="loadingAI">
+                                        <v-icon class="mr-1">mdi-refresh</v-icon> Generate Ulang
+                                    </v-btn>
+                                    <v-spacer></v-spacer>
+                                    <v-btn x-large color="amber darken-2" dark @click="useAIResult" elevation="2" style="border-radius:10px;">
+                                        <v-icon class="mr-2">mdi-arrow-right-circle</v-icon> Gunakan Artikel Ini
+                                    </v-btn>
+                                </v-card-actions>
+                            </v-card>
+                        </v-col>
+                    </v-row>
+                </v-card-text>
+            </v-card>
+        </v-dialog>
+    </v-row>
+</template>
+<!-- End Modal AI Article Generator -->
+
 <v-dialog v-model="loading" hide-overlay persistent width="300">
     <v-card>
         <v-card-text class="pt-3">
@@ -428,6 +636,73 @@
         mediaPath: null,
         imagePreview: null,
         overlay: false,
+
+        // AI Article Generator
+        modalAI: false,
+        loadingAI: false,
+        aiTopic: "",
+        aiTopicError: "",
+        aiType: "tutorial",
+        aiTone: "friendly",
+        aiCategory: "",
+        aiResult: {
+            title_id: "",
+            headline_id: "",
+            body_id: "",
+            title_en: "",
+            headline_en: "",
+            body_en: ""
+        },
+        aiTypeOptions: [{
+                label: "Tutorial (Langkah demi langkah)",
+                value: "tutorial"
+            },
+            {
+                label: "Tips & Trik Praktis",
+                value: "tips"
+            },
+            {
+                label: "Review / Ulasan",
+                value: "review"
+            },
+            {
+                label: "Berita & Info Terkini",
+                value: "news"
+            },
+            {
+                label: "Penjelasan Konsep",
+                value: "explanation"
+            },
+        ],
+        aiToneOptions: [{
+                label: "Friendly & Ramah (Default)",
+                value: "friendly"
+            },
+            {
+                label: "Profesional & Formal",
+                value: "professional"
+            },
+            {
+                label: "Santai & Casual",
+                value: "casual"
+            },
+            {
+                label: "Edukatif & Informatif",
+                value: "educational"
+            },
+        ],
+        aiPopularTopics: [
+            "Cara mempercepat laptop Windows yang lemot",
+            "Tutorial instalasi XAMPP di Windows 11",
+            "Panduan memilih VPS untuk website bisnis",
+            "Cara install WordPress di cPanel",
+            "Perbedaan SSD dan HDD untuk laptop",
+            "Apa itu AI dan bagaimana cara kerjanya",
+            "Tutorial Git untuk pemula",
+            "Cara setting DNS domain di Cloudflare",
+            "Linux vs Windows untuk server",
+            "Tips keamanan jaringan komputer kantor",
+        ],
     }
 
     var errorKeys = []
@@ -947,6 +1222,89 @@
                         setTimeout(() => window.location.href = error.data.data.url, 1000);
                     }
                 })
+        },
+
+        // AI Article Generator
+        modalAIOpen: function() {
+            this.modalAI = true;
+            this.aiTopicError = "";
+        },
+        modalAIClose: function() {
+            this.modalAI = false;
+        },
+        clearAIResult: function() {
+            this.aiResult = {
+                title_id: "",
+                headline_id: "",
+                body_id: "",
+                title_en: "",
+                headline_en: "",
+                body_en: ""
+            };
+            this.aiTopic = "";
+        },
+        generateAIArticle: function() {
+            if (!this.aiTopic.trim()) {
+                this.aiTopicError = "Topik artikel wajib diisi!";
+                return;
+            }
+            this.aiTopicError = "";
+            this.loadingAI = true;
+            this.aiResult = {
+                title_id: "",
+                headline_id: "",
+                body_id: "",
+                title_en: "",
+                headline_en: "",
+                body_en: ""
+            };
+
+            axios.post(`<?= base_url() ?>api/article/generate-ai`, {
+                    topic: this.aiTopic,
+                    type: this.aiType,
+                    tone: this.aiTone,
+                }, options)
+                .then(res => {
+                    this.loadingAI = false;
+                    var data = res.data;
+                    if (data.status == true) {
+                        this.aiResult = data.data;
+                        this.snackbar = true;
+                        this.snackbarMessage = '✅ Artikel AI berhasil dibuat!';
+                    } else {
+                        this.snackbar = true;
+                        this.snackbarMessage = '❌ ' + data.message;
+                    }
+                })
+                .catch(err => {
+                    this.loadingAI = false;
+                    console.log(err);
+                    this.snackbar = true;
+                    this.snackbarMessage = '❌ Gagal menghubungi AI. Coba lagi.';
+                });
+        },
+        useAIResult: function() {
+            if (!this.aiResult.title_id) return;
+
+            this.articleTitle = this.aiResult.title_id;
+            this.articleHeadline = this.aiResult.headline_id;
+            this.articleBody = this.aiResult.body_id;
+
+            this.articleTitleEn = this.aiResult.title_en;
+            this.articleHeadlineEn = this.aiResult.headline_en;
+            this.articleBodyEn = this.aiResult.body_en;
+
+            // Isi kategori jika dipilih
+            if (this.aiCategory) {
+                this.idCategory = this.aiCategory;
+            }
+
+            // Tutup modal AI, buka modal Add
+            this.modalAI = false;
+            this.modalAdd = true;
+
+            this.snackbar = true;
+            this.snackbarMessage = '✅ Artikel AI berhasil dipindahkan ke form!';
         },
 
         // Delete Category

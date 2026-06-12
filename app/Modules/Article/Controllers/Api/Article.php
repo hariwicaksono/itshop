@@ -4,6 +4,9 @@ namespace App\Modules\Article\Controllers\Api;
 
 use App\Controllers\BaseControllerApi;
 use App\Modules\Article\Models\ArticleModel;
+use Gemini;
+use Gemini\Data\Content;
+use Gemini\Enums\Role;
 
 class Article extends BaseControllerApi
 {
@@ -312,6 +315,119 @@ class Article extends BaseControllerApi
                 'data' => [],
             ];
             return $this->respond($response, 200);
+        }
+    }
+
+    /**
+     * Generate AI Article using Google Gemini API
+     * Menghasilkan artikel IT yang terhumanisasi menggunakan Google Gemini
+     */
+    public function generateAI()
+    {
+        $json = $this->request->getJSON();
+        $topic    = $json->topic    ?? '';
+        $type     = $json->type     ?? 'tutorial';
+        $tone     = $json->tone     ?? 'friendly';
+
+        if (empty($topic)) {
+            return $this->respond([
+                'status'  => false,
+                'message' => 'Topik artikel tidak boleh kosong.',
+                'data'    => [],
+            ], 200);
+        }
+
+        try {
+            $apiKey = env('GEMINI_API_KEY');
+            $client = \Gemini::client($apiKey);
+
+            // Tentukan gaya bahasa
+            $toneDesc = match ($tone) {
+                'professional' => 'profesional dan formal',
+                'casual'       => 'santai dan conversational',
+                'educational'  => 'edukatif dan informatif',
+                default        => 'ramah, hangat, dan mudah dipahami seperti ditulis oleh manusia berpengalaman',
+            };
+
+            $typeDesc = match ($type) {
+                'tutorial'    => 'tutorial langkah demi langkah',
+                'tips'        => 'tips dan trik praktis',
+                'review'      => 'ulasan mendalam',
+                'news'        => 'berita dan informasi terkini',
+                'explanation' => 'penjelasan konsep',
+                default       => 'artikel informatif',
+            };
+
+            $prompt = <<<PROMPT
+You are a professional IT content writer and translator with over 10 years of experience.
+Your task is to write a {$typeDesc} about: "{$topic}".
+
+Writing style: {$toneDesc}.
+
+You MUST write the article in BOTH Indonesian and English.
+For the Indonesian version, write naturally like a native Indonesian IT expert (humanized, not robot-like).
+For the English version, write naturally like a native English IT expert.
+
+Important guidelines for both versions:
+- Write like a real human expert in IT, not a robot.
+- Use natural, flowing sentences with varied lengths. Use everyday analogies where appropriate.
+- Add personal perspectives like "Menurut pengalaman saya..." / "In my experience...", etc.
+- Avoid overly rigid bullet points. Create engaging narratives.
+- Include real, practical examples.
+- Article length for each version: minimum 600 words, maximum 1200 words.
+
+Output format that MUST be followed (in JSON):
+{
+  "title_id": "Judul artikel Bahasa Indonesia yang menarik dan SEO-friendly",
+  "headline_id": "Ringkasan singkat artikel Bahasa Indonesia (maks 200 karakter)",
+  "body_id": "Isi artikel lengkap Bahasa Indonesia dalam format HTML (gunakan tag h2, h3, p, strong, em, ul, ol, li, blockquote). JANGAN sertakan tag html, head, body.",
+  "title_en": "An attractive, SEO-friendly article title in English",
+  "headline_en": "A brief summary of the article in English (max 200 characters)",
+  "body_en": "Full article content in English in HTML format (use h2, h3, p, strong, em, ul, ol, li, blockquote). Do NOT add html, head, body tags."
+}
+
+Ensure output is valid JSON without markdown code blocks.
+PROMPT;
+
+            $result = $client
+                ->generativeModel(model: 'gemini-2.5-flash')
+                ->generateContent($prompt);
+
+            $rawText = $result->text();
+
+            // Bersihkan jika ada markdown code block
+            $rawText = preg_replace('/^```json\s*/i', '', trim($rawText));
+            $rawText = preg_replace('/```\s*$/', '', $rawText);
+            $rawText = trim($rawText);
+
+            $decoded = json_decode($rawText, true);
+
+            if (json_last_error() !== JSON_ERROR_NONE || empty($decoded)) {
+                return $this->respond([
+                    'status'  => false,
+                    'message' => 'Gagal memproses respons AI. Coba lagi.',
+                    'data'    => ['raw' => $rawText],
+                ], 200);
+            }
+
+            return $this->respond([
+                'status'  => true,
+                'message' => 'Artikel AI berhasil digenerate!',
+                'data'    => [
+                    'title_id'    => $decoded['title_id']    ?? '',
+                    'headline_id' => $decoded['headline_id'] ?? '',
+                    'body_id'     => $decoded['body_id']     ?? '',
+                    'title_en'    => $decoded['title_en']    ?? '',
+                    'headline_en' => $decoded['headline_en'] ?? '',
+                    'body_en'     => $decoded['body_en']     ?? '',
+                ],
+            ], 200);
+        } catch (\Throwable $e) {
+            return $this->respond([
+                'status'  => false,
+                'message' => 'Error AI: ' . $e->getMessage(),
+                'data'    => [],
+            ], 200);
         }
     }
 }
