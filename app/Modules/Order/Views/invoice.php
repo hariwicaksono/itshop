@@ -226,10 +226,20 @@
 
     <div class="payment-info">
         <h4>Informasi Pembayaran:</h4>
-        <p><strong>Metode:</strong> <?= $order['payment_name'] ?? '-' ?></p>
-        <p><strong>Atas Nama:</strong> <?= $order['account'] ?? '-' ?></p>
-        <p><strong>No. Rekening:</strong> <?= $order['number'] ?? '-' ?></p>
-        <p class="small-note">Mohon abaikan jika sudah lunas.</p>
+        <?php if ($order['status'] == 0) { ?>
+            Silahkan melakukan transfer pembayaran ke rekening dibawah ini:<br />
+            <?php foreach ($payment as $row) { ?>
+                <p><strong>Bank:</strong> <?= $row['payment'] ?? '-' ?></p>
+                <p><strong>No. Rekening:</strong> <?= $row['number'] ?? '-' ?></p>
+                <p><strong>Atas Nama:</strong> <?= $row['account'] ?? '-' ?></p>
+                <hr />
+            <?php } ?>
+        <?php } else { ?>
+            <p><strong>Metode:</strong> <?= $order['payment_name'] ?? '-' ?></p>
+            <p><strong>No. Rekening:</strong> <?= $order['number'] ?? '-' ?></p>
+            <p><strong>Atas Nama:</strong> <?= $order['account'] ?? '-' ?></p>
+        <?php } ?>
+        <p class="small-note">Mohon abaikan jika sudah Lunas.</p>
     </div>
 
     <div class="footer">

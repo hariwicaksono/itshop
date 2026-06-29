@@ -195,7 +195,7 @@ class User extends BaseControllerApi
         $delete = $this->model->find($id);
         $userId = $delete['user_id'];
 
-        if ($userId == 1) :
+        if ($userId == 1 || $userId == 2) :
             $response = [
                 'status' => false,
                 'message' => lang('App.delFailed'),

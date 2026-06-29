@@ -170,6 +170,15 @@ Modified: 03-2026
                             </v-list-item-content>
                         </v-list-item>
 
+                        <v-list-item link href="<?= base_url('admin/reviews'); ?>" <?php if ($uri->getSegment(2) == "reviews") : ?><?php echo 'class="v-item--active v-list-item--active"'; ?><?php endif; ?> alt="Ulasan" title="Ulasan">
+                            <v-list-item-icon>
+                                <v-icon>mdi-star</v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-content>
+                                <v-list-item-title><?= lang('App.reviews'); ?></v-list-item-title>
+                            </v-list-item-content>
+                        </v-list-item>
+
                         <v-divider></v-divider>
 
                         <v-list-group color="white" v-for="(item, i) in pages" :key="item.title" v-model="item.active" :prepend-icon="item.action">

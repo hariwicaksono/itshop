@@ -562,6 +562,16 @@ Modified: 03-2026
                 }).format(number);
                 return formattedNumber;
             },
+
+            formatDate(dateStr) {
+                if (!dateStr) return ""
+                const options = {
+                    day: "2-digit",
+                    month: "long",
+                    year: "numeric"
+                }
+                return new Date(dateStr).toLocaleDateString("<?= $language->siteLang; ?>", options)
+            },
         }
         Vue.component('paginate', VuejsPaginate)
         var VueMasonryPlugin = window["vue-masonry-plugin"].VueMasonryPlugin;

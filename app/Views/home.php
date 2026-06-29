@@ -183,6 +183,11 @@
                                 <span v-show="item.discount > 0">
                                     <p class="text-body-2 mb-0"><span class="text-decoration-line-through">{{ RibuanLocale(item.product_price_normal) }}</span> <v-chip color="red" label x-small dark class="px-1" title="<?= lang('App.discount'); ?>">{{item.discount_percent}}%</v-chip></p>
                                 </span>
+
+                                <div class="mt-0 d-flex align-center mb-n3" v-if="productRatings[item.product_id] && productRatings[item.product_id].count >= 0">
+                                    <v-rating :value="productRatings[item.product_id].average" readonly dense half-increments size="14" color="amber" background-color="grey lighten-1"></v-rating>
+                                    <span class="text-caption grey--text ml-1">({{ productRatings[item.product_id].count }} ulasan) <a @click="getReviews(item)" v-if="productRatings[item.product_id] && productRatings[item.product_id].count > 0">Lihat Ulasan</a></span>
+                                </div>
                             </v-card-subtitle>
                             <v-card-actions>
                                 <v-btn color="success" @click="sendWhatsApp(item)" elevation="1" :disabled="item.stock == 0 || item.active == 0">
@@ -261,24 +266,81 @@
     <br />
 </template>
 
+<!-- Modal Review List -->
 <template>
-    <v-row justify="center">
-        <v-dialog v-model="dialog" scrollable width="600px">
-            <v-card>
-                <v-card-actions>
-                    <v-card-title>Fitur &amp; Teknologi</v-card-title>
-                    <v-spacer></v-spacer>
-                    <v-btn icon @click="dialog = false">
-                        <v-icon>mdi-close</v-icon>
-                    </v-btn>
-                </v-card-actions>
-                <v-card-text>
+    <v-dialog v-model="modalReviewList" scrollable max-width="900">
+        <v-card>
+            <v-card-title class="text-h6 headline">
+                <v-icon color="amber" left>mdi-star</v-icon>
+                Ulasan: {{ reviewListProductName }}
+                <v-spacer></v-spacer>
+                <v-btn icon @click="modalReviewListClose">
+                    <v-icon>mdi-close</v-icon>
+                </v-btn>
+            </v-card-title>
+            <v-divider></v-divider>
+            <v-card-text class="pt-4">
+                <!-- Average Rating Summary -->
+                <div class="text-center mb-4" v-if="reviewListRating && reviewListRating.count > 0">
+                    <div class="display-1 font-weight-bold amber--text">{{ reviewListRating.average }}</div>
+                    <v-rating :value="reviewListRating.average" readonly dense half-increments size="24" color="amber" background-color="grey lighten-1"></v-rating>
+                    <div class="grey--text">{{ reviewListRating.count }} ulasan</div>
+                </div>
 
-                </v-card-text>
-            </v-card>
-        </v-dialog>
-    </v-row>
+                <!-- Loading Skeleton -->
+                <v-list three-line v-if="loadingReviews">
+                    <template v-for="n in 3">
+                        <v-list-item :key="n">
+                            <v-list-item-avatar>
+                                <v-skeleton-loader type="avatar" width="40" height="40"></v-skeleton-loader>
+                            </v-list-item-avatar>
+                            <v-list-item-content>
+                                <v-list-item-title>
+                                    <v-skeleton-loader type="text" width="120" height="16"></v-skeleton-loader>
+                                </v-list-item-title>
+                                <v-list-item-subtitle>
+                                    <v-skeleton-loader type="text" width="100%" height="14" class="mb-1"></v-skeleton-loader>
+                                    <v-skeleton-loader type="text" width="60%" height="14"></v-skeleton-loader>
+                                </v-list-item-subtitle>
+                            </v-list-item-content>
+                        </v-list-item>
+                        <v-divider v-if="n < 3" :key="'div-' + n"></v-divider>
+                    </template>
+                </v-list>
+
+                <!-- Individual Reviews -->
+                <v-list three-line v-else-if="dataReviews.length > 0">
+                    <template v-for="(review, index) in dataReviews">
+                        <v-list-item :key="review.review_id">
+                            <v-list-item-avatar>
+                                <v-icon class="grey lighten-1" dark>mdi-account</v-icon>
+                            </v-list-item-avatar>
+                            <v-list-item-content>
+                                <v-list-item-title>
+                                    {{ review.first_name }} {{ review.last_name }}
+                                    <v-rating :value="review.rating" readonly dense half-increments size="12" color="amber" class="d-inline-block ml-2"></v-rating>
+                                </v-list-item-title>
+                                <v-list-item-subtitle class="text-wrap">{{ review.review_text || 'Tidak ada komentar' }}</v-list-item-subtitle>
+                                <v-list-item-subtitle class="font-italic caption">{{ formatDate(review.created_at) }}</v-list-item-subtitle>
+                            </v-list-item-content>
+                        </v-list-item>
+                        <v-divider v-if="index < dataReviews.length - 1" :key="'div-' + review.review_id"></v-divider>
+                    </template>
+                </v-list>
+
+                <div v-else class="text-center py-8 grey--text">
+                    <v-icon size="48" class="mb-2">mdi-comment-off</v-icon>
+                    <p>Belum ada ulasan untuk mobil ini</p>
+                </div>
+            </v-card-text>
+            <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="primary" text @click="modalReviewListClose">Tutup</v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
 </template>
+<!-- End Modal Review List -->
 
 <v-dialog v-model="loading" hide-overlay persistent width="300">
     <v-card>
@@ -348,6 +410,12 @@
         }, ],
         orderByArticles: "created_new",
         categoryArticles: [],
+        productRatings: {},
+        modalReviewList: false,
+        reviewListProductName: '',
+        reviewListRating: {},
+        dataReviews: [],
+        loadingReviews: false,
     }
 
     // Vue Created
@@ -451,6 +519,7 @@
                         this.products = data.data;
                         this.pageCount = Math.ceil(data.total_page / data.per_page);
                         this.show = false;
+                        this.getProductRatings();
                     } else {
                         this.snackbar = true;
                         this.snackbarMessage = data.message;
@@ -473,6 +542,7 @@
                         this.products = data.data;
                         this.pageCount = Math.ceil(data.total_page / data.per_page);
                         this.show = false;
+                        this.getProductRatings();
                     } else {
                         this.products = data.data;
                         this.show = false;
@@ -632,6 +702,46 @@
                     // handle error
                     console.log(err.response);
                 })
+        },
+
+        // Get ratings for all loaded products (batch request)
+        getProductRatings: function() {
+            if (!this.products || this.products.length === 0) return;
+            // Collect all product IDs
+            const ids = this.products.map(p => p.product_id).join(',');
+            // Single batch request for all ratings
+            axios.get(`<?= base_url(); ?>api/home/review/ratings-batch?product_ids=${ids}`)
+                .then(res => {
+                    if (res.data.status == true && res.data.data) {
+                        this.productRatings = res.data.data;
+                    }
+                })
+                .catch(err => console.log(err));
+        },
+
+        // Open review modal for a specific product
+        getReviews: function(product) {
+            this.reviewListProductName = product.product_name;
+            this.dataReviews = [];
+            this.reviewListRating = {};
+            this.loadingReviews = true;
+            this.modalReviewList = true;
+            axios.get(`<?= base_url(); ?>api/home/review/product/${product.product_id}`)
+                .then(res => {
+                    this.loadingReviews = false;
+                    if (res.data.status == true) {
+                        this.dataReviews = res.data.data || [];
+                        this.reviewListRating = res.data.rating || {};
+                    }
+                })
+                .catch(err => {
+                    this.loadingReviews = false;
+                    console.log(err);
+                });
+        },
+
+        modalReviewListClose: function() {
+            this.modalReviewList = false;
         },
     }
 </script>

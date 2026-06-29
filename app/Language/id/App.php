@@ -104,6 +104,7 @@ return [
     'bestSeller' => 'Paling Laku',
     'bestSellerProducts' => 'Produk Terlaris',
     'category' => 'Kategori',
+    'reviews' => 'Ulasan',
 
     //User
     'editUser' => 'Ubah User',

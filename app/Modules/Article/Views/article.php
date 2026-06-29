@@ -38,7 +38,7 @@
                         <v-btn color="error" @click="deleteItem(item)" icon class="mr-2" title="Delete" alt="Delete">
                             <v-icon>mdi-delete</v-icon>
                         </v-btn>
-                        <v-btn color="info" link :href="'<?= base_url('read/'); ?>' + item.category_slug + '/' + item.year + '/' + item.month + '/' + item.slug" target="_blank" icon title="Show" alt="Show">
+                        <v-btn color="info" link :href="'<?= base_url('read/'); ?>' + item.category_slug + '/' + item.slug" target="_blank" icon title="Show" alt="Show">
                             <v-icon>mdi-arrow-right</v-icon>
                         </v-btn>
                     </td>

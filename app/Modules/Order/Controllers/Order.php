@@ -12,6 +12,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use CodeIgniter\I18n\Time;
 use App\Libraries\Settings;
 use CodeIgniter\Exceptions\PageNotFoundException;
+use App\Modules\Payment\Models\PaymentModel;
 
 class Order extends BaseController
 {
@@ -20,6 +21,7 @@ class Order extends BaseController
     protected $order;
     protected $user;
     protected $cart;
+    protected $payment;
 
     public function __construct()
     {
@@ -35,6 +37,7 @@ class Order extends BaseController
         $this->order = new OrderModel();
         $this->user = new UserModel();
         $this->cart = new CartModel();
+        $this->payment = new PaymentModel();
     }
 
     public function index()
@@ -70,6 +73,7 @@ class Order extends BaseController
             'user'  => $user,
             'cart'  => $cart,
             'company' => $this->setting->info, // ambil info perusahaan
+            'payment' => $this->payment->where(['active' => 1, 'number !=' => '-'])->findAll(),
         ];
 
         // Load view invoice (HTML)

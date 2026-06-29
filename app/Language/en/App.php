@@ -103,6 +103,7 @@ return [
     'bestSeller' => 'Best Seller',
     'bestSellerProducts' => 'Best Seller Products',
     'category' => 'Category',
+    'reviews' => 'Reviews',
 
     //User
     'editUser' => 'Edit User',

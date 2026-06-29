@@ -49,6 +49,9 @@
                                                         <p v-else>{{row.qty}} x {{ RibuanLocale(row.price) }}</p>
                                                     </v-list-item-content>
                                                 </v-list-item>
+                                                <v-btn small color="amber darken-2" outlined @click="reviewItem(row)" title="Berikan Ulasan">
+                                                    <v-icon>mdi-star</v-icon> Berikan Ulasan
+                                                </v-btn>
                                             </div>
                                         </div>
                                         <br />
@@ -293,6 +296,9 @@
                                                         <p v-else>{{row.qty}} x {{ RibuanLocale(row.price) }}</p>
                                                     </v-list-item-content>
                                                 </v-list-item>
+                                                <v-btn small color="amber darken-2" outlined @click="reviewItem(row)" title="Berikan Ulasan">
+                                                    <v-icon>mdi-star</v-icon> Berikan Ulasan
+                                                </v-btn>
                                             </div>
                                         </div>
                                         <br />
@@ -549,6 +555,40 @@
     </v-card>
 </v-dialog>
 
+<!-- Modal Review -->
+<template>
+    <v-row justify="center">
+        <v-dialog v-model="modalReview" persistent scrollable max-width="600px">
+            <v-card>
+                <v-card-title>
+                    Berikan Ulasan
+                    <v-spacer></v-spacer>
+                    <v-btn icon @click="modalReviewClose">
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                </v-card-title>
+                <v-divider></v-divider>
+                <v-card-text class="pt-5">
+                    <p class="mb-2 grey--text text--darken-1">Produk: <strong>{{ reviewProductName }}</strong></p>
+                    <p class="mb-1 text-subtitle-1">Rating</p>
+                    <v-rating v-model="reviewRating" hover dense half-increments size="32" color="amber" background-color="grey lighten-1"></v-rating>
+                    <p class="mb-1 mt-3 text-subtitle-1">Ulasan</p>
+                    <v-textarea v-model="reviewText" label="Bagikan pengalaman Anda..." outlined rows="3" counter="500"></v-textarea>
+                </v-card-text>
+                <v-divider></v-divider>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="grey darken-1" text @click="modalReviewClose">Batal</v-btn>
+                    <v-btn color="amber darken-2" dark @click="saveReview" :loading="loading2" :disabled="reviewRating == 0">
+                        <v-icon>mdi-send</v-icon> Kirim Ulasan
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+    </v-row>
+</template>
+<!-- End Modal Review -->
+
 <?php $this->endSection("content") ?>
 
 <?php $this->section("js") ?>
@@ -589,6 +629,12 @@
         status: "",
         dialogConfirm: false,
         selectedItem: null,
+        modalReview: false,
+        reviewRating: 0,
+        reviewText: "",
+        reviewOrderId: "",
+        reviewProductId: "",
+        reviewProductName: "",
     }
 
     createdVue = function() {
@@ -941,6 +987,48 @@
                         }, 1000);
                     }
                 });
+        },
+
+        // Open Review Modal (for completed orders only)
+        reviewItem: function(item) {
+            this.reviewOrderId = item.order_id;
+            this.reviewProductId = item.product_id;
+            this.reviewProductName = item.product_name;
+            this.reviewRating = 0;
+            this.reviewText = "";
+            this.modalReview = true;
+        },
+
+        modalReviewClose: function() {
+            this.modalReview = false;
+            this.reviewRating = 0;
+            this.reviewText = "";
+        },
+
+        // Submit Review (public endpoint, uses session)
+        saveReview: function() {
+            this.loading2 = true;
+            axios.post('<?= base_url(); ?>api/home/review/save', {
+                    order_id: this.reviewOrderId,
+                    product_id: this.reviewProductId,
+                    rating: this.reviewRating,
+                    review_text: this.reviewText,
+                })
+                .then(res => {
+                    this.loading2 = false;
+                    var data = res.data;
+                    this.snackbar = true;
+                    this.snackbarMessage = data.message;
+                    if (data.status == true) {
+                        this.modalReviewClose();
+                    }
+                })
+                .catch(err => {
+                    this.loading2 = false;
+                    console.log(err);
+                    this.snackbar = true;
+                    this.snackbarMessage = 'Terjadi kesalahan. Silakan coba lagi.';
+                })
         },
     }
 </script>
