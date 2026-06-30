@@ -272,12 +272,15 @@
         <v-card>
             <v-card-title class="text-h6 headline">
                 <v-icon color="amber" left>mdi-star</v-icon>
-                Ulasan: {{ reviewListProductName }}
-                <v-spacer></v-spacer>
+                Ulasan
+                 <v-spacer></v-spacer>
                 <v-btn icon @click="modalReviewListClose">
                     <v-icon>mdi-close</v-icon>
                 </v-btn>
             </v-card-title>
+            <v-card-subtitle>
+                {{ reviewListProductName }}
+            </v-card-subtitle>
             <v-divider></v-divider>
             <v-card-text class="pt-4">
                 <!-- Average Rating Summary -->

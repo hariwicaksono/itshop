@@ -4,6 +4,10 @@
     <h1 class="font-weight-medium mb-3"><?= $title; ?></h1>
     <v-card>
         <v-card-title>
+            <v-btn large color="primary" class="mr-3" @click="generateAIReviews" :loading="loadingAI" v-if="isAdmin">
+                <v-icon left>mdi-robot</v-icon>
+                Generate AI Reviews
+            </v-btn>
             <v-select v-model="filterStatus" :items="statusOptions" item-text="label" item-value="value" label="Filter Status" outlined dense hide-details style="max-width: 200px;" @change="getReviews"></v-select>
             <v-spacer></v-spacer>
             <v-text-field v-model="pencarian" append-icon="mdi-magnify" label="<?= lang('App.search') ?>" single-line hide-details>
@@ -126,15 +130,17 @@
         modalEdit: false,
         modalDelete: false,
         filterStatus: "",
+        loadingAI: false,
+        isAdmin: <?= session('role') == 1 ? 'true' : 'false' ?>,
         dataHeader: [{
             text: "#",
             value: "review_id"
         }, {
-            text: "Mobil",
-            value: "car_nama"
+            text: "Produk",
+            value: "product_name"
         }, {
             text: "Pemberi Ulasan",
-            value: "fullname"
+            value: "first_name"
         }, {
             text: "Rating",
             value: "rating"
@@ -157,20 +163,39 @@
         rating: 0,
         reviewText: "",
         reviewStatus: 0,
-        statusOptions: [
-            { label: 'Semua', value: '' },
-            { label: 'Menunggu', value: 0 },
-            { label: 'Disetujui', value: 1 },
-            { label: 'Ditolak', value: 2 }
+        statusOptions: [{
+                label: 'Semua',
+                value: ''
+            },
+            {
+                label: 'Menunggu',
+                value: 0
+            },
+            {
+                label: 'Disetujui',
+                value: 1
+            },
+            {
+                label: 'Ditolak',
+                value: 2
+            }
         ],
-        editStatusOptions: [
-            { label: 'Menunggu', value: 0 },
-            { label: 'Disetujui', value: 1 },
-            { label: 'Ditolak', value: 2 }
+        editStatusOptions: [{
+                label: 'Menunggu',
+                value: 0
+            },
+            {
+                label: 'Disetujui',
+                value: 1
+            },
+            {
+                label: 'Ditolak',
+                value: 2
+            }
         ],
     };
 
-    createdVue = function () {
+    createdVue = function() {
         axios.defaults.headers['Authorization'] = 'Bearer ' + token;
         this.getReviews();
     };
@@ -185,17 +210,25 @@
         },
 
         statusLabel(status) {
-            const labels = { 0: 'Menunggu', 1: 'Disetujui', 2: 'Ditolak' };
+            const labels = {
+                0: 'Menunggu',
+                1: 'Disetujui',
+                2: 'Ditolak'
+            };
             return labels[status] ?? 'Unknown';
         },
 
         statusColor(status) {
-            const colors = { 0: 'grey', 1: 'green', 2: 'red' };
+            const colors = {
+                0: 'grey',
+                1: 'green',
+                2: 'red'
+            };
             return colors[status] ?? 'grey';
         },
 
         // Get Review Data
-        getReviews: function () {
+        getReviews: function() {
             this.loading = true;
             var url = '<?= base_url(); ?>api/review';
             if (this.filterStatus !== '' && this.filterStatus !== null) {
@@ -218,11 +251,11 @@
         },
 
         // Approve Review (status = 1)
-        approveReview: function (item) {
+        approveReview: function(item) {
             this.loading1 = true;
             axios.put(`<?= base_url(); ?>api/review/setstatus/${item.review_id}`, {
-                status: 1
-            }, options)
+                    status: 1
+                }, options)
                 .then(res => {
                     this.loading1 = false;
                     var data = res.data;
@@ -239,11 +272,11 @@
         },
 
         // Reject Review (status = 2)
-        rejectReview: function (item) {
+        rejectReview: function(item) {
             this.loading1 = true;
             axios.put(`<?= base_url(); ?>api/review/setstatus/${item.review_id}`, {
-                status: 2
-            }, options)
+                    status: 2
+                }, options)
                 .then(res => {
                     this.loading1 = false;
                     var data = res.data;
@@ -260,7 +293,7 @@
         },
 
         // Edit Item
-        editItem: function (item) {
+        editItem: function(item) {
             this.idReview = item.review_id;
             this.rating = item.rating;
             this.reviewText = item.review_text ?? "";
@@ -268,19 +301,19 @@
             this.modalEdit = true;
         },
 
-        modalEditClose: function () {
+        modalEditClose: function() {
             this.modalEdit = false;
             this.$refs.form.resetValidation();
         },
 
         // Update Review
-        updateReview: function () {
+        updateReview: function() {
             this.loading1 = true;
             axios.put(`<?= base_url(); ?>api/review/update/${this.idReview}`, {
-                rating: this.rating,
-                review_text: this.reviewText,
-                status: this.reviewStatus,
-            }, options)
+                    rating: this.rating,
+                    review_text: this.reviewText,
+                    status: this.reviewStatus,
+                }, options)
                 .then(res => {
                     this.loading1 = false;
                     var data = res.data;
@@ -297,17 +330,45 @@
                 });
         },
 
+        // Generate AI Reviews
+        generateAIReviews: function() {
+            if (!confirm('Apakah Anda yakin ingin generate review menggunakan AI? Fitur ini akan membuat review untuk semua order yang belum memiliki review.')) {
+                return;
+            }
+
+            this.loadingAI = true;
+            axios.post(`<?= base_url(); ?>api/review/generate-ai-reviews`, {}, options)
+                .then(res => {
+                    this.loadingAI = false;
+                    var data = res.data;
+                    if (data.status == true) {
+                        this.snackbar = true;
+                        this.snackbarMessage = data.message;
+                        this.getReviews();
+                    } else {
+                        this.snackbar = true;
+                        this.snackbarMessage = data.message || 'Gagal generate review';
+                    }
+                })
+                .catch(err => {
+                    this.loadingAI = false;
+                    console.log(err);
+                    this.snackbar = true;
+                    this.snackbarMessage = 'Terjadi kesalahan saat generate review';
+                });
+        },
+
         // Delete Item
-        deleteItem: function (item) {
+        deleteItem: function(item) {
             this.modalDelete = true;
             this.idReview = item.review_id;
         },
 
-        modalDeleteClose: function () {
+        modalDeleteClose: function() {
             this.modalDelete = false;
         },
 
-        deleteReview: function () {
+        deleteReview: function() {
             this.loading1 = true;
             axios.delete(`<?= base_url(); ?>api/review/delete/${this.idReview}`)
                 .then(res => {

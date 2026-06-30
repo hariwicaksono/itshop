@@ -25,4 +25,5 @@ $routes->group('api', ['filter' => 'jwtauth', 'namespace' => 'App\Modules\Review
     $routes->put('review/update/(:segment)', 'Review::update/$1');
     $routes->delete('review/delete/(:segment)', 'Review::delete/$1');
     $routes->put('review/setstatus/(:segment)', 'Review::setStatus/$1');
+    $routes->post('review/generate-ai-reviews', 'Review::generateAIReviews');
 });
