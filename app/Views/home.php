@@ -38,6 +38,23 @@
             transform: translateY(0);
         }
     }
+
+    /* hanya menggeser konten */
+    .content-scroll-x {
+        overflow-x: auto;
+        overflow-y: hidden;
+    }
+
+    /* paksa konten bisa melebar */
+    .content-inner {
+        min-width: 900px;
+        /* sesuaikan kebutuhan */
+    }
+
+    /* smooth di mobile */
+    .content-scroll-x {
+        -webkit-overflow-scrolling: touch;
+    }
 </style>
 <?php $this->endSection("style") ?>
 <?php $this->section("content"); ?>
@@ -232,28 +249,30 @@
             <v-skeleton-loader type="list-item-avatar-three-line" class="mb-3"></v-skeleton-loader>
             <v-divider></v-divider>
         </div>
-        <v-list two-line v-else>
-            <template v-for="(item, index) in articles">
-                <v-list-item three-line>
-                    <v-list-item-avatar size="150" rounded>
-                        <v-img lazy-src="<?= base_url('images/no-image.png') ?>" :src="'<?= base_url(); ?>' + item.media_path" aspect-ratio="1" v-if="item.media_path != null"></v-img>
-                        <v-img lazy-src="<?= base_url('images/no-image.png') ?>" src="<?= base_url('images/no-image.png') ?>" v-else></v-img>
-                    </v-list-item-avatar>
+        <v-list class="content-scroll-x" two-line v-else>
+            <div class="content-inner">
+                <template v-for="(item, index) in articles">
+                    <v-list-item three-line>
+                        <v-list-item-avatar size="150" rounded>
+                            <v-img lazy-src="<?= base_url('images/no-image.png') ?>" :src="'<?= base_url(); ?>' + item.media_path" aspect-ratio="1" v-if="item.media_path != null"></v-img>
+                            <v-img lazy-src="<?= base_url('images/no-image.png') ?>" src="<?= base_url('images/no-image.png') ?>" v-else></v-img>
+                        </v-list-item-avatar>
 
-                    <v-list-item-content>
-                        <v-list-item-title>
-                            <a class="text-h5 text-capitalize text-decoration-none" :href="'<?= base_url('read/'); ?>' + item.category_slug + '/' + item.slug" :title="item.article_title" :alt="item.article_title">{{item.article_title}}</a>
-                        </v-list-item-title>
-                        <v-list-item-subtitle>
-                            <h6 class="text-subtitle-1 mb-2">{{item.article_headline}}</h6>
-                        </v-list-item-subtitle>
-                        <v-list-item-subtitle>
-                            <p>{{dayjs(item.created_at).fromNow()}} &mdash; <v-icon small>mdi-tag</v-icon> {{item.category_name}} &mdash; <v-icon small>mdi-account</v-icon> {{item.first_name}} {{item.last_name}} <v-icon small color="primary" v-show="item.role == '1'" title="Official Account" alt="Official Account">mdi-check-decagram</v-icon></p>
-                        </v-list-item-subtitle>
-                    </v-list-item-content>
-                </v-list-item>
-                <v-divider></v-divider>
-            </template>
+                        <v-list-item-content>
+                            <v-list-item-title>
+                                <a class="text-h6 text-capitalize text-decoration-none" :href="'<?= base_url('read/'); ?>' + item.category_slug + '/' + item.slug" :title="item.article_title" :alt="item.article_title">{{item.article_title}}</a>
+                            </v-list-item-title>
+                            <v-list-item-subtitle>
+                                <h6 class="text-subtitle-1 mb-2">{{item.article_headline}}</h6>
+                            </v-list-item-subtitle>
+                            <v-list-item-subtitle>
+                                <p>{{dayjs(item.created_at).fromNow()}} &mdash; <v-icon small>mdi-tag</v-icon> {{item.category_name}} &mdash; <v-icon small>mdi-account</v-icon> {{item.first_name}} {{item.last_name}} <v-icon small color="primary" v-show="item.role == '1'" title="Official Account" alt="Official Account">mdi-check-decagram</v-icon></p>
+                            </v-list-item-subtitle>
+                        </v-list-item-content>
+                    </v-list-item>
+                    <v-divider></v-divider>
+                </template>
+            </div>
         </v-list>
         <div class="text-center" v-show="articles == '' && loading2 == false">
             <h1 class="font-weight-medium mb-3">No Articles Found</h1>
@@ -268,12 +287,12 @@
 
 <!-- Modal Review List -->
 <template>
-    <v-dialog v-model="modalReviewList" scrollable max-width="900">
+    <v-dialog v-model="modalReviewList" scrollable max-width="1000">
         <v-card>
             <v-card-title class="text-h6 headline">
                 <v-icon color="amber" left>mdi-star</v-icon>
                 Ulasan
-                 <v-spacer></v-spacer>
+                <v-spacer></v-spacer>
                 <v-btn icon @click="modalReviewListClose">
                     <v-icon>mdi-close</v-icon>
                 </v-btn>
@@ -312,28 +331,30 @@
                 </v-list>
 
                 <!-- Individual Reviews -->
-                <v-list three-line v-else-if="dataReviews.length > 0">
-                    <template v-for="(review, index) in dataReviews">
-                        <v-list-item :key="review.review_id">
-                            <v-list-item-avatar>
-                                <v-icon class="grey lighten-1" dark>mdi-account</v-icon>
-                            </v-list-item-avatar>
-                            <v-list-item-content>
-                                <v-list-item-title>
-                                    {{ review.first_name }} {{ review.last_name }}
-                                    <v-rating :value="review.rating" readonly dense half-increments size="12" color="amber" class="d-inline-block ml-2"></v-rating>
-                                </v-list-item-title>
-                                <v-list-item-subtitle class="text-wrap">{{ review.review_text || 'Tidak ada komentar' }}</v-list-item-subtitle>
-                                <v-list-item-subtitle class="font-italic caption">{{ formatDate(review.created_at) }}</v-list-item-subtitle>
-                            </v-list-item-content>
-                        </v-list-item>
-                        <v-divider v-if="index < dataReviews.length - 1" :key="'div-' + review.review_id"></v-divider>
-                    </template>
+                <v-list three-line v-else-if="dataReviews.length > 0" class="content-scroll-x">
+                    <div class="content-inner">
+                        <template v-for="(review, index) in dataReviews">
+                            <v-list-item :key="review.review_id">
+                                <v-list-item-avatar>
+                                    <v-icon class="grey lighten-1" dark>mdi-account</v-icon>
+                                </v-list-item-avatar>
+                                <v-list-item-content>
+                                    <v-list-item-title>
+                                        {{ review.first_name }} {{ review.last_name }}
+                                        <v-rating :value="review.rating" readonly dense half-increments size="12" color="amber" class="d-inline-block ml-2"></v-rating>
+                                    </v-list-item-title>
+                                    <v-list-item-subtitle class="text-wrap">{{ review.review_text || 'Tidak ada komentar' }}</v-list-item-subtitle>
+                                    <v-list-item-subtitle class="font-italic caption">{{ formatDate(review.created_at) }}</v-list-item-subtitle>
+                                </v-list-item-content>
+                            </v-list-item>
+                            <v-divider v-if="index < dataReviews.length - 1" :key="'div-' + review.review_id"></v-divider>
+                        </template>
+                    </div>
                 </v-list>
 
                 <div v-else class="text-center py-8 grey--text">
                     <v-icon size="48" class="mb-2">mdi-comment-off</v-icon>
-                    <p>Belum ada ulasan untuk mobil ini</p>
+                    <p>Belum ada ulasan untuk produk ini</p>
                 </div>
             </v-card-text>
             <v-card-actions>

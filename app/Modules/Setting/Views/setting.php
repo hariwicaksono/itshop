@@ -76,7 +76,7 @@
                         </div>
 
                         <div v-else-if="variableEdit == 'img_logo' || variableEdit == 'img_logo_sm' || variableEdit == 'img_navbar'">
-                            <img v-bind:src="'<?= base_url() ?>' + valueEdit" width="200" class="mb-0" />
+                            <img v-bind:src="'<?= base_url('images/') ?>' + valueEdit" width="200" class="mb-0" />
                             <v-file-input v-model="image" show-size label="Image Upload" id="file" class="mb-2" accept=".jpg, .jpeg, .png" prepend-icon="mdi-camera" @change="onFileChange" @click:clear="onFileClear" :loading="loading2"></v-file-input>
                             <v-img :src="imagePreview" max-width="150">
                                 <v-overlay v-model="overlay" absolute :opacity="0.1">
