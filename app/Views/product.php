@@ -5,6 +5,25 @@ $appName = $setting->info['app_name'];
 $imgLogo = $setting->info['img_logo'];
 ?>
 <?php $this->extend("layouts/app-front"); ?>
+<?php $this->section("style"); ?>
+<style>
+    /* hanya menggeser konten */
+.content-scroll-x {
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+/* paksa konten bisa melebar */
+.content-inner {
+    min-width: 900px; /* sesuaikan kebutuhan */
+}
+
+/* smooth di mobile */
+.content-scroll-x {
+    -webkit-overflow-scrolling: touch;
+}
+</style>
+<?php $this->endSection("style") ?>
 <?php $this->section("opengraph"); ?>
 <meta property="og:title" content="Jual <?= $title; ?>" />
 <meta property="og:description" content="Jual <?= $title; ?> - <?= $appName; ?>" />
@@ -174,7 +193,8 @@ $imgLogo = $setting->info['img_logo'];
                 </v-list>
 
                 <!-- Individual Reviews -->
-                <v-list three-line v-else-if="dataReviews.length > 0">
+                <v-list three-line v-else-if="dataReviews.length > 0" class="content-scroll-x">
+					<div class="content-inner">
                     <template v-for="(review, index) in dataReviews">
                         <v-list-item :key="review.review_id">
                             <v-list-item-avatar>
@@ -191,6 +211,7 @@ $imgLogo = $setting->info['img_logo'];
                         </v-list-item>
                         <v-divider v-if="index < dataReviews.length - 1" :key="'div-' + review.review_id"></v-divider>
                     </template>
+					</div>
                 </v-list>
 
                 <div v-else class="text-center py-8 grey--text">

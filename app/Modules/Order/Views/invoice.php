@@ -378,7 +378,9 @@
             <h2>#<?= $order['no_order'] ?></h2>
             <div class="invoice-meta">
                 <p><strong>Tanggal:</strong> <?= date('d/m/Y', strtotime($order['created_at'])) ?></p>
-                <p><strong>Jatuh Tempo:</strong> <?= date('d/m/Y', strtotime($order['created_at'] . ' +7 days')) ?></p>
+                <?php if ($order['status_payment'] != 'settlement'): ?>
+                    <p><strong>Jatuh Tempo:</strong> <?= date('d/m/Y', strtotime($order['created_at'] . ' +3 days')) ?></p>
+                <?php endif; ?>
                 <?php if ($order['status_payment'] == 'settlement'): ?>
                     <span class="status lunas">LUNAS</span>
                 <?php elseif ($order['status_payment'] == 'pending'): ?>
