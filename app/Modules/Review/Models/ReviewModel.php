@@ -160,15 +160,17 @@ class ReviewModel extends Model
     }
 
     /**
-     * Check if a user has already reviewed a specific booking.
+     * Check if a user has already reviewed a specific product in an order.
      *
-     * @param int $bookingId
+     * @param int $orderId
+     * @param int $productId
      * @param int $userId
      * @return array|null
      */
-    public function checkExistingReview($bookingId, $userId)
+    public function checkExistingReview($orderId, $productId, $userId)
     {
-        return $this->where('order_id', $bookingId)
+        return $this->where('order_id', $orderId)
+            ->where('product_id', $productId)
             ->where('user_id', $userId)
             ->first();
     }

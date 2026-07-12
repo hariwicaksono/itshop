@@ -70,13 +70,14 @@ class Review extends BaseControllerApi
      * Validation:
      * - Order must exist and belong to the logged-in user
      * - Order must be completed (order_status = 2)
-     * - No existing review for this order (one review per order)
+     * - No existing review for this product in the order
      * - Rating must be 1-5
      */
     public function create()
     {
         $rules = [
             'order_id' => 'required|numeric',
+            'product_id' => 'required|numeric',
             'rating'     => 'required|numeric|greater_than_equal_to[1]|less_than_equal_to[5]',
         ];
 
@@ -136,12 +137,12 @@ class Review extends BaseControllerApi
             ], 200);
         }
 
-        // Check for existing review (one review per order)
-        $existingReview = $this->model->checkExistingReview($orderId, $userId);
+        // Check for existing review (one review per product in order)
+        $existingReview = $this->model->checkExistingReview($orderId, $productId, $userId);
         if ($existingReview) {
             return $this->respond([
                 'status'  => false,
-                'message' => 'Anda sudah memberikan ulasan untuk order ini.',
+                'message' => 'Anda sudah memberikan ulasan untuk produk ini dalam order.',
                 'data'    => [],
             ], 200);
         }
@@ -351,17 +352,22 @@ class Review extends BaseControllerApi
         $this->log->save(['keterangan' => session('first_name') . ' ' . session('last_name') . ' (' . session('email') . ') ' . strtolower(lang('App.do')) . ' Generate AI Reviews: Admin memulai generate review menggunakan AI']);
 
         // Get all completed orders that don't have reviews yet
+        // Check per (order_id, product_id) combination to handle orders with multiple products
         $db = \Config\Database::connect();
         
         $query = $db->query("
-            SELECT DISTINCT o.order_id, o.no_order, o.user_id, o.status, o.created_at,
+            SELECT o.order_id, o.no_order, o.user_id, o.status, o.created_at,
                    c.product_id, p.product_name, u.first_name, u.last_name
             FROM orders o
             JOIN carts c ON c.order_id = o.order_id
             JOIN products p ON p.product_id = c.product_id
             JOIN users u ON u.user_id = o.user_id
             WHERE o.status = 2
-            AND o.order_id NOT IN (SELECT DISTINCT order_id FROM reviews WHERE order_id IS NOT NULL)
+            AND NOT EXISTS (
+                SELECT 1 FROM reviews r 
+                WHERE r.order_id = o.order_id 
+                AND r.product_id = c.product_id
+            )
             ORDER BY o.created_at DESC
         ");
 
