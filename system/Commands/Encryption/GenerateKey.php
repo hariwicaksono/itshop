@@ -101,7 +101,8 @@ class GenerateKey extends BaseCommand
 
         // force DotEnv to reload the new env vars
         putenv('encryption.key');
-        unset($_ENV['encryption.key'], $_SERVER['encryption.key']);
+        unset($_ENV['encryption.key']);
+        service('superglobals')->unsetServer('encryption.key');
         $dotenv = new DotEnv((new Paths())->envDirectory ?? ROOTPATH); // @phpstan-ignore nullCoalesce.property
         $dotenv->load();
 
@@ -126,7 +127,7 @@ class GenerateKey extends BaseCommand
     /**
      * Sets the new encryption key in your .env file.
      *
-     * @param array<int|string, string|null> $params
+     * @param array<array-key, string|null> $params
      */
     protected function setNewEncryptionKey(string $key, array $params): bool
     {
@@ -143,7 +144,7 @@ class GenerateKey extends BaseCommand
     /**
      * Checks whether to overwrite existing encryption key.
      *
-     * @param array<int|string, string|null> $params
+     * @param array<array-key, string|null> $params
      */
     protected function confirmOverwrite(array $params): bool
     {

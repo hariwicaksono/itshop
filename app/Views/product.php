@@ -1,5 +1,6 @@
 <?php
 // Memanggil library
+$language = new \App\Libraries\Language();
 $setting = new \App\Libraries\Settings();
 $appName = $setting->info['app_name'];
 $imgLogo = $setting->info['img_logo'];
@@ -8,31 +9,87 @@ $imgLogo = $setting->info['img_logo'];
 <?php $this->section("style"); ?>
 <style>
     /* hanya menggeser konten */
-.content-scroll-x {
-    overflow-x: auto;
-    overflow-y: hidden;
-}
+    .content-scroll-x {
+        overflow-x: auto;
+        overflow-y: hidden;
+    }
 
-/* paksa konten bisa melebar */
-.content-inner {
-    min-width: 900px; /* sesuaikan kebutuhan */
-}
+    /* paksa konten bisa melebar */
+    .content-inner {
+        min-width: 900px;
+        /* sesuaikan kebutuhan */
+    }
 
-/* smooth di mobile */
-.content-scroll-x {
-    -webkit-overflow-scrolling: touch;
-}
+    /* smooth di mobile */
+    .content-scroll-x {
+        -webkit-overflow-scrolling: touch;
+    }
 </style>
 <?php $this->endSection("style") ?>
 <?php $this->section("opengraph"); ?>
 <meta property="og:title" content="Jual <?= $title; ?>" />
-<meta property="og:description" content="Jual <?= $title; ?> - <?= $appName; ?>" />
-<meta property="og:type" content="website" />
+<meta property="og:description" content="<?= esc($product['product_headline'] ?? ($product['product_desc'] ?? '')); ?>" />
+<meta property="og:type" content="product" />
 <meta property="og:url" content="<?= current_url(); ?>" />
 <meta property="og:image" content="<?= base_url() ?><?= $product['media_path']; ?>" />
-<meta property="og:locale" content="en_US" />
-<meta property="og:logo" content="<?= base_url('images/') . $imgLogo; ?>" />
+<meta property="og:locale" content="<?= $language->siteLang; ?>" />
+<meta property="og:logo" content="<?= base_url('images/') . $imgLogo; ?>">
+<meta property="product:price:amount" content="<?= $product['product_price']; ?>">
+<meta property="product:price:currency" content="IDR">
 <?php $this->endSection("opengraph") ?>
+
+<?php $this->section("meta"); ?>
+<meta name="description" content="<?= esc($product['product_headline'] ?? ($product['product_desc'] ?? '')); ?>">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Jual <?= $title; ?>">
+<meta name="twitter:description" content="<?= esc($product['product_headline'] ?? ($product['product_desc'] ?? '')); ?>">
+<meta name="twitter:image" content="<?= base_url() ?><?= $product['media_path']; ?>">
+<!-- JSON-LD: Product -->
+<script type="application/ld+json">
+    {
+        "@context": "https://schema.org/",
+        "@type": "Product",
+        "name": "<?= esc($title); ?>",
+        "image": "<?= base_url() ?><?= $product['media_path']; ?>",
+        "description": "<?= esc($product['product_desc'] ?? $product['product_headline'] ?? ''); ?>",
+        "sku": "<?= esc($product['product_code'] ?? ''); ?>",
+        "offers": {
+            "@type": "Offer",
+            "url": "<?= current_url(); ?>",
+            "priceCurrency": "IDR",
+            "price": "<?= $product['product_price']; ?>",
+            "availability": "<?= ($product['stock'] > 0) ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock'; ?>",
+            "itemCondition": "https://schema.org/NewCondition"
+        },
+        "brand": {
+            "@type": "Brand",
+            "name": "<?= $appName; ?>"
+        },
+        "category": "<?= esc($product['category_name'] ?? ''); ?>"
+    }
+</script>
+<!-- JSON-LD: BreadcrumbList -->
+<script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [{
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "<?= base_url(); ?>"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "<?= $title; ?>",
+                "item": "<?= current_url(); ?>"
+            }
+        ]
+    }
+</script>
+<?php $this->endSection("meta"); ?>
+
 <?php $this->section("content"); ?>
 
 <template>
@@ -113,7 +170,7 @@ $imgLogo = $setting->info['img_logo'];
                 </h2>
                 <div class="mt-0 d-flex align-center mb-4" v-if="productRatings[products.product_id] && productRatings[products.product_id].count >= 0">
                     <v-rating :value="productRatings[products.product_id].average" readonly dense half-increments size="20" color="amber" background-color="grey lighten-1"></v-rating>
-                    <span class="grey--text ml-1">({{ productRatings[products.product_id].count }} ulasan) <a  href="#ulasan" v-if="productRatings[products.product_id] && productRatings[products.product_id].count > 0">Lihat Ulasan</a></span>
+                    <span class="grey--text ml-1">({{ productRatings[products.product_id].count }} ulasan) <a href="#ulasan" v-if="productRatings[products.product_id] && productRatings[products.product_id].count > 0">Lihat Ulasan</a></span>
                 </div>
                 <v-divider></v-divider>
                 <h4 class="mb-3 mt-5">Detail Produk:</h4>
@@ -194,24 +251,24 @@ $imgLogo = $setting->info['img_logo'];
 
                 <!-- Individual Reviews -->
                 <v-list three-line v-else-if="dataReviews.length > 0" class="content-scroll-x">
-					<div class="content-inner">
-                    <template v-for="(review, index) in dataReviews">
-                        <v-list-item :key="review.review_id">
-                            <v-list-item-avatar>
-                                <v-icon class="grey lighten-1" dark>mdi-account</v-icon>
-                            </v-list-item-avatar>
-                            <v-list-item-content>
-                                <v-list-item-title>
-                                    {{ review.first_name }} {{ review.last_name }}
-                                    <v-rating :value="review.rating" readonly dense half-increments size="12" color="amber" class="d-inline-block ml-2"></v-rating>
-                                </v-list-item-title>
-                                <v-list-item-subtitle class="text-wrap">{{ review.review_text || 'Tidak ada komentar' }}</v-list-item-subtitle>
-                                <v-list-item-subtitle class="font-italic caption">{{ formatDate(review.created_at) }}</v-list-item-subtitle>
-                            </v-list-item-content>
-                        </v-list-item>
-                        <v-divider v-if="index < dataReviews.length - 1" :key="'div-' + review.review_id"></v-divider>
-                    </template>
-					</div>
+                    <div class="content-inner">
+                        <template v-for="(review, index) in dataReviews">
+                            <v-list-item :key="review.review_id">
+                                <v-list-item-avatar>
+                                    <v-icon class="grey lighten-1" dark>mdi-account</v-icon>
+                                </v-list-item-avatar>
+                                <v-list-item-content>
+                                    <v-list-item-title>
+                                        {{ review.first_name }} {{ review.last_name }}
+                                        <v-rating :value="review.rating" readonly dense half-increments size="12" color="amber" class="d-inline-block ml-2"></v-rating>
+                                    </v-list-item-title>
+                                    <v-list-item-subtitle class="text-wrap">{{ review.review_text || 'Tidak ada komentar' }}</v-list-item-subtitle>
+                                    <v-list-item-subtitle class="font-italic caption">{{ formatDate(review.created_at) }}</v-list-item-subtitle>
+                                </v-list-item-content>
+                            </v-list-item>
+                            <v-divider v-if="index < dataReviews.length - 1" :key="'div-' + review.review_id"></v-divider>
+                        </template>
+                    </div>
                 </v-list>
 
                 <div v-else class="text-center py-8 grey--text">

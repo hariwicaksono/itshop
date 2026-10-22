@@ -1,4 +1,60 @@
+<?php
+// Memanggil library
+$language = new \App\Libraries\Language();
+$setting = new \App\Libraries\Settings();
+$appName = $setting->info['app_name'];
+$imgLogo = $setting->info['img_logo'];
+?>
 <?php $this->extend("layouts/app-front"); ?>
+<?php $this->section("opengraph"); ?>
+<meta property="og:title" content="<?= $title; ?> - <?= $appName; ?>">
+<meta property="og:description" content="<?= esc($article_description ?? ($article_headline ?? '')); ?>">
+<meta property="og:type" content="article">
+<meta property="og:url" content="<?= current_url(); ?>">
+<meta property="og:image" content="<?= esc($article_image_url ?? base_url('images/' . $imgLogo)); ?>">
+<meta property="article:published_time" content="<?= esc($article_publish_date ?? date('c')); ?>">
+<meta property="article:modified_time" content="<?= esc($article_update_date ?? date('c')); ?>">
+<meta property="article:author" content="<?= esc($article_author ?? ''); ?>">
+<meta property="article:section" content="<?= esc($article_category ?? ''); ?>">
+<?php $this->endSection("opengraph"); ?>
+
+<?php $this->section("meta"); ?>
+<meta name="description" content="<?= esc($article_description ?? ($article_headline ?? '')); ?>">
+<meta name="author" content="<?= esc($article_author ?? ''); ?>">
+<meta name="twitter:title" content="<?= $title; ?> - <?= $appName; ?>">
+<meta name="twitter:description" content="<?= esc($article_description ?? ($article_headline ?? '')); ?>">
+<meta name="twitter:image" content="<?= esc($article_image_url ?? base_url('images/' . $imgLogo)); ?>">
+<meta name="article:author" content="<?= esc($article_author ?? ''); ?>">
+<meta name="article:section" content="<?= esc($article_category ?? ''); ?>">
+<!-- JSON-LD: BlogPosting -->
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "<?= esc($article_headline ?? ($title ?? '')); ?>",
+    "description": "<?= esc($article_description ?? ''); ?>",
+    "image": "<?= esc($article_image_url ?? base_url('images/' . $imgLogo)); ?>",
+    "author": {
+        "@type": "Person",
+        "name": "<?= esc($article_author ?? ''); ?>"
+    },
+    "publisher": {
+        "@type": "Organization",
+        "name": "<?= $appName; ?>",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "<?= base_url('images/' . $imgLogo); ?>"
+        }
+    },
+    "datePublished": "<?= esc($article_publish_date ?? date('c')); ?>",
+    "dateModified": "<?= esc($article_update_date ?? date('c')); ?>",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "<?= current_url(); ?>"
+    }
+}
+</script>
+<?php $this->endSection("meta"); ?>
 <?php $this->section("content"); ?>
 <template>
     <v-container class="mt-3">

@@ -1,2 +1,9 @@
 User-agent: *
-Disallow: 
+Disallow: /admin/
+Disallow: /openapi/
+Disallow: /api/
+Disallow: /login
+Disallow: /register
+Disallow: /password/reset
+Allow: /
+Sitemap: https://itshop.biz.id/sitemap.xml

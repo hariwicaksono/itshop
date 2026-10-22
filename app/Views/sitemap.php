@@ -6,7 +6,7 @@ $datetime1 = new DateTime(date('Y-m-d H:i:s'));
         <loc><?= base_url() ?></loc>
         <lastmod><?= $datetime1->format(DATE_ATOM); ?></lastmod>
         <changefreq>daily</changefreq>
-        <priority>0.1</priority>
+        <priority>1.0</priority>
     </url>
     <url>
         <loc><?= base_url('login'); ?></loc>
@@ -41,7 +41,7 @@ $datetime1 = new DateTime(date('Y-m-d H:i:s'));
             <loc><?= base_url() . $item['category_slug'] . '/' . $item['slug']; ?></loc>
             <lastmod><?= $datetime->format(DATE_ATOM); ?></lastmod>
             <changefreq>daily</changefreq>
-            <priority>0.5</priority>
+            <priority>0.8</priority>
         </url>
     <?php } ?>
     <?php foreach ($articles as $item) {
@@ -50,7 +50,7 @@ $datetime1 = new DateTime(date('Y-m-d H:i:s'));
             <loc><?= base_url() . $item['category_slug'] . '/' . $item['year'] . '/' . $item['month'] . '/' . $item['slug']; ?></loc>
             <lastmod><?= $datetime->format(DATE_ATOM); ?></lastmod>
             <changefreq>daily</changefreq>
-            <priority>0.5</priority>
+            <priority>0.8</priority>
         </url>
     <?php } ?>
 </urlset>

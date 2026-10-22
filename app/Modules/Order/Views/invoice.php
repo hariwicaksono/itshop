@@ -13,9 +13,9 @@
 
         body {
             font-family: "Segoe UI", Arial, sans-serif;
-            font-size: 13px;
+            font-size: 11px;
             color: #333;
-            line-height: 1.6;
+            line-height: 1.4;
             margin: 0;
             padding: 30px;
             background: #fff;

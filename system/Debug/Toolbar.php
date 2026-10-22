@@ -190,6 +190,9 @@ class Toolbar
 
     /**
      * Called within the view to display the timeline itself.
+     *
+     * @param list<array{hasTimelineData: bool, timelineData: list<array<string, mixed>>}> $collectors
+     * @param array<string, string>                                                        $styles
      */
     protected function renderTimeline(array $collectors, float $startTime, int $segmentCount, int $segmentDuration, array &$styles): string
     {
@@ -202,6 +205,9 @@ class Toolbar
 
     /**
      * Recursively renders timeline elements and their children.
+     *
+     * @param list<array<string, mixed>> $rows
+     * @param array<string, string>      $styles
      */
     protected function renderTimelineRecursive(array $rows, float $startTime, int $segmentCount, int $segmentDuration, array &$styles, int &$styleCount, int $level = 0, bool $isChild = false): string
     {
@@ -210,8 +216,8 @@ class Toolbar
         $output = '';
 
         foreach ($rows as $row) {
-            $hasChildren = isset($row['children']) && ! empty($row['children']);
-            $isQuery     = isset($row['query']) && ! empty($row['query']);
+            $hasChildren = ($row['children'] ?? []) !== [];
+            $isQuery     = ($row['query'] ?? '') !== '';
 
             // Open controller timeline by default
             $open = $row['name'] === 'Controller';
@@ -268,7 +274,9 @@ class Toolbar
     /**
      * Returns a sorted array of timeline data arrays from the collectors.
      *
-     * @param array $collectors
+     * @param list<array{hasTimelineData: bool, timelineData: list<array<string, mixed>>}> $collectors
+     *
+     * @return list<array<string, mixed>>
      */
     protected function collectTimelineData($collectors): array
     {
@@ -305,6 +313,10 @@ class Toolbar
 
     /**
      * Arranges the already sorted timeline data into a parent => child structure.
+     *
+     * @param list<array<string, mixed>> $elements
+     *
+     * @return list<array<string, mixed>>
      */
     protected function structureTimelineData(array $elements): array
     {
@@ -333,6 +345,8 @@ class Toolbar
     /**
      * Returns an array of data from all of the modules
      * that should be displayed in the 'Vars' tab.
+     *
+     * @return array<string, mixed>
      */
     protected function collectVarData(): array
     {
@@ -479,7 +493,7 @@ class Toolbar
 
         // Otherwise, if it includes ?debugbar_time, then
         // we should return the entire debugbar.
-        if ($request->getGet('debugbar_time')) {
+        if ($request->getGet('debugbar_time') !== null) {
             helper('security');
 
             // Negotiate the content-type to format the output

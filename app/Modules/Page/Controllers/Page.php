@@ -38,10 +38,23 @@ class Page extends BaseController
 		} else {
 			$pageTitle = $page['page_title'];
 		}
+		// Build SEO description from body (strip HTML tags)
+		$pageBody = '';
+		if (session()->get('lang') == 'en') {
+			$pageBody = $page['page_body_en'] ?: $page['page_body'];
+		} else {
+			$pageBody = $page['page_body'];
+		}
+		$seoDescription = substr(strip_tags($pageBody), 0, 160);
+
 		return view('page', [
 			'title' => ucfirst($pageTitle),
-			'slug' => $uri->getSegment(1)
+			'slug' => $uri->getSegment(1),
+			'page' => $page,
+			'page_description' => $seoDescription,
+			'page_id' => $page['page_id'],
+			'page_publish_date' => $page['created_at'] ?? date('Y-m-d H:i:s'),
+			'page_update_date' => $page['updated_at'] ?? $page['created_at'] ?? date('Y-m-d H:i:s'),
 		]);
 	}
-
 }

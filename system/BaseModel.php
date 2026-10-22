@@ -49,7 +49,7 @@ use stdClass;
  *      - process various callbacks
  *      - allow intermingling calls to the db connection
  *
- * @phpstan-type row_array               array<int|string, float|int|null|object|string|bool>
+ * @phpstan-type row_array               array<array-key, mixed>
  * @phpstan-type event_data_beforeinsert array{data: row_array}
  * @phpstan-type event_data_afterinsert  array{id: int|string, data: row_array, result: bool}
  * @phpstan-type event_data_beforefind   array{id?: int|string, method: string, singleton: bool, limit?: int, offset?: int}
@@ -1425,9 +1425,11 @@ abstract class BaseModel
      */
     protected function setDate(?int $userDate = null)
     {
-        $currentDate = $userDate ?? Time::now()->getTimestamp();
+        if ($userDate === null && $this->dateFormat === 'datetime') {
+            return $this->timeToDate(Time::now());
+        }
 
-        return $this->intToDate($currentDate);
+        return $this->intToDate($userDate ?? Time::now()->getTimestamp());
     }
 
     /**
@@ -1648,9 +1650,7 @@ abstract class BaseModel
 
     protected function ensureValidation(): void
     {
-        if ($this->validation === null) {
-            $this->validation = service('validation', null, false);
-        }
+        $this->validation ??= service('validation', null, false);
     }
 
     /**
@@ -1855,7 +1855,7 @@ abstract class BaseModel
      *
      * @param object|row_array|null $row
      *
-     * @return array<int|string, mixed>
+     * @return array<array-key, mixed>
      *
      * @throws DataException
      * @throws InvalidArgumentException
@@ -1947,7 +1947,7 @@ abstract class BaseModel
     /**
      * Provides direct access to method in the database connection.
      *
-     * @param array<int|string, mixed> $params
+     * @param array<array-key, mixed> $params
      *
      * @return mixed
      */

@@ -1,4 +1,40 @@
+<?php
+// Memanggil library
+$language = new \App\Libraries\Language();
+$setting = new \App\Libraries\Settings();
+$appName = $setting->info['app_name'];
+$imgLogo = $setting->info['img_logo'];
+?>
 <?php $this->extend("layouts/app-front"); ?>
+<?php $this->section("opengraph"); ?>
+<meta property="og:title" content="<?= $title; ?> - <?= $appName; ?>">
+<meta property="og:description" content="<?= esc($page_description ?? ''); ?>">
+<meta property="og:type" content="website">
+<meta property="og:url" content="<?= current_url(); ?>">
+<meta property="og:image" content="<?= base_url('images/' . $imgLogo); ?>">
+<meta property="og:site_name" content="<?= $appName; ?>">
+<?php $this->endSection("opengraph"); ?>
+
+<?php $this->section("meta"); ?>
+<meta name="description" content="<?= esc($page_description ?? ''); ?>">
+<meta name="twitter:title" content="<?= $title; ?> - <?= $appName; ?>">
+<meta name="twitter:description" content="<?= esc($page_description ?? ''); ?>">
+<!-- JSON-LD: WebPage -->
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "<?= esc($title ?? ''); ?>",
+    "description": "<?= esc($page_description ?? ''); ?>",
+    "url": "<?= current_url(); ?>",
+    "publisher": {
+        "@type": "Organization",
+        "name": "<?= $appName; ?>"
+    },
+    "dateModified": "<?= esc($page_update_date ?? date('c')); ?>"
+}
+</script>
+<?php $this->endSection("meta"); ?>
 <?php $this->section("content"); ?>
 <template>
     <v-container class="mt-3">

@@ -682,7 +682,7 @@
         // Get Articles
         getArticles: function() {
             this.loading2 = true;
-            axios.get(`<?= base_url(); ?>openapi/articles/all?page=${this.currentPage}&limit=${this.limitPage}&category=${this.categoryArticles}&sort_by=${this.orderByArticles}`, options)
+            axios.get(`<?= base_url(); ?>openapi/articles/all?page=${this.currentPage}&limit=5&category=${this.categoryArticles}&sort_by=${this.orderByArticles}`, options)
                 .then(res => {
                     // handle success
                     this.loading2 = false;
@@ -710,7 +710,7 @@
         },
         pagingArticles: function(pageNumber) {
             this.loading2 = true;
-            axios.get(`<?= base_url() ?>openapi/articles/all?page=${pageNumber}&limit=${this.limitPage}&sort_by=${this.orderByArticles}`)
+            axios.get(`<?= base_url() ?>openapi/articles/all?page=${pageNumber}&limit=5&sort_by=${this.orderByArticles}`)
                 .then((res) => {
                     var data = res.data;
                     if (data.status == true) {

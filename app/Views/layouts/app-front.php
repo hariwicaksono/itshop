@@ -29,12 +29,14 @@ Created: 11-2021
 Modified: 03-2026
 -->
 <!DOCTYPE html>
-<html>
+<html lang="<?= $language->htmlLang; ?>">
 
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+
+    <!-- SEO: Dynamic Title -->
     <?php if ($uri->getSegment(1) == "") { ?>
         <title><?= $title; ?> - <?= $appName; ?></title>
         <meta name="description" content="<?= $appDesc; ?> - <?= $appName; ?> by <?= env('appCompany'); ?>">
@@ -45,17 +47,74 @@ Modified: 03-2026
         <title><?= $title; ?> - <?= $appName; ?></title>
         <meta name="description" content="<?= $title; ?> - <?= $appName; ?> by <?= env('appCompany'); ?>">
     <?php } ?>
-    <meta name="theme-color" content="#1976D2" />
-    <link rel="apple-touch-icon" href="<?= base_url('images/') . $imgLogo; ?>">
-    <link rel="shortcut icon" href="<?= base_url('images/') . $imgLogo; ?>">
+
+    <!-- SEO: Meta Keywords -->
+    <meta name="keywords" content="ITSHOP, toko online, source code, aplikasi web, CodeIgniter 4, Laravel, jual source code, script PHP, aplikasi desktop, jasa pembuatan website, itshop purwokerto">
+
+    <!-- SEO: Meta Robots -->
     <meta name="robots" content="index,follow">
+
+    <!-- SEO: Theme Color -->
+    <meta name="theme-color" content="#1976D2" />
+
+    <!-- SEO: Canonical URL -->
     <link rel="canonical" href="<?= current_url(); ?>" />
+
+    <!-- SEO: Hreflang Tags -->
+    <link rel="alternate" hreflang="<?= $language->htmlLang; ?>" href="<?= current_url(); ?>" />
+    <link rel="alternate" hreflang="<?= $language->htmlLang == 'id' ? 'en-US' : 'id-ID'; ?>" href="<?= current_url(); ?>" />
+
+    <!-- SEO: Open Graph Defaults -->
+    <meta property="og:site_name" content="<?= $appName; ?>">
+    <meta property="og:locale" content="<?= $language->siteLang; ?>">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
+    <!-- SEO: Twitter Card Defaults -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="<?= $appName; ?>">
+
+    <!-- SEO: JSON-LD Structured Data (Website) -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "<?= $appName; ?>",
+        "description": "<?= $appDesc; ?>",
+        "url": "<?= base_url(); ?>",
+        "publisher": {
+            "@type": "Organization",
+            "name": "<?= $companyNama; ?>",
+            "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Purwokerto",
+                "addressRegion": "Jawa Tengah",
+                "addressCountry": "ID"
+            },
+            "telephone": "<?= $companyTelp; ?>",
+            "email": "<?= $companyEmail1; ?>"
+        },
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "<?= base_url(); ?>?s={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }
+    }
+    </script>
+
+    <!-- SEO: Favicon & Touch Icons -->
+    <link rel="apple-touch-icon" href="<?= base_url('images/') . $imgLogo; ?>">
+    <link rel="icon" href="<?= base_url('images/') . $imgLogo; ?>" type="image/png">
+    <link rel="shortcut icon" href="<?= base_url('images/') . $imgLogo; ?>">
+
+    <!-- CSS -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
     <link href="<?= base_url('assets/css/materialdesignicons.min.css') ?>" rel="stylesheet">
     <link href="<?= base_url('assets/css/vuetify.min.css') ?>" rel="stylesheet">
     <link href="<?= base_url('assets/css/styles.css') ?>" rel="stylesheet">
     <?= $this->renderSection('style') ?>
     <?= $this->renderSection('opengraph') ?>
+    <?= $this->renderSection('meta') ?>
 </head>
 
 <body>
